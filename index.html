@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto VIP Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08090d;--bg-sub:#0c0e14;--card:rgba(14,17,26,0.85);--card-solid:#0e111a;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.12);
+  --text:#e8ecf4;--muted:#6b7280;--muted2:#4b5563;
+  --green:#10b981;--green-s:rgba(16,185,129,0.12);
+  --red:#ef4444;--red-s:rgba(239,68,68,0.12);
+  --orange:#f59e0b;--blue:#638cff;--purple:#a78bfa;--cyan:#22d3ee;
+  --sw:240px;--r:12px;--r-sm:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;line-height:1.6}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.07);border-radius:3px}
+
+/* SIDEBAR */
+.sb{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--bg-sub);border-right:1px solid var(--border);overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+.sb-head{padding:20px 18px 16px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(99,140,255,0.07),rgba(167,139,250,0.04))}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.sb-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.sb-title{font-size:14px;font-weight:700;letter-spacing:-0.01em}
+.sb-sub{font-size:10px;color:var(--muted);padding-left:40px;font-weight:500}
+.sb-nav{flex:1;padding:8px 0}
+.sb-lbl{padding:16px 18px 5px;font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted2);font-weight:600}
+.sb a{display:flex;align-items:center;gap:9px;padding:7px 14px 7px 18px;color:var(--muted);text-decoration:none;font-size:12.5px;font-weight:450;border-left:2px solid transparent;transition:all .15s;margin:1px 0}
+.sb a .ni{width:16px;text-align:center;font-size:12px;opacity:.7;flex-shrink:0}
+.sb a:hover{color:var(--text);background:rgba(255,255,255,0.025)}
+.sb a.active{color:var(--blue);border-left-color:var(--blue);background:rgba(99,140,255,0.06);font-weight:500}
+.sb a.active .ni{opacity:1}
+.sb-status{padding:12px 18px;border-top:1px solid var(--border);font-size:10px;color:var(--muted2)}
+.sb-status span{display:block}
+#statusDot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--muted2);margin-right:5px;vertical-align:middle;transition:background .3s}
+#statusDot.live{background:var(--green)}
+#statusDot.loading{background:var(--orange)}
+#statusDot.err{background:var(--red)}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;padding:28px 40px 80px;max-width:1200px}
+.page{display:none}.page.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px;backdrop-filter:blur(8px)}
+.card-sm{padding:16px}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:600;margin-bottom:6px}
+.h1{font-size:1.8rem;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--text),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.h2{font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-0.01em;padding-bottom:10px;margin-bottom:18px;border-bottom:1px solid var(--border);position:relative}
+.h2::after{content:'';position:absolute;bottom:-1px;left:0;width:36px;height:2px;background:linear-gradient(90deg,var(--blue),transparent);border-radius:1px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,rgba(99,140,255,0.06),rgba(167,139,250,0.04));border-color:rgba(99,140,255,0.15)}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.cta{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;padding:10px 20px;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.cta:hover{opacity:.85}
+.cta.ghost{background:transparent;border:1px solid var(--border-h);color:var(--text)}
+.cta.ghost:hover{border-color:var(--blue);color:var(--blue)}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.stat{text-align:center;padding:18px 12px}
+.stat-lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.stat-val{font-size:1.3rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.stat-delta{font-size:11.5px;margin-top:4px;color:var(--muted)}
+
+/* COLORS */
+.up{color:#9df5ad}.down{color:#ffb5a8}.muted{color:var(--muted)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;margin-top:12px}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl thead th{text-align:left;padding:8px 10px;color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer}
+.tbl thead th:hover{color:var(--blue)}
+.tbl tbody tr{border-bottom:1px solid rgba(255,255,255,0.03);transition:background .1s}
+.tbl tbody tr:hover{background:rgba(255,255,255,0.025)}
+.tbl td{padding:8px 10px;vertical-align:middle}
+.coin-img{width:20px;height:20px;border-radius:50%;margin-right:7px;vertical-align:middle;object-fit:cover}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+input.search{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:var(--r-sm);font-size:12.5px;outline:none;width:220px;transition:border .2s}
+input.search:focus{border-color:var(--blue)}
+.chip{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:var(--r-sm);font-size:11.5px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.chip:hover{border-color:var(--border-h);color:var(--text)}
+.chip.active{background:rgba(99,140,255,0.12);border-color:var(--blue);color:var(--blue)}
+.count{font-size:11px;color:var(--muted);margin-left:4px}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}}
+.col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.list-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.list-img{width:22px;height:22px;border-radius:50%;object-fit:cover}
+.list-name{font-size:12.5px;font-weight:600}
+.list-sub{font-size:10.5px;color:var(--muted)}
+.list-price{font-family:'JetBrains Mono',monospace;font-size:11.5px;margin-left:auto}
+.list-pct{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:60px;text-align:right}
+
+/* SIGNAL CARD */
+.signal-card{border-color:rgba(99,140,255,0.15);background:linear-gradient(135deg,rgba(10,12,20,0.9),rgba(14,17,26,0.8))}
+.signal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.signal-title{font-size:1rem;font-weight:700}
+.signal-badge{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:1px;border:1px solid currentColor}
+.signal-badge.long{color:#9df5ad;background:rgba(16,185,129,0.12)}
+.signal-badge.short{color:#ffb5a8;background:rgba(239,68,68,0.12)}
+.signal-badge.neutral{color:var(--muted);background:rgba(255,255,255,0.04)}
+.signal-score-row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px}
+.signal-score-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px}
+.signal-bar-wrap{margin-bottom:14px}
+.signal-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;position:relative;overflow:visible}
+.signal-bar-fill{position:absolute;width:14px;height:14px;background:var(--blue);border-radius:50%;top:-4px;transition:left .4s;box-shadow:0 0 8px rgba(99,140,255,0.5)}
+.signal-bar-labels{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted2);margin-top:6px}
+.signal-factor{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:11.5px}
+.signal-factor-name{color:var(--muted);display:flex;align-items:center;gap:5px}
+.signal-factor-val{font-family:'JetBrains Mono',monospace;font-size:11px}
+.signal-footer{font-size:10px;color:var(--muted2);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
+
+/* NARRATIVES */
+.narr-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.narr-card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px}
+.narr-card-title{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:10px}
+.narr-card.hot .narr-card-title{color:#9df5ad}
+.narr-card.warm .narr-card-title{color:var(--orange)}
+.narr-card.cold .narr-card-title{color:var(--muted)}
+.narr-pills{display:flex;flex-wrap:wrap;gap:6px}
+.narr-pill{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid}
+.narr-pill.hot{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:#9df5ad}
+.narr-pill.warm{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:var(--orange)}
+.narr-pill.cold{background:rgba(255,255,255,0.04);border-color:var(--border);color:var(--muted)}
+
+/* TOP NARRATIVES STATS */
+.narr-stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:12px}
+.narr-stat-name{color:var(--muted)}
+.narr-stat-pct{font-family:'JetBrains Mono',monospace;font-weight:700}
+
+/* KILL ZONES */
+.kz-list{display:flex;flex-direction:column;gap:10px}
+.kz-row{display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--r-sm);transition:all .2s}
+.kz-row.active{border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.06)}
+.kz-dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);flex-shrink:0}
+.kz-row.active .kz-dot{background:var(--green);box-shadow:0 0 8px rgba(16,185,129,0.6)}
+.kz-name{font-weight:600;font-size:13px}
+.kz-time{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);margin-left:auto}
+.kz-active-badge{font-size:9.5px;font-weight:700;color:var(--green);background:rgba(16,185,129,0.12);padding:2px 8px;border-radius:20px;border:1px solid rgba(16,185,129,0.25)}
+
+/* CALCULATOR */
+.calc-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
+.calc-field label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px}
+.calc-field input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:var(--r-sm);font-size:13px;outline:none;transition:border .2s}
+.calc-field input:focus{border-color:var(--blue)}
+.calc-result{background:rgba(99,140,255,0.06);border:1px solid rgba(99,140,255,0.2);border-radius:var(--r-sm);padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.calc-res-item{text-align:center}
+.calc-res-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.calc-res-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--blue)}
+
+/* CHECKLIST */
+.cl-progress{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin-bottom:6px;overflow:hidden}
+.cl-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:2px;transition:width .3s}
+.cl-progress-text{font-size:11px;color:var(--muted);margin-bottom:14px;text-align:right}
+.cl-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:7px;cursor:pointer;transition:all .15s;user-select:none}
+.cl-item:hover{border-color:var(--border-h)}
+.cl-item.done{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.25)}
+.cl-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;flex-shrink:0;transition:all .2s}
+.cl-item.done .cl-box{background:var(--green);border-color:var(--green);color:#fff}
+.cl-label{font-size:12.5px}
+.cl-item.done .cl-label{color:var(--muted);text-decoration:line-through}
+
+/* FEAR & GREED */
+.fg-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 0}
+.fg-value{font-size:5rem;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1}
+.fg-label{font-size:1.1rem;font-weight:700;margin:10px 0 20px;text-transform:uppercase;letter-spacing:2px}
+.fg-bar{width:100%;max-width:460px;height:14px;border-radius:7px;background:linear-gradient(90deg,#ef4444,#f59e0b,#22d3ee,#10b981,#a78bfa);position:relative;margin-bottom:8px}
+.fg-needle{position:absolute;width:3px;height:22px;background:#fff;top:-4px;border-radius:2px;transform:translateX(-50%);transition:left .6s;box-shadow:0 0 8px rgba(255,255,255,0.5)}
+.fg-scale{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted2);width:100%;max-width:460px}
+.fg-history{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px;width:100%;max-width:460px}
+.fg-hist-item{text-align:center;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px}
+.fg-hist-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.fg-hist-val{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+/* FINDER */
+.slider-group{display:flex;flex-direction:column;gap:16px;margin-bottom:20px}
+.slider-row{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px}
+.slider-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.slider-lbl{font-size:12px;font-weight:600}
+.slider-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--blue)}
+input[type=range].slider{width:100%;accent-color:var(--blue);cursor:pointer}
+.slider-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--muted2);margin-top:4px}
+.scan-actions{display:flex;gap:10px;margin-bottom:16px}
+.finder-results-title{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px}
+
+/* HEATMAP */
+.hm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:20px}
+.hm-tile{padding:10px 12px;border-radius:var(--r-sm);border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all .15s}
+.hm-tile:hover,.hm-tile.active{border-color:rgba(99,140,255,0.4);transform:translateY(-1px)}
+.hm-tile-name{font-size:11px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.hm-tile-row{display:flex;justify-content:space-between;align-items:center}
+.hm-tile-pct{font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:700}
+.hm-tile-count{font-size:9.5px;color:var(--muted)}
+.hm-drill{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:12px}
+.hm-drill-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.hm-drill-title{font-size:1rem;font-weight:700}
+.hm-drill-avg{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+/* ARENA */
+.arena-wrap{display:flex;flex-direction:column;gap:16px}
+.arena-stats-bar{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+.arena-stat-item{font-size:11px;color:var(--muted)}
+.arena-stat-item strong{color:var(--text);font-family:'JetBrains Mono',monospace}
+.arena-pool-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.pool-btn{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);padding:5px 11px;border-radius:20px;font-size:11px;cursor:pointer;transition:all .15s}
+.pool-btn:hover{border-color:var(--border-h);color:var(--text)}
+.pool-btn.active{background:rgba(99,140,255,0.12);border-color:var(--blue);color:var(--blue)}
+.battle-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center}
+.fighter{background:rgba(255,255,255,0.02);border:2px solid var(--border);border-radius:var(--r);padding:22px 18px;cursor:pointer;transition:all .2s;text-align:center;user-select:none}
+.fighter:hover{border-color:var(--blue);background:rgba(99,140,255,0.06);transform:translateY(-2px)}
+.fighter.winner-flash{border-color:var(--green);background:rgba(16,185,129,0.1);animation:wf .3s}
+.fighter.loser-flash{border-color:var(--red);background:rgba(239,68,68,0.08)}
+@keyframes wf{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.fighter-img{width:52px;height:52px;border-radius:50%;object-fit:cover;margin-bottom:8px;display:none}
+.fighter-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.fighter-sym{font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase}
+.fighter-meta{display:flex;flex-direction:column;gap:4px;font-size:11px}
+.fighter-meta-row{display:flex;justify-content:space-between}
+.fighter-meta-lbl{color:var(--muted)}
+.fighter-meta-val{font-family:'JetBrains Mono',monospace;font-weight:600}
+.elo-badge{margin-top:10px;font-size:10.5px;color:var(--blue);font-weight:700;font-family:'JetBrains Mono',monospace}
+.vs{font-size:1.4rem;font-weight:800;color:var(--muted);text-align:center;width:40px;flex-shrink:0}
+.arena-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+/* RANKING */
+.rank-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.rank-hl{color:#fbbf24;font-weight:700}
+.rank-hl-2{color:#9ca3af}
+.rank-hl-3{color:#b45309}
+.page-row{display:flex;align-items:center;gap:10px;margin-top:12px;justify-content:center}
+.page-btn{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:var(--r-sm);font-size:11.5px;cursor:pointer;transition:all .15s}
+.page-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
+.page-btn:disabled{opacity:.3;cursor:default}
+.page-info{font-size:11px;color:var(--muted)}
+
+/* BREAKOUTS */
+.brk-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.brk-stat-box{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center}
+.brk-stat-val{font-size:1.2rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.brk-stat-lbl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.signal-badge-tbl{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9.5px;font-weight:700;letter-spacing:.5px}
+.signal-badge-tbl.hot{background:rgba(16,185,129,0.15);color:#9df5ad}
+.signal-badge-tbl.warm{background:rgba(245,158,11,0.12);color:var(--orange)}
+.signal-badge-tbl.cool{background:rgba(255,255,255,0.04);color:var(--muted)}
+
+/* LOADER */
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px}
+.loader-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.06);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:13px;color:var(--muted)}
+
+/* MOBILE */
+.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--bg-sub);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:var(--r-sm);font-size:16px;cursor:pointer}
+@media(max-width:768px){
+  .sb{transform:translateX(-100%);transition:transform .25s}.sb.open{transform:translateX(0)}
+  .main{margin-left:0;padding:60px 16px 60px}
+  .menu-btn{display:block}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .battle-wrap{grid-template-columns:1fr 1fr;grid-template-rows:auto auto}
+  .vs{display:none}
+  .brk-stats{grid-template-columns:repeat(2,1fr)}
+  .hm-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<button class="menu-btn" id="menuBtn">☰</button>
+
+<!-- SIDEBAR -->
+<nav class="sb" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo">
+      <div class="sb-icon">⬡</div>
+      <div class="sb-title">Crypto VIP</div>
+    </div>
+    <div class="sb-sub">Live Market Intelligence</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-lbl">Overview</div>
+    <a href="#" class="active" data-page="dashboard"><span class="ni">◈</span> Dashboard</a>
+    <a href="#" data-page="markets"><span class="ni">◫</span> Markets</a>
+    <a href="#" data-page="movers"><span class="ni">↕</span> Movers</a>
+    <div class="sb-lbl">Analysis</div>
+    <a href="#" data-page="heatmap"><span class="ni">⊞</span> Heat Map</a>
+    <a href="#" data-page="breakouts"><span class="ni">↗</span> Breakouts</a>
+    <a href="#" data-page="narratives"><span class="ni">◉</span> Narratives</a>
+    <a href="#" data-page="feargreed"><span class="ni">◐</span> Sentiment</a>
+    <div class="sb-lbl">Tools</div>
+    <a href="#" data-page="finder"><span class="ni">⌕</span> Finder</a>
+    <a href="#" data-page="killzones"><span class="ni">◷</span> Killzones</a>
+    <a href="#" data-page="calculator"><span class="ni">∑</span> Calculator</a>
+    <a href="#" data-page="checklist"><span class="ni">✓</span> Checklist</a>
+    <div class="sb-lbl">Arena</div>
+    <a href="#" data-page="arena"><span class="ni">⚔</span> Battle</a>
+    <a href="#" data-page="ranking"><span class="ni">♛</span> Ranking</a>
+  </div>
+  <div class="sb-status">
+    <span><span id="statusDot"></span><span id="statusText">Loading...</span></span>
+    <span id="statusTime" style="margin-top:2px;padding-left:11px;"></span>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- LOADER -->
+  <div class="loader" id="mainLoader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading 1000 coins from CoinPaprika...</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="page" data-page="dashboard" id="allPages">
+
+    <div class="page active" data-page="dashboard">
+      <div class="card hero">
+        <div class="eyebrow">Live Market Intelligence</div>
+        <div class="h1">Trade smarter. Move with data.</div>
+        <p class="sub">Prices, momentum, narratives, and signals in one clean interface. 1000 coins, live data, zero noise.</p>
+        <div class="cta-row">
+          <button class="cta" onclick="switchPage('markets')">Open Markets</button>
+          <button class="cta ghost" onclick="switchPage('calculator')">Position Calculator</button>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="card stat"><div class="stat-lbl">Bitcoin</div><div class="stat-val" id="dBTC">—</div><div class="stat-delta" id="dBTCp">—</div></div>
+        <div class="card stat"><div class="stat-lbl">Ethereum</div><div class="stat-val" id="dETH">—</div><div class="stat-delta" id="dETHp">—</div></div>
+        <div class="card stat"><div class="stat-lbl">Top Gainer 24h</div><div class="stat-val" id="dGainer" style="font-size:1rem">—</div><div class="stat-delta up" id="dGainerP">—</div></div>
+        <div class="card stat"><div class="stat-lbl">Top Narratives 24h</div><div id="dNarrTop" style="margin-top:6px;font-size:12px"></div></div>
+      </div>
+      <div class="card signal-card">
+        <div class="signal-header">
+          <div><div class="eyebrow">5-Pillar Signal Engine</div><div class="signal-title">BTC Market Bias</div></div>
+          <div class="signal-badge neutral" id="sigBadge">—</div>
+        </div>
+        <div class="signal-score-row"><span style="color:var(--muted);font-size:12px">Confluence Score</span><span class="signal-score-val" id="sigScore">—/10</span></div>
+        <div class="signal-bar-wrap">
+          <div class="signal-bar"><div class="signal-bar-fill" id="sigBar" style="left:50%"></div></div>
+          <div class="signal-bar-labels"><span>SHORT</span><span>NEUTRAL</span><span>LONG</span></div>
+        </div>
+        <div id="sigFactors"></div>
+        <div class="signal-footer" id="sigFooter"></div>
+      </div>
+    </div>
+
+    <!-- MARKETS -->
+    <div class="page" data-page="markets">
+      <div class="card">
+        <div class="eyebrow">Markets</div>
+        <div class="h2">Live Coin Universe</div>
+        <div class="filter-row">
+          <input class="search" id="mSearch" type="text" placeholder="Search coin or symbol...">
+          <button class="chip active" id="mSortMcap" onclick="sortTable('mcap',this)">Market Cap</button>
+          <button class="chip" id="mSortGain" onclick="sortTable('gain',this)">Top Gainers</button>
+          <button class="chip" id="mSortLoss" onclick="sortTable('loss',this)">Top Losers</button>
+          <span class="count" id="mCount"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>Coin</th><th>Price</th><th>24h</th><th>7d</th><th>Market Cap</th><th>Dominance</th></tr></thead>
+            <tbody id="mBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVERS -->
+    <div class="page" data-page="movers">
+      <div class="card">
+        <div class="eyebrow">Momentum</div>
+        <div class="h2">Top Movers 24h</div>
+        <div class="two-col">
+          <div><div class="col-title up">↑ Top Gainers</div><div id="gainList"></div></div>
+          <div><div class="col-title down">↓ Top Losers</div><div id="loserList"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="page" data-page="heatmap">
+      <div class="card">
+        <div class="eyebrow">Sector Performance</div>
+        <div class="h2">Narrative Heat Map</div>
+        <p class="sub">Click any sector to drill down into its coins. Color intensity = average 24h performance.</p>
+        <div class="hm-grid" id="hmGrid"></div>
+        <div class="hm-drill" id="hmDrill" style="display:none">
+          <div class="hm-drill-header">
+            <div class="eyebrow" id="hmDrillEye">Sector Drill-Down</div>
+            <div class="hm-drill-title" id="hmDrillTitle"></div>
+            <div class="hm-drill-avg" id="hmDrillAvg"></div>
+            <div class="muted" id="hmDrillCount" style="font-size:11px"></div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>#</th><th>Coin</th><th>Price</th><th>24h</th><th>7d</th><th>ATH %</th><th>Vol/MC</th></tr></thead>
+              <tbody id="hmDrillBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BREAKOUTS -->
+    <div class="page" data-page="breakouts">
+      <div class="card">
+        <div class="eyebrow">Signal Scanner</div>
+        <div class="h2">Breakouts &amp; Momentum Radar</div>
+        <div class="brk-stats" id="brkStats"></div>
+        <div class="filter-row">
+          <button class="chip active" id="brkAll" onclick="brkSwitch('all',this)">All Signals</button>
+          <button class="chip" id="brkAccel" onclick="brkSwitch('accel',this)">Accelerating</button>
+          <button class="chip" id="brkVol" onclick="brkSwitch('volspike',this)">Vol Spike</button>
+          <button class="chip" id="brkDip" onclick="brkSwitch('dip',this)">Dip Recovery</button>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>Coin</th><th>Price</th><th>24h</th><th>7d</th><th>Accel</th><th>Vol/MC</th><th>ATH %</th><th>Signal</th></tr></thead>
+            <tbody id="brkBody"></tbody>
+          </table>
+        </div>
+        <div id="brkFooter" style="font-size:10px;color:var(--muted2);margin-top:8px;text-align:right"></div>
+      </div>
+    </div>
+
+    <!-- NARRATIVES -->
+    <div class="page" data-page="narratives">
+      <div class="card">
+        <div class="eyebrow">Narrative Tracker</div>
+        <div class="h2">What's Running?</div>
+        <p class="sub">Current narratives attracting capital. Hot, warm, cold — curated by momentum.</p>
+        <div class="narr-wrap" id="narrWrap"></div>
+      </div>
+    </div>
+
+    <!-- FEAR & GREED -->
+    <div class="page" data-page="feargreed">
+      <div class="card">
+        <div class="eyebrow">Market Sentiment</div>
+        <div class="h2">Fear &amp; Greed Index</div>
+        <p class="sub">Sentiment is a contrarian indicator. Extreme Fear = opportunity, Extreme Greed = caution.</p>
+        <div class="fg-wrap">
+          <div class="fg-value" id="fgVal">—</div>
+          <div class="fg-label" id="fgLbl">Loading...</div>
+          <div class="fg-bar"><div class="fg-needle" id="fgNeedle" style="left:50%"></div></div>
+          <div class="fg-scale"><span>Extreme Fear</span><span>Fear</span><span>Neutral</span><span>Greed</span><span>Extreme Greed</span></div>
+          <div class="fg-history" id="fgHistory"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINDER -->
+    <div class="page" data-page="finder">
+      <div class="card">
+        <div class="eyebrow">Coin Discovery Engine</div>
+        <div class="h2">Finder</div>
+        <p class="sub">Five sliders, five dimensions. Score every coin against your ideal profile and surface the top matches.</p>
+        <div class="slider-group">
+          <div class="slider-row"><div class="slider-head"><span class="slider-lbl">Market Cap</span><span class="slider-val" id="fv1">50%</span></div><input type="range" class="slider" id="fr1" min="0" max="100" value="50" oninput="document.getElementById('fv1').textContent=this.value+'%'"><div class="slider-ends"><span>Large Cap</span><span>Micro Cap</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span class="slider-lbl">Narrative Strength</span><span class="slider-val" id="fv2">50%</span></div><input type="range" class="slider" id="fr2" min="0" max="100" value="50" oninput="document.getElementById('fv2').textContent=this.value+'%'"><div class="slider-ends"><span>Strong (AI, L1, DeFi)</span><span>Risky (Meme, Spec)</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span class="slider-lbl">Hype Level</span><span class="slider-val" id="fv3">50%</span></div><input type="range" class="slider" id="fr3" min="0" max="100" value="50" oninput="document.getElementById('fv3').textContent=this.value+'%'"><div class="slider-ends"><span>Quiet</span><span>Extreme Hype</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span class="slider-lbl">ATH Distance</span><span class="slider-val" id="fv4">50%</span></div><input type="range" class="slider" id="fr4" min="0" max="100" value="50" oninput="document.getElementById('fv4').textContent=this.value+'%'"><div class="slider-ends"><span>Deep Drawdown</span><span>Near ATH</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span class="slider-lbl">Popularity / Buzz</span><span class="slider-val" id="fv5">50%</span></div><input type="range" class="slider" id="fr5" min="0" max="100" value="50" oninput="document.getElementById('fv5').textContent=this.value+'%'"><div class="slider-ends"><span>Low Activity</span><span>Viral</span></div></div>
+        </div>
+        <div class="scan-actions"><button class="cta" onclick="runFinder()">Run Scan</button><button class="cta ghost" onclick="resetFinder()">Reset</button></div>
+        <div class="finder-results-title" id="finderTitle"></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Coin</th><th>Score</th><th>Price</th><th>24h</th><th>Market Cap</th><th>ATH %</th></tr></thead><tbody id="finderBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- KILLZONES -->
+    <div class="page" data-page="killzones">
+      <div class="card">
+        <div class="eyebrow">Trading Sessions</div>
+        <div class="h2">Killzones (Berlin Time)</div>
+        <p class="sub">Active sessions highlighted live. The golden hours for volatility and volume.</p>
+        <div class="kz-list" id="kzList"></div>
+      </div>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="page" data-page="calculator">
+      <div class="card">
+        <div class="eyebrow">Risk Management</div>
+        <div class="h2">Position Size Calculator</div>
+        <p class="sub">Calculate your size precisely. Capital, risk, entry, and stop. The rest is discipline.</p>
+        <div class="calc-form">
+          <div class="calc-field"><label>Account Capital ($)</label><input type="number" id="cCapital" value="10000" oninput="calcPosition()"></div>
+          <div class="calc-field"><label>Risk per Trade (%)</label><input type="number" id="cRisk" value="1" step="0.1" oninput="calcPosition()"></div>
+          <div class="calc-field"><label>Entry Price ($)</label><input type="number" id="cEntry" value="100" oninput="calcPosition()"></div>
+          <div class="calc-field"><label>Stop Loss ($)</label><input type="number" id="cStop" value="95" oninput="calcPosition()"></div>
+        </div>
+        <div class="calc-result" id="calcResult"></div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="page" data-page="checklist">
+      <div class="card">
+        <div class="eyebrow">Discipline Protocol</div>
+        <div class="h2">Pre-Trade Checklist</div>
+        <p class="sub">Before you hit the buy button. Check off what is truly confirmed.</p>
+        <div class="cl-progress"><div class="cl-progress-fill" id="clFill" style="width:0%"></div></div>
+        <div class="cl-progress-text" id="clText">0 / 8 confirmed</div>
+        <div id="clWrap"></div>
+      </div>
+    </div>
+
+    <!-- ARENA -->
+    <div class="page" data-page="arena">
+      <div class="card">
+        <div class="eyebrow">ELO Battle System</div>
+        <div class="h2">Crypto Arena</div>
+        <p class="sub">Pick the coin you'd rather hold long-term. ELO ratings build over time.</p>
+        <div class="arena-stats-bar">
+          <div class="arena-stat-item">Battles: <strong id="aTot">0</strong></div>
+          <div class="arena-stat-item">Loaded: <strong id="aLoad">—</strong></div>
+          <div class="arena-stat-item">Streak: <strong id="aStreak">0</strong></div>
+          <div class="arena-stat-item">Top Rated: <strong id="aTop">—</strong></div>
+        </div>
+        <div class="arena-pool-row">
+          <span style="font-size:11px;color:var(--muted);align-self:center">Pool:</span>
+          <button class="pool-btn active" data-pool="all">All 1000</button>
+          <button class="pool-btn" data-pool="100">Top 100</button>
+          <button class="pool-btn" data-pool="200">Top 200</button>
+          <button class="pool-btn" data-pool="500">Top 500</button>
+        </div>
+        <div class="battle-wrap">
+          <div class="fighter" id="fighterA">
+            <img class="fighter-img" id="fImgA" src="" alt="">
+            <div class="fighter-name" id="fNameA">Loading...</div>
+            <div class="fighter-sym" id="fSymA"></div>
+            <div class="fighter-meta">
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">Price</span><span class="fighter-meta-val" id="fPxA">—</span></div>
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">Market Cap</span><span class="fighter-meta-val" id="fMcA">—</span></div>
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">24h</span><span class="fighter-meta-val" id="fChA">—</span></div>
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">Rank</span><span class="fighter-meta-val" id="fRkA">—</span></div>
+            </div>
+            <div class="elo-badge" id="fEloA">ELO 1200</div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="fighter" id="fighterB">
+            <img class="fighter-img" id="fImgB" src="" alt="">
+            <div class="fighter-name" id="fNameB">Loading...</div>
+            <div class="fighter-sym" id="fSymB"></div>
+            <div class="fighter-meta">
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">Price</span><span class="fighter-meta-val" id="fPxB">—</span></div>
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">Market Cap</span><span class="fighter-meta-val" id="fMcB">—</span></div>
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">24h</span><span class="fighter-meta-val" id="fChB">—</span></div>
+              <div class="fighter-meta-row"><span class="fighter-meta-lbl">Rank</span><span class="fighter-meta-val" id="fRkB">—</span></div>
+            </div>
+            <div class="elo-badge" id="fEloB">ELO 1200</div>
+          </div>
+        </div>
+        <div class="arena-actions">
+          <button class="cta ghost" id="aSkip">Skip →</button>
+          <button class="cta ghost" id="aReset" style="color:var(--red);border-color:rgba(239,68,68,0.3)">Reset ELO</button>
+        </div>
+        <div style="font-size:10.5px;color:var(--muted);margin-top:10px">← Left Arrow = Left wins · Right Arrow → = Right wins</div>
+      </div>
+    </div>
+
+    <!-- RANKING -->
+    <div class="page" data-page="ranking">
+      <div class="card">
+        <div class="eyebrow">Arena ELO Ranking</div>
+        <div class="h2">Coin Ranking</div>
+        <div class="rank-actions">
+          <input class="search" id="rSearch" type="text" placeholder="Search coin...">
+          <button class="chip active" id="rFiltRated" onclick="rankFilter('rated',this)">Rated</button>
+          <button class="chip" id="rFiltAll" onclick="rankFilter('all',this)">All Coins</button>
+          <span class="count" id="rCount"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th data-sort="rank">#</th><th>Coin</th><th data-sort="elo" style="cursor:pointer">ELO ↕</th><th>W</th><th>L</th><th data-sort="winrate" style="cursor:pointer">Win% ↕</th><th>Market Cap</th><th>Price</th></tr></thead>
+            <tbody id="rBody"></tbody>
+          </table>
+        </div>
+        <div class="page-row">
+          <button class="page-btn" id="rPrev" disabled>← Prev</button>
+          <span class="page-info" id="rPageInfo">1 / 1</span>
+          <button class="page-btn" id="rNext" disabled>Next →</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /allPages -->
+</main>
+
+<script>
+// ── SECTORS MAP ────────────────────────────────────────────────
+const SECTORS = {
+  'bitcoin':['Layer 1','Store of Value'],'ethereum':['Layer 1','Smart Contracts'],'solana':['Layer 1','High Performance'],
+  'cardano':['Layer 1'],'avalanche':['Layer 1'],'the-open-network':['Layer 1','TON Ecosystem'],
+  'near-protocol':['Layer 1','AI Infrastructure'],'sui':['Layer 1','Move Ecosystem'],
+  'aptos':['Layer 1','Move Ecosystem'],'hedera-hashgraph':['Layer 1','Enterprise'],
+  'internet-computer':['Layer 1','Web3 Cloud'],'tron':['Layer 1','Payment'],
+  'binancecoin':['Layer 1','BNB Ecosystem','Exchange'],'xrp':['Layer 1','Payment','Cross-Border'],
+  'litecoin':['Layer 1','Payment'],'bitcoin-cash':['Layer 1','Payment'],'stellar':['Layer 1','Payment'],
+  'ethereum-classic':['Layer 1'],'vechain':['Layer 1','Supply Chain'],
+  'casper-network':['Layer 1','Enterprise'],'celo':['Layer 1','Payment','Mobile'],
+  'sonic':['Layer 1','High Performance'],'berachain':['Layer 1','DeFi'],
+  'celestia':['Layer 1','Modular Blockchain','Data Availability'],'story':['Layer 1','IP Infrastructure'],
+  'polygon-ecosystem-token':['Ethereum L2','Scaling'],'arbitrum':['Ethereum L2','Scaling'],
+  'optimism':['Ethereum L2','Scaling'],'starknet':['Ethereum L2','ZK Rollup'],
+  'zksync':['Ethereum L2','ZK Rollup'],'mantle':['Ethereum L2','Scaling'],
+  'immutable-x':['Ethereum L2','Gaming','NFT Infra'],'polygon':['Ethereum L2','Scaling'],
+  'movement':['Ethereum L2','Move Ecosystem'],
+  'stacks':['Bitcoin L2','Smart Contracts'],
+  'fetch-ai':['AI Agent','Autonomous Agent'],'singularitynet':['AI Agent','AGI'],
+  'virtual-protocol':['AI Agent','Virtual Agent'],'worldcoin':['AI Agent','Identity'],
+  'render-token':['AI Infrastructure','GPU Network'],'akash-network':['AI Infrastructure','Cloud Computing'],
+  'bittensor':['AI Infrastructure','Decentralized AI'],'ocean-protocol':['AI Infrastructure','Data Market'],
+  'grass':['AI Infrastructure','Data Scraping'],'aethir':['AI Infrastructure','GPU Cloud'],
+  'aave':['DeFi Lending'],'maker':['DeFi Lending','Stablecoin Issuer'],
+  'uniswap':['DeFi DEX','Ethereum'],'curve-dao-token':['DeFi DEX','Stablecoin DEX'],
+  'jupiter-exchange-token':['DeFi DEX','Solana Ecosystem'],
+  'pancakeswap':['DeFi DEX','BNB Ecosystem'],'raydium':['DeFi DEX','Solana Ecosystem'],
+  'aerodrome-finance':['DeFi DEX','Base Ecosystem'],'1inch':['DeFi DEX','Aggregator'],
+  'lido-dao':['DeFi Liquid Staking','Ethereum'],'rocket-pool':['DeFi Liquid Staking','Ethereum'],
+  'jito':['DeFi Liquid Staking','Solana Ecosystem','MEV'],
+  'etherfi':['DeFi Liquid Staking','Restaking'],'eigenlayer':['DeFi Yield','Restaking'],
+  'pendle':['DeFi Yield','Yield Tokenization'],'convex-finance':['DeFi Yield','Curve Ecosystem'],
+  'chainlink':['Oracle','Cross-Chain'],'pyth-network':['Oracle','Solana Ecosystem'],'api3':['Oracle'],
+  'polkadot':['Cross-Chain','Interop'],'wormhole':['Cross-Chain','Bridge'],
+  'layerzero':['Cross-Chain','Messaging'],'axelar':['Cross-Chain','Bridge'],
+  'tether':['Stablecoin','Payment'],'usd-coin':['Stablecoin','Payment'],
+  'dai':['Stablecoin','DeFi'],'ethena-usde':['Stablecoin','DeFi Yield'],
+  'ondo':['RWA','Tokenized Treasuries'],'mantra':['RWA','Tokenization Platform'],
+  'centrifuge':['RWA','Credit Markets'],'pax-gold':['RWA','Gold Tokenized'],
+  'helium':['DePIN','Wireless Network'],'filecoin':['DePIN','Storage'],
+  'arweave':['DePIN','Permanent Storage'],'render-token':['DePIN','GPU Computing'],
+  'axie-infinity':['GameFi','Play-to-Earn'],'the-sandbox':['GameFi','Metaverse'],
+  'decentraland':['GameFi','Metaverse'],'gala':['GameFi','Gaming Platform'],
+  'ronin-token':['GameFi','Gaming Chain'],
+  'dogecoin':['Meme','OG Meme'],'shiba-inu':['Meme','Dog Meme'],
+  'pepe':['Meme','Frog Meme'],'bonk':['Meme','Solana Ecosystem'],
+  'floki-inu':['Meme','Dog Meme'],'dogwifcoin':['Meme','Solana Meme'],
+  'popcat':['Meme','Solana Meme'],'fartcoin':['Meme','Solana Meme'],
+  'official-trump':['Meme','PolitiFi'],'mog-coin':['Meme','Ethereum'],
+  'monero':['Privacy','Fungible'],'zcash':['Privacy','ZK'],
+  'leo-token':['Exchange Token','Bitfinex'],'okb':['Exchange Token','OKX'],
+  'blur':['NFT Infra','Marketplace'],'ethereum-name-service':['NFT Infra','Identity'],
+  'mask-network':['Social','Web3 Social'],'kaito':['Social','AI Analytics'],
+  'the-graph':['Modular Blockchain','Indexing'],'celestia':['Data Availability','Modular Blockchain'],
+};
+
+// ── DATA LAYER ─────────────────────────────────────────────────
+let DB = [];
+let totalMcap = 0;
+let brkFilter = 'all';
+let currentSort = 'mcap';
+let currentSearch = '';
+
+const fmt = n => {
+  if (!n && n !== 0) return '—';
+  if (n >= 1e12) return '$' + (n/1e12).toFixed(2) + 'T';
+  if (n >= 1e9)  return '$' + (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6)  return '$' + (n/1e6).toFixed(2) + 'M';
+  if (n >= 1000) return '$' + n.toLocaleString('en-US',{maximumFractionDigits:2});
+  if (n >= 1)    return '$' + n.toFixed(4);
+  return '$' + n.toFixed(6);
+};
+const pct = v => {
+  if (v == null) return '<span style="color:rgba(255,255,255,0.3)">—</span>';
+  const cls = v >= 0 ? 'up' : 'down';
+  return `<span class="${cls}">${v >= 0 ? '+' : ''}${v.toFixed(2)}%</span>`;
+};
+
+function setStatus(state, text, time) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  const tEl = document.getElementById('statusTime');
+  dot.className = state;
+  txt.textContent = text;
+  if (time) tEl.textContent = time;
+}
+
+async function loadData() {
+  setStatus('loading', 'Fetching 1000 coins...');
+  try {
+    const res = await fetch('https://api.coinpaprika.com/v1/tickers?limit=1000');
+    const coins = await res.json();
+    DB = coins.map(c => {
+      const u = c.quotes.USD;
+      const id = c.id.split('-').slice(1).join('-') || c.id;
+      return {
+        id, name: c.name, symbol: (c.symbol||'').toLowerCase(),
+        image: `https://static.coinpaprika.com/coin/${c.id}/logo.png`,
+        current_price: u.price,
+        market_cap: u.market_cap,
+        market_cap_rank: c.rank,
+        price_change_percentage_24h: u.percent_change_24h,
+        price_change_percentage_7d_in_currency: u.percent_change_7d,
+        total_volume: u.volume_24h,
+        ath: u.ath_price,
+        ath_change_percentage: u.percent_from_price_ath,
+      };
+    });
+    totalMcap = DB.reduce((s,c) => s + (c.market_cap||0), 0);
+    const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    setStatus('live', `${DB.length} coins live`, `Updated ${now}`);
+    document.getElementById('mainLoader').style.display = 'none';
+    renderAll();
+  } catch(e) {
+    setStatus('err', 'Fetch failed — retry');
+    document.getElementById('mainLoader').innerHTML = `<div style="color:var(--red);text-align:center;font-size:13px">Failed to load data.<br><button class="cta ghost" style="margin-top:12px" onclick="loadData()">Retry</button></div>`;
+  }
+}
+
+function renderAll() {
+  renderDashboard();
+  renderTable();
+  renderMovers();
+  renderNarratives();
+  renderKillzones();
+  renderChecklist();
+  calcPosition();
+  loadFearGreed();
+  renderHeatmap();
+  renderBreakouts();
+  initArena();
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────
+function renderDashboard() {
+  const btc = DB.find(c => c.id === 'bitcoin');
+  const eth = DB.find(c => c.id === 'ethereum');
+  const gainers = [...DB].filter(c => c.price_change_percentage_24h != null)
+    .sort((a,b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+  const topG = gainers[0];
+  if (btc) {
+    document.getElementById('dBTC').textContent = fmt(btc.current_price);
+    document.getElementById('dBTCp').innerHTML = pct(btc.price_change_percentage_24h) + ' 24h';
+  }
+  if (eth) {
+    document.getElementById('dETH').textContent = fmt(eth.current_price);
+    document.getElementById('dETHp').innerHTML = pct(eth.price_change_percentage_24h) + ' 24h';
+  }
+  if (topG) {
+    document.getElementById('dGainer').textContent = topG.name;
+    document.getElementById('dGainerP').textContent = '+' + (topG.price_change_percentage_24h||0).toFixed(2) + '% 24h';
+  }
+  // Top narratives
+  const ranked = computeNarratives();
+  const top3 = ranked.slice(0,3);
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('dNarrTop').innerHTML = top3.map((s,i) => {
+    const col = s.avg >= 0 ? '#9df5ad' : '#ffb5a8';
+    const sign = s.avg >= 0 ? '+' : '';
+    return `<div class="narr-stat-row"><span class="narr-stat-name">${medals[i]} ${s.name}</span><span class="narr-stat-pct" style="color:${col}">${sign}${s.avg.toFixed(2)}%</span></div>`;
+  }).join('');
+  renderSignal();
+}
+
+function renderSignal() {
+  const btc = DB.find(c => c.id === 'bitcoin');
+  const eth = DB.find(c => c.id === 'ethereum');
+  if (!btc) return;
+  const factors = [];
+  let score = 0;
+  const chg24 = btc.price_change_percentage_24h || 0;
+  const chg7d = btc.price_change_percentage_7d_in_currency || 0;
+  // 7d HTF
+  if (chg7d > 5)       { score += 2; factors.push({name:'7d Trend (HTF)',val:'+'+chg7d.toFixed(1)+'%',icon:'▲',cls:'up',pts:'+2'}); }
+  else if (chg7d > 1)  { score += 1; factors.push({name:'7d Trend (HTF)',val:'+'+chg7d.toFixed(1)+'%',icon:'▲',cls:'up',pts:'+1'}); }
+  else if (chg7d < -5) { score -= 2; factors.push({name:'7d Trend (HTF)',val:chg7d.toFixed(1)+'%',icon:'▼',cls:'down',pts:'-2'}); }
+  else if (chg7d < -1) { score -= 1; factors.push({name:'7d Trend (HTF)',val:chg7d.toFixed(1)+'%',icon:'▼',cls:'down',pts:'-1'}); }
+  else                  { factors.push({name:'7d Trend (HTF)',val:chg7d.toFixed(1)+'%',icon:'◆',cls:'',pts:'0'}); }
+  // 24h LTF
+  if (chg24 > 3)        { score += 2; factors.push({name:'24h Momentum (LTF)',val:'+'+chg24.toFixed(1)+'%',icon:'▲',cls:'up',pts:'+2'}); }
+  else if (chg24 > 0.5) { score += 1; factors.push({name:'24h Momentum (LTF)',val:'+'+chg24.toFixed(1)+'%',icon:'▲',cls:'up',pts:'+1'}); }
+  else if (chg24 < -3)  { score -= 2; factors.push({name:'24h Momentum (LTF)',val:chg24.toFixed(1)+'%',icon:'▼',cls:'down',pts:'-2'}); }
+  else if (chg24 <-0.5) { score -= 1; factors.push({name:'24h Momentum (LTF)',val:chg24.toFixed(1)+'%',icon:'▼',cls:'down',pts:'-1'}); }
+  else                   { factors.push({name:'24h Momentum (LTF)',val:chg24.toFixed(1)+'%',icon:'◆',cls:'',pts:'0'}); }
+  // ATH dist
+  const athD = btc.ath_change_percentage || -50;
+  if (athD > -15)      { score -= 1; factors.push({name:'ATH Distance (Exhaustion)',val:athD.toFixed(1)+'%',icon:'⚠',cls:'down',pts:'-1'}); }
+  else if (athD > -35) { score += 1; factors.push({name:'ATH Distance (Structure)',val:athD.toFixed(1)+'%',icon:'▲',cls:'up',pts:'+1'}); }
+  else                 { factors.push({name:'ATH Distance',val:athD.toFixed(1)+'%',icon:'◆',cls:'',pts:'0'}); }
+  // Volume
+  const vr = btc.total_volume / btc.market_cap;
+  const vp = (vr*100).toFixed(2);
+  if (vr > 0.04 && chg24 > 0)     { score += 1; factors.push({name:'Volume Confirmation',val:vp+'% V/MC',icon:'▲',cls:'up',pts:'+1'}); }
+  else if (vr > 0.04 && chg24 < 0){ score -= 1; factors.push({name:'Volume on Sell-Off',val:vp+'% V/MC',icon:'▼',cls:'down',pts:'-1'}); }
+  else                              { factors.push({name:'Volume',val:vp+'% V/MC',icon:'◆',cls:'',pts:'0'}); }
+  // Market breadth
+  const greens = DB.filter(c => (c.price_change_percentage_24h||0) > 0).length;
+  const breadth = greens / DB.length * 100;
+  if (breadth > 65)      { score += 1; factors.push({name:'Market Breadth',val:breadth.toFixed(0)+'% green',icon:'▲',cls:'up',pts:'+1'}); }
+  else if (breadth < 35) { score -= 1; factors.push({name:'Market Breadth',val:breadth.toFixed(0)+'% green',icon:'▼',cls:'down',pts:'-1'}); }
+  else                   { factors.push({name:'Market Breadth',val:breadth.toFixed(0)+'% green',icon:'◆',cls:'',pts:'0'}); }
+  // ETH/BTC
+  const ethChg = eth ? (eth.price_change_percentage_24h||0) : 0;
+  const delta = ethChg - chg24;
+  if (delta > 3)      { score -= 1; factors.push({name:'ETH/BTC Rotation',val:'ETH +'+delta.toFixed(1)+'% vs BTC',icon:'⚠',cls:'down',pts:'-1'}); }
+  else if (delta < -2){ score += 1; factors.push({name:'BTC Dominance',val:'BTC leads +'+Math.abs(delta).toFixed(1)+'%',icon:'▲',cls:'up',pts:'+1'}); }
+  else                { factors.push({name:'ETH/BTC Balance',val:'Delta '+delta.toFixed(1)+'%',icon:'◆',cls:'',pts:'0'}); }
+  // Killzone
+  const h = new Date().getHours();
+  let kz = 'No Active Killzone', kzA = false;
+  if (h>=9&&h<12)  { kz='London Open'; kzA=true; }
+  else if (h>=14&&h<17){ kz='NY Open'; kzA=true; }
+  else if (h>=19&&h<22){ kz='NY PM Session'; kzA=true; }
+  else if (h>=1&&h<5)  { kz='Asia Session (Range)'; }
+  if (kzA) score += 1;
+  factors.push({name:'Killzone',val:kz,icon:kzA?'▲':'○',cls:kzA?'up':'',pts:kzA?'+1':'0'});
+
+  let bias, biasClass;
+  if (score >= 5)       { bias='STRONG LONG';  biasClass='long'; }
+  else if (score >= 2)  { bias='LEAN LONG';    biasClass='long'; }
+  else if (score <= -5) { bias='STRONG SHORT'; biasClass='short'; }
+  else if (score <= -2) { bias='LEAN SHORT';   biasClass='short'; }
+  else                  { bias='NEUTRAL';       biasClass='neutral'; }
+
+  document.getElementById('sigBadge').textContent = bias;
+  document.getElementById('sigBadge').className = 'signal-badge ' + biasClass;
+  document.getElementById('sigScore').textContent = (score>=0?'+':'')+score+'/10';
+  const pctBar = Math.max(0, Math.min(100, (score+10)/20*100));
+  document.getElementById('sigBar').style.left = `calc(${pctBar}% - 7px)`;
+  document.getElementById('sigFactors').innerHTML = factors.map(f =>
+    `<div class="signal-factor">
+      <span class="signal-factor-name"><span>${f.icon}</span> ${f.name}</span>
+      <span class="signal-factor-val ${f.cls}">${f.val} <span style="opacity:.35;font-size:.58rem">(${f.pts})</span></span>
+    </div>`
+  ).join('');
+  document.getElementById('sigFooter').textContent =
+    `5-Pillar Protocol: MTF Trend, ATH Structure, Volume, Market Breadth, Killzone · ${new Date().toLocaleTimeString('en-US')}`;
+}
+
+// ── MARKETS TABLE ──────────────────────────────────────────────
+function sortTable(key, btn) {
+  currentSort = key;
+  document.querySelectorAll('#mSortMcap,#mSortGain,#mSortLoss').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+function renderTable() {
+  let data = DB.filter(c => {
+    const q = currentSearch.toLowerCase();
+    return !q || (c.name||'').toLowerCase().includes(q) || (c.symbol||'').includes(q);
+  });
+  if (currentSort==='mcap') data.sort((a,b) => (a.market_cap_rank||9999)-(b.market_cap_rank||9999));
+  if (currentSort==='gain') data.sort((a,b) => (b.price_change_percentage_24h||0)-(a.price_change_percentage_24h||0));
+  if (currentSort==='loss') data.sort((a,b) => (a.price_change_percentage_24h||0)-(b.price_change_percentage_24h||0));
+  document.getElementById('mCount').textContent = data.length + ' coins';
+  const body = document.getElementById('mBody');
+  body.innerHTML = data.map((c,i) => {
+    const chg = c.price_change_percentage_24h || 0;
+    const chg7 = c.price_change_percentage_7d_in_currency || 0;
+    const dom = totalMcap ? ((c.market_cap||0)/totalMcap*100).toFixed(2) : '—';
+    return `<tr>
+      <td class="muted">${c.market_cap_rank||i+1}</td>
+      <td><img class="coin-img" src="${c.image}" onerror="this.style.display='none'" alt=""><strong>${c.name}</strong> <span class="muted">${(c.symbol||'').toUpperCase()}</span></td>
+      <td class="mono">${fmt(c.current_price)}</td>
+      <td>${pct(chg)}</td><td>${pct(chg7)}</td>
+      <td class="muted">${fmt(c.market_cap)}</td>
+      <td class="muted">${dom}%</td>
+    </tr>`;
+  }).join('');
+}
+document.getElementById('mSearch').addEventListener('input', e => { currentSearch = e.target.value; renderTable(); });
+
+// ── MOVERS ─────────────────────────────────────────────────────
+function renderMovers() {
+  const valid = DB.filter(c => c.price_change_percentage_24h != null);
+  const gainers = [...valid].sort((a,b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0,15);
+  const losers  = [...valid].sort((a,b) => a.price_change_percentage_24h - b.price_change_percentage_24h).slice(0,15);
+  const mkRow = (c, gain) => {
+    const ch = c.price_change_percentage_24h || 0;
+    return `<div class="list-row">
+      <img class="list-img" src="${c.image}" onerror="this.style.display='none'" alt="">
+      <div><div class="list-name">${c.name}</div><div class="list-sub">${(c.symbol||'').toUpperCase()}</div></div>
+      <div class="list-price">${fmt(c.current_price)}</div>
+      <div class="list-pct ${gain?'up':'down'}">${ch>=0?'+':''}${ch.toFixed(2)}%</div>
+    </div>`;
+  };
+  document.getElementById('gainList').innerHTML = gainers.map(c => mkRow(c,true)).join('');
+  document.getElementById('loserList').innerHTML = losers.map(c => mkRow(c,false)).join('');
+}
+
+// ── NARRATIVES ─────────────────────────────────────────────────
+function computeNarratives() {
+  const map = Object.create(null);
+  for (const c of DB) {
+    const tags = SECTORS[c.id];
+    if (!tags) continue;
+    const chg = c.price_change_percentage_24h;
+    if (chg == null) continue;
+    for (const t of tags) {
+      if (!map[t]) map[t] = {sum:0,count:0};
+      map[t].sum += chg; map[t].count++;
+    }
+  }
+  return Object.entries(map).filter(([,s]) => s.count >= 2)
+    .map(([name,s]) => ({name, avg: s.sum/s.count, count: s.count}))
+    .sort((a,b) => b.avg - a.avg);
+}
+function renderNarratives() {
+  const groups = [
+    { label:'Hot Right Now',    cls:'hot',  items:['AI Agents','RWA','Bitcoin L2','Modular Blockchain','Restaking','DePIN','ZK'] },
+    { label:'Warm / Building',  cls:'warm', items:['GameFi','DeFi DEX','Meme','Privacy','DeFi Yield'] },
+    { label:'Cold / Contrarian',cls:'cold', items:['NFT Infra','Metaverse','Old DeFi','Exchange Token','Social'] }
+  ];
+  document.getElementById('narrWrap').innerHTML = groups.map(g => `
+    <div class="narr-card ${g.cls}">
+      <div class="narr-card-title">${g.label}</div>
+      <div class="narr-pills">${g.items.map(n => `<span class="narr-pill ${g.cls}">${n}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+// ── HEATMAP ────────────────────────────────────────────────────
+function heatColor(avg) {
+  if (avg >= 8)  return 'rgba(46,204,113,0.5)';
+  if (avg >= 5)  return 'rgba(46,204,113,0.3)';
+  if (avg >= 2)  return 'rgba(157,245,173,0.18)';
+  if (avg >= 0)  return 'rgba(255,255,255,0.05)';
+  if (avg >= -3) return 'rgba(255,181,168,0.18)';
+  return 'rgba(255,107,107,0.3)';
+}
+function renderHeatmap() {
+  const ranked = computeNarratives();
+  const grid = document.getElementById('hmGrid');
+  grid.innerHTML = ranked.map(s => {
+    const col = s.avg >= 0 ? '#9df5ad' : '#ffb5a8';
+    const sign = s.avg >= 0 ? '+' : '';
+    return `<div class="hm-tile" data-sector="${s.name}" style="background:${heatColor(s.avg)}">
+      <div class="hm-tile-name">${s.name}</div>
+      <div class="hm-tile-row">
+        <span class="hm-tile-pct" style="color:${col}">${sign}${s.avg.toFixed(2)}%</span>
+        <span class="hm-tile-count">${s.count}</span>
+      </div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.hm-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      grid.querySelectorAll('.hm-tile').forEach(t => t.classList.remove('active'));
+      tile.classList.add('active');
+      drillSector(tile.dataset.sector);
+    });
+  });
+}
+function drillSector(name) {
+  const coins = DB.filter(c => { const t = SECTORS[c.id]; return t && t.includes(name); })
+    .sort((a,b) => (b.price_change_percentage_24h||0)-(a.price_change_percentage_24h||0));
+  const drill = document.getElementById('hmDrill');
+  drill.style.display = 'block';
+  document.getElementById('hmDrillTitle').textContent = name;
+  const avg = coins.length ? coins.reduce((s,c) => s+(c.price_change_percentage_24h||0),0)/coins.length : 0;
+  const avgEl = document.getElementById('hmDrillAvg');
+  avgEl.textContent = (avg>=0?'+':'')+avg.toFixed(2)+'%';
+  avgEl.style.color = avg>=0?'#9df5ad':'#ffb5a8';
+  document.getElementById('hmDrillCount').textContent = coins.length + ' coins';
+  document.getElementById('hmDrillBody').innerHTML = coins.map((c,i) => {
+    const ch24 = c.price_change_percentage_24h||0;
+    const ch7 = c.price_change_percentage_7d_in_currency||0;
+    const ath = c.ath_change_percentage;
+    const athCol = ath==null?'rgba(255,255,255,0.4)':ath>=-20?'#9df5ad':ath>=-50?'#ffd88a':'#ffb5a8';
+    const vm = (c.total_volume&&c.market_cap)?(c.total_volume/c.market_cap*100).toFixed(1)+'%':'—';
+    return `<tr>
+      <td class="muted">${i+1}</td>
+      <td><img class="coin-img" src="${c.image}" onerror="this.style.display='none'" alt=""><strong>${c.name}</strong> <span class="muted">${(c.symbol||'').toUpperCase()}</span></td>
+      <td class="mono">${fmt(c.current_price)}</td>
+      <td>${pct(ch24)}</td><td>${pct(ch7)}</td>
+      <td class="mono" style="color:${athCol}">${ath!=null?ath.toFixed(1)+'%':'—'}</td>
+      <td class="muted">${vm}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── BREAKOUTS ──────────────────────────────────────────────────
+function brkSwitch(key, btn) {
+  brkFilter = key;
+  document.querySelectorAll('#brkAll,#brkAccel,#brkVol,#brkDip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBreakouts();
+}
+function renderBreakouts() {
+  const all = DB.filter(c => c.price_change_percentage_24h != null && c.price_change_percentage_7d_in_currency != null)
+    .map(c => {
+      const ch24 = c.price_change_percentage_24h||0;
+      const ch7  = c.price_change_percentage_7d_in_currency||0;
+      const accel = ch24 - ch7/7;
+      const vm = (c.total_volume && c.market_cap) ? c.total_volume/c.market_cap : 0;
+      let signal = 'cool', signalText = 'NEUTRAL';
+      if (accel > 5 && ch24 > 3 && vm > 0.03)    { signal='hot';  signalText='BREAKOUT'; }
+      else if (accel > 3 && ch24 > 1)             { signal='warm'; signalText='MOMENTUM'; }
+      else if (ch24 > 5 && ch7 < -5)              { signal='warm'; signalText='DIP RECOVERY'; }
+      else if (vm > 0.06 && ch24 > 2)             { signal='hot';  signalText='VOL SPIKE'; }
+      return {...c, accel, vm, signal, signalText};
+    });
+  let filtered;
+  if (brkFilter==='accel')    filtered = all.filter(c=>c.accel>3).sort((a,b)=>b.accel-a.accel);
+  else if(brkFilter==='volspike') filtered = all.filter(c=>c.vm>0.04&&c.price_change_percentage_24h>0).sort((a,b)=>b.vm-a.vm);
+  else if(brkFilter==='dip')  filtered = all.filter(c=>c.price_change_percentage_24h>3&&c.price_change_percentage_7d_in_currency<-3).sort((a,b)=>b.price_change_percentage_24h-a.price_change_percentage_24h);
+  else filtered = all.filter(c=>c.signal!=='cool').sort((a,b)=>b.accel-a.accel);
+  if (brkFilter==='all'&&filtered.length===0) filtered=all.sort((a,b)=>b.accel-a.accel).slice(0,30);
+  const top = filtered.slice(0,50);
+  const hot = all.filter(c=>c.signal==='hot').length;
+  const warm = all.filter(c=>c.signal==='warm').length;
+  const best = all.reduce((b,c)=>c.accel>b.accel?c:b, all[0]);
+  document.getElementById('brkStats').innerHTML = `
+    <div class="brk-stat-box"><div class="brk-stat-val" style="color:#9df5ad">${hot}</div><div class="brk-stat-lbl">Breakouts</div></div>
+    <div class="brk-stat-box"><div class="brk-stat-val" style="color:var(--orange)">${warm}</div><div class="brk-stat-lbl">Momentum</div></div>
+    <div class="brk-stat-box"><div class="brk-stat-val">${filtered.length}</div><div class="brk-stat-lbl">Filtered</div></div>
+    <div class="brk-stat-box"><div class="brk-stat-val" style="color:#9df5ad">${best?(best.symbol||'').toUpperCase():'—'}</div><div class="brk-stat-lbl">Top Accel</div></div>`;
+  document.getElementById('brkBody').innerHTML = top.map((c,i) => {
+    const ch24 = c.price_change_percentage_24h||0;
+    const ch7  = c.price_change_percentage_7d_in_currency||0;
+    const accelCol = c.accel>=5?'#9df5ad':c.accel>=2?'#ffd99a':'rgba(255,255,255,0.5)';
+    const ath = c.ath_change_percentage;
+    const athCol = ath==null?'rgba(255,255,255,0.4)':ath>=-20?'#9df5ad':ath>=-50?'#ffd88a':'#ffb5a8';
+    return `<tr>
+      <td class="muted">${i+1}</td>
+      <td><img class="coin-img" src="${c.image}" onerror="this.style.display='none'" alt=""><strong>${c.name}</strong> <span class="muted">${(c.symbol||'').toUpperCase()}</span></td>
+      <td class="mono">${fmt(c.current_price)}</td>
+      <td>${pct(ch24)}</td><td>${pct(ch7)}</td>
+      <td class="mono" style="color:${accelCol};font-weight:700">${c.accel>=0?'+':''}${c.accel.toFixed(1)}</td>
+      <td class="muted">${(c.vm*100).toFixed(1)}%</td>
+      <td class="mono" style="color:${athCol}">${ath!=null?ath.toFixed(1)+'%':'—'}</td>
+      <td><span class="signal-badge-tbl ${c.signal}">${c.signalText}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('brkFooter').textContent =
+    `${filtered.length} coins filtered · Accel = 24h change minus 7d daily avg · ${new Date().toLocaleTimeString('en-US')}`;
+}
+
+// ── FEAR & GREED ───────────────────────────────────────────────
+async function loadFearGreed() {
+  try {
+    const r = await fetch('https://api.alternative.me/fng/?limit=3');
+    const j = await r.json();
+    const d = j.data;
+    if (!d || !d.length) return;
+    const val = parseInt(d[0].value);
+    const lbl = d[0].value_classification;
+    const col = val <= 25 ? '#ef4444' : val <= 45 ? '#f59e0b' : val <= 55 ? '#22d3ee' : val <= 75 ? '#10b981' : '#a78bfa';
+    document.getElementById('fgVal').textContent = val;
+    document.getElementById('fgVal').style.color = col;
+    document.getElementById('fgLbl').textContent = lbl;
+    document.getElementById('fgLbl').style.color = col;
+    document.getElementById('fgNeedle').style.left = val + '%';
+    const labels = ['Today','Yesterday','1 Week Ago'];
+    document.getElementById('fgHistory').innerHTML = d.map((entry,i) => {
+      const v = parseInt(entry.value);
+      const c = v<=25?'#ef4444':v<=45?'#f59e0b':v<=55?'#22d3ee':v<=75?'#10b981':'#a78bfa';
+      return `<div class="fg-hist-item"><div class="fg-hist-lbl">${labels[i]||''}</div><div class="fg-hist-val" style="color:${c}">${v}</div><div style="font-size:9.5px;color:var(--muted2)">${entry.value_classification}</div></div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ── FINDER ─────────────────────────────────────────────────────
+function runFinder() {
+  const r1=parseInt(document.getElementById('fr1').value);
+  const r2=parseInt(document.getElementById('fr2').value);
+  const r3=parseInt(document.getElementById('fr3').value);
+  const r4=parseInt(document.getElementById('fr4').value);
+  const r5=parseInt(document.getElementById('fr5').value);
+  const scored = DB.map(c => {
+    let s = 0;
+    const rank = c.market_cap_rank || 500;
+    // Market Cap: low r1 = prefer large cap
+    const mcapScore = r1 < 50 ? Math.max(0, 100 - rank) / 100 : rank / 1000;
+    s += mcapScore * 20;
+    // Narrative: high r2 = prefer weak/speculative
+    const tags = SECTORS[c.id] || [];
+    const isStrong = tags.some(t => ['Layer 1','Ethereum L2','DeFi Lending','Oracle','RWA','AI Infrastructure'].includes(t));
+    const isMeme = tags.some(t => t === 'Meme');
+    if (r2 < 50 && isStrong) s += 20;
+    else if (r2 >= 50 && isMeme) s += 20;
+    else s += 10;
+    // Hype: high r3 = high 24h change
+    const ch24 = Math.abs(c.price_change_percentage_24h || 0);
+    const hypeScore = r3 < 50 ? Math.max(0, 10 - ch24) / 10 : Math.min(ch24, 30) / 30;
+    s += hypeScore * 20;
+    // ATH Distance: low r4 = prefer deep drawdown
+    const athD = Math.abs(c.ath_change_percentage || -80);
+    const athScore = r4 < 50 ? Math.min(athD, 80) / 80 : Math.max(0, 80 - athD) / 80;
+    s += athScore * 20;
+    // Popularity: high r5 = high volume
+    const vm = (c.total_volume && c.market_cap) ? c.total_volume / c.market_cap : 0;
+    const popScore = r5 < 50 ? Math.max(0, 0.1 - vm) / 0.1 : Math.min(vm, 0.1) / 0.1;
+    s += popScore * 20;
+    return {...c, finderScore: Math.round(s)};
+  }).sort((a,b) => b.finderScore - a.finderScore).slice(0,100);
+  document.getElementById('finderTitle').textContent = `Top 100 matches`;
+  document.getElementById('finderBody').innerHTML = scored.map((c,i) => {
+    const ath = c.ath_change_percentage;
+    const athCol = ath==null?'rgba(255,255,255,0.4)':ath>=-20?'#9df5ad':ath>=-50?'#ffd88a':'#ffb5a8';
+    return `<tr>
+      <td class="muted">${i+1}</td>
+      <td><img class="coin-img" src="${c.image}" onerror="this.style.display='none'" alt=""><strong>${c.name}</strong> <span class="muted">${(c.symbol||'').toUpperCase()}</span></td>
+      <td class="mono" style="color:var(--blue);font-weight:700">${c.finderScore}</td>
+      <td class="mono">${fmt(c.current_price)}</td>
+      <td>${pct(c.price_change_percentage_24h)}</td>
+      <td class="muted">${fmt(c.market_cap)}</td>
+      <td class="mono" style="color:${athCol}">${ath!=null?ath.toFixed(1)+'%':'—'}</td>
+    </tr>`;
+  }).join('');
+}
+function resetFinder() {
+  ['fr1','fr2','fr3','fr4','fr5'].forEach((id,i) => { document.getElementById(id).value=50; document.getElementById(`fv${i+1}`).textContent='50%'; });
+  document.getElementById('finderBody').innerHTML = '';
+  document.getElementById('finderTitle').textContent = '';
+}
+
+// ── KILLZONES ──────────────────────────────────────────────────
+function renderKillzones() {
+  const zones = [
+    {name:'Asia Session',     time:'02:00 — 09:00',start:2, end:9,  desc:'Range building, lower volume'},
+    {name:'London Open',      time:'08:00 — 11:00',start:8, end:11, desc:'Manipulation, liquidity sweeps'},
+    {name:'NY Open',          time:'14:30 — 17:00',start:14,end:17, desc:'Max volume, highest volatility'},
+    {name:'NY PM / Close',    time:'20:00 — 23:00',start:20,end:23, desc:'Reversals, closing positions'},
+  ];
+  const h = new Date().getHours();
+  document.getElementById('kzList').innerHTML = zones.map(z => {
+    const active = h >= z.start && h < z.end;
+    return `<div class="kz-row ${active?'active':''}">
+      <div class="kz-dot"></div>
+      <div><div class="kz-name">${z.name}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${z.desc}</div></div>
+      <div class="kz-time">${z.time}</div>
+      ${active?'<span class="kz-active-badge">ACTIVE</span>':''}
+    </div>`;
+  }).join('');
+}
+
+// ── CALCULATOR ─────────────────────────────────────────────────
+function calcPosition() {
+  const cap = parseFloat(document.getElementById('cCapital').value)||10000;
+  const risk = parseFloat(document.getElementById('cRisk').value)||1;
+  const entry = parseFloat(document.getElementById('cEntry').value)||100;
+  const stop = parseFloat(document.getElementById('cStop').value)||95;
+  if (entry <= 0 || stop <= 0 || entry === stop) return;
+  const riskAmt = cap * risk / 100;
+  const pctRisk = Math.abs((entry-stop)/entry*100);
+  const posSize = riskAmt / (pctRisk/100) / entry;
+  const posVal = posSize * entry;
+  const rr = entry > stop ? (entry-stop) : (stop-entry);
+  document.getElementById('calcResult').innerHTML = `
+    <div class="calc-res-item"><div class="calc-res-label">Risk Amount</div><div class="calc-res-val">$${riskAmt.toFixed(2)}</div></div>
+    <div class="calc-res-item"><div class="calc-res-label">Position Size</div><div class="calc-res-val">${posSize.toFixed(4)} coins</div></div>
+    <div class="calc-res-item"><div class="calc-res-label">Position Value</div><div class="calc-res-val">$${posVal.toFixed(2)}</div></div>
+    <div class="calc-res-item"><div class="calc-res-label">Risk %</div><div class="calc-res-val">${pctRisk.toFixed(2)}%</div></div>`;
+}
+
+// ── CHECKLIST ──────────────────────────────────────────────────
+const CL_ITEMS = [
+  'Trend clearly defined (Higher Highs / Lower Lows)',
+  'Entry level confirmed (Support / Resistance)',
+  'Volume confirmation present',
+  'Risk/Reward minimum 1:2',
+  'Stop Loss logically placed',
+  'Position size calculated (max 1-2% risk)',
+  'No FOMO, no revenge trade',
+  'News / Events checked'
+];
+function renderChecklist() {
+  const wrap = document.getElementById('clWrap');
+  wrap.innerHTML = CL_ITEMS.map((t,i) => `
+    <div class="cl-item" data-i="${i}">
+      <div class="cl-box">✓</div>
+      <div class="cl-label">${t}</div>
+    </div>`).join('');
+  wrap.querySelectorAll('.cl-item').forEach(item => {
+    item.addEventListener('click', () => {
+      item.classList.toggle('done');
+      const done = wrap.querySelectorAll('.cl-item.done').length;
+      const total = CL_ITEMS.length;
+      document.getElementById('clFill').style.width = (done/total*100)+'%';
+      document.getElementById('clText').textContent = `${done} / ${total} confirmed`;
+    });
+  });
+}
+
+// ── ARENA ──────────────────────────────────────────────────────
+const ARENA_KEY = 'cryptoVip_arenaElo';
+const ELO_DEFAULT = 1200, K = 32;
+let arenaCoins = [], eloData = {}, arenaPair = [null,null];
+let arenaBattlePool = 'all', arenaStreak = 0, arenaBattles = 0;
+let rankPage = 0, rankFilter = 'rated', rankSearch = '';
+let rankSort = {key:'elo',dir:-1};
+const RANK_PAGE = 50;
+
+function loadElo() { try { eloData = JSON.parse(localStorage.getItem(ARENA_KEY))||{}; } catch(e){ eloData={}; } }
+function saveElo() { try { localStorage.setItem(ARENA_KEY, JSON.stringify(eloData)); } catch(e){} }
+function getElo(id) {
+  if (!eloData[id]) eloData[id] = {elo:ELO_DEFAULT,wins:0,losses:0,battles:0};
+  return eloData[id];
+}
+function calcElo(rA, rB, sA) {
+  const eA = 1/(1+Math.pow(10,(rB-rA)/400));
+  return { newA: Math.round(rA+K*(sA-eA)), newB: Math.round(rB+K*((1-sA)-(1-eA))) };
+}
+function arenaPool() {
+  if (arenaBattlePool==='all') return arenaCoins;
+  const n = parseInt(arenaBattlePool);
+  return arenaCoins.slice(0, Math.min(n, arenaCoins.length));
+}
+function pickPair() {
+  const pool = arenaPool();
+  if (pool.length < 2) return [null,null];
+  let a = Math.floor(Math.random()*pool.length), b = a;
+  while (b===a) b = Math.floor(Math.random()*pool.length);
+  return [pool[a], pool[b]];
+}
+function renderFighter(coin, side) {
+  if (!coin) return;
+  const img = document.getElementById('fImg'+side);
+  img.src = coin.image||''; img.style.display = 'block';
+  document.getElementById('fName'+side).textContent = coin.name||'—';
+  document.getElementById('fSym'+side).textContent = (coin.symbol||'').toUpperCase();
+  document.getElementById('fPx'+side).textContent = fmt(coin.current_price);
+  document.getElementById('fMc'+side).textContent = fmt(coin.market_cap);
+  const ch = coin.price_change_percentage_24h;
+  const chEl = document.getElementById('fCh'+side);
+  chEl.textContent = (ch>=0?'+':'')+(ch||0).toFixed(2)+'%';
+  chEl.style.color = ch>=0?'#9df5ad':'#ffb5a8';
+  document.getElementById('fRk'+side).textContent = '#'+(coin.market_cap_rank||'—');
+  const e = getElo(coin.id);
+  document.getElementById('fElo'+side).textContent = `ELO ${e.elo} · ${e.wins}W ${e.losses}L`;
+}
+function nextBattle() {
+  arenaPair = pickPair();
+  document.getElementById('fighterA').classList.remove('winner-flash','loser-flash');
+  document.getElementById('fighterB').classList.remove('winner-flash','loser-flash');
+  renderFighter(arenaPair[0], 'A');
+  renderFighter(arenaPair[1], 'B');
+}
+function updateArenaStats() {
+  document.getElementById('aTot').textContent = arenaBattles;
+  document.getElementById('aLoad').textContent = arenaCoins.length;
+  document.getElementById('aStreak').textContent = arenaStreak;
+  let topName='—', topElo=0;
+  for (const [id,d] of Object.entries(eloData)) {
+    if (d.elo > topElo && d.battles > 0) {
+      topElo = d.elo;
+      const c = arenaCoins.find(c => c.id===id);
+      topName = c ? (c.symbol||'').toUpperCase() : id;
+    }
+  }
+  document.getElementById('aTop').textContent = topName;
+}
+function vote(winIdx) {
+  const winner = arenaPair[winIdx], loser = arenaPair[winIdx===0?1:0];
+  if (!winner||!loser) return;
+  const eW = getElo(winner.id), eL = getElo(loser.id);
+  const r = calcElo(eW.elo, eL.elo, 1);
+  eW.elo=r.newA; eW.wins++; eW.battles++;
+  eL.elo=r.newB; eL.losses++; eL.battles++;
+  saveElo(); arenaBattles++; arenaStreak++;
+  document.getElementById('fighter'+(winIdx===0?'A':'B')).classList.add('winner-flash');
+  document.getElementById('fighter'+(winIdx===0?'B':'A')).classList.add('loser-flash');
+  updateArenaStats(); renderRanking();
+  setTimeout(nextBattle, 160);
+}
+function initArena() {
+  loadElo();
+  arenaCoins = DB.slice();
+  updateArenaStats(); nextBattle(); renderRanking();
+  document.getElementById('fighterA').onclick = () => vote(0);
+  document.getElementById('fighterB').onclick = () => vote(1);
+  document.getElementById('aSkip').onclick = nextBattle;
+  document.getElementById('aReset').onclick = () => {
+    if (!confirm('Reset all ELO ratings?')) return;
+    eloData={}; saveElo(); arenaBattles=0; arenaStreak=0;
+    updateArenaStats(); nextBattle(); renderRanking();
+  };
+  document.querySelectorAll('.pool-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.pool-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      arenaBattlePool = btn.dataset.pool;
+      nextBattle();
+    };
+  });
+  document.addEventListener('keydown', e => {
+    if (!document.querySelector('.page[data-page="arena"].active')) return;
+    if (e.key==='ArrowLeft')  { e.preventDefault(); vote(0); }
+    if (e.key==='ArrowRight') { e.preventDefault(); vote(1); }
+  });
+}
+
+// ── RANKING ────────────────────────────────────────────────────
+function getRanked() {
+  let list = arenaCoins.map(c => {
+    const e = eloData[c.id]||{elo:ELO_DEFAULT,wins:0,losses:0,battles:0};
+    return {id:c.id,name:c.name,symbol:c.symbol,image:c.image,price:c.current_price,mcap:c.market_cap,
+      elo:e.elo,wins:e.wins,losses:e.losses,battles:e.battles,
+      winrate:e.battles>0?e.wins/e.battles*100:0,rated:e.battles>0};
+  });
+  if (rankFilter==='rated') list = list.filter(c=>c.rated);
+  if (rankSearch) { const q=rankSearch.toLowerCase(); list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.symbol||'').includes(q)); }
+  const {key,dir} = rankSort;
+  list.sort((a,b) => typeof a[key]==='string' ? dir*a[key].localeCompare(b[key]) : dir*((b[key]||0)-(a[key]||0)));
+  return list;
+}
+function renderRanking() {
+  const list = getRanked();
+  const total = Math.ceil(list.length/RANK_PAGE);
+  document.getElementById('rCount').textContent = list.length+' coins';
+  if (rankPage >= total) rankPage = Math.max(0, total-1);
+  const start = rankPage*RANK_PAGE;
+  const page = list.slice(start, start+RANK_PAGE);
+  document.getElementById('rBody').innerHTML = page.length === 0
+    ? `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">No rated coins yet. Start a battle in Arena.</td></tr>`
+    : page.map((c,i) => {
+        const rank = start+i+1;
+        const rCls = rank===1?'rank-hl':rank===2?'rank-hl-2':rank===3?'rank-hl-3':'muted';
+        const wr = c.battles>0?c.winrate.toFixed(1)+'%':'—';
+        const wrCol = c.winrate>=60?'#9df5ad':c.winrate>=40?'rgba(255,255,255,0.75)':'#ffb5a8';
+        return `<tr>
+          <td class="${rCls}">${rank}</td>
+          <td><img class="coin-img" src="${c.image}" onerror="this.style.display='none'" alt=""><strong>${c.name}</strong> <span class="muted">${(c.symbol||'').toUpperCase()}</span></td>
+          <td class="mono" style="font-weight:700">${c.elo}</td>
+          <td style="color:#9df5ad">${c.wins}</td>
+          <td style="color:#ffb5a8">${c.losses}</td>
+          <td class="mono" style="color:${wrCol}">${wr}</td>
+          <td class="muted">${fmt(c.mcap)}</td>
+          <td class="mono">${fmt(c.price)}</td>
+        </tr>`;
+      }).join('');
+  document.getElementById('rPageInfo').textContent = `${rankPage+1} / ${Math.max(1,total)}`;
+  document.getElementById('rPrev').disabled = rankPage <= 0;
+  document.getElementById('rNext').disabled = rankPage >= total-1;
+}
+function rankFilter(f, btn) {
+  rankFilter = f;
+  document.getElementById('rFiltRated').classList.toggle('active', f==='rated');
+  document.getElementById('rFiltAll').classList.toggle('active',   f==='all');
+  rankPage=0; renderRanking();
+}
+document.getElementById('rSearch').addEventListener('input', e => { rankSearch=e.target.value; rankPage=0; renderRanking(); });
+document.getElementById('rPrev').addEventListener('click', () => { rankPage--; renderRanking(); });
+document.getElementById('rNext').addEventListener('click', () => { rankPage++; renderRanking(); });
+document.querySelectorAll('[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.dataset.sort;
+    if (rankSort.key===k) rankSort.dir*=-1; else {rankSort.key=k; rankSort.dir=-1;}
+    renderRanking();
+  });
+});
+
+// ── PAGE NAVIGATION ────────────────────────────────────────────
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.dataset.page===name));
+  document.querySelectorAll('.sb a').forEach(a => a.classList.toggle('active', a.dataset.page===name));
+  if (name==='killzones') renderKillzones();
+  if (name==='heatmap' && DB.length) renderHeatmap();
+  if (name==='breakouts' && DB.length) renderBreakouts();
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.sb a').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); switchPage(a.dataset.page); });
+});
+document.querySelectorAll('[data-goto]').forEach(btn => {
+  btn.addEventListener('click', () => switchPage(btn.dataset.goto));
+});
+document.getElementById('menuBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// ── CLOCK (Killzones live) ─────────────────────────────────────
+setInterval(() => {
+  if (document.querySelector('.page[data-page="killzones"].active')) renderKillzones();
+}, 60000);
+
+// ── AUTO REFRESH every 5 min ───────────────────────────────────
+setInterval(() => { if (DB.length) loadData(); }, 5*60*1000);
+
+// ── BOOT ───────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
