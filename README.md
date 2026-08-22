@@ -64,3 +64,39 @@ Kurse aktualisieren sich im Browser laufend über die Binance-API. Die übrigen
 Daten stammen aus dem letzten Build.
 
 Keine Finanzberatung. Alle Angaben ohne Gewähr.
+
+## Automatischer Betrieb
+
+Zwei Wege halten die Seite frisch, unabhängig voneinander:
+
+| Wer | Wann | Was |
+|---|---|---|
+| Rechner zu Hause | 7:30 voll, 12:30 / 17:30 / 21:30 schnell | Kompletter Neubau aus dem Agent Dashboard |
+| GitHub Actions | 6:15 / 11:15 / 16:15 / 20:15 UTC | Nur die Zahlen, direkt aus der Cloud |
+
+Der Cloud-Lauf (`.github/workflows/daten-update.yml`) ruft `tools/update_data.py`
+auf und schreibt ausschließlich nach `data/`. Läuft der Rechner also nicht,
+bleiben die Kurse trotzdem aktuell. Der nächste lokale Lauf überschreibt alles
+wieder mit dem vollen Stand inklusive Signal-Engine und Briefing.
+
+Kurse aktualisieren sich zusätzlich im Browser selbst, per WebSocket-Stream
+direkt von Binance. Dafür ist kein Lauf nötig.
+
+## Zum Homescreen hinzufügen
+
+Die Seite ist eine installierbare Web-App mit Offline-Speicher. Auf dem iPhone
+über Teilen und "Zum Home-Bildschirm", auf Android über das Menü und "App
+installieren". Ohne Verbindung zeigt sie den zuletzt geladenen Stand statt
+einer Fehlerseite.
+
+## Dateien
+
+| Datei | Zweck |
+|---|---|
+| `index.html` | Die Seite, wird komplett generiert |
+| `data/*.js` | Marktdaten, ebenfalls generiert |
+| `sw.js` | Service Worker für den Offline-Betrieb |
+| `manifest.webmanifest`, `icon.png` | App-Installation |
+| `social-card.png` | Vorschaubild beim Teilen |
+| `qr-code.png` | QR-Code auf diese Seite, für Videos |
+| `tools/update_data.py` | Datenaktualisierung in der Cloud |

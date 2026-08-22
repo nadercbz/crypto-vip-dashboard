@@ -11,6 +11,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://api.binance.com">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Crypto Biz Dashboard">
+<meta property="og:description" content="Live-Marktdaten, Sektor-Rotation, Social Buzz, Hidden Gems und Trading-Werkzeuge.">
+<meta property="og:url" content="https://nadercbz.github.io/crypto-vip-dashboard/">
+<meta property="og:image" content="https://nadercbz.github.io/crypto-vip-dashboard/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crypto Biz Dashboard">
+<meta name="twitter:description" content="Live-Marktdaten, Sektoren, Social Buzz und Hidden Gems.">
+<meta name="twitter:image" content="https://nadercbz.github.io/crypto-vip-dashboard/social-card.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <style>
@@ -4957,6 +4966,9 @@ body { overflow: hidden; }
     .c2x-p-comp-hint { color: var(--c2x-panel-dim); font-weight: 500; text-transform: none; letter-spacing: 0; }
     .c2x-p-comp-clear { font-size: 0.56rem; height: 22px; }
     .c2x-p-comp-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 9px; }
+    .c2x-p-comp-range { display: flex; gap: 4px; margin-bottom: 9px; }
+    .c2x-tog { border: 1px solid var(--c2x-panel-line) !important; opacity: 0.55; }
+    .c2x-tog.active { opacity: 1; }
     .c2x-comp-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.62rem; font-weight: 600;
         padding: 3px 10px; border-radius: 999px; border: 1px solid var(--c2x-panel-line); }
     .c2x-comp-chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; font-style: normal; }
@@ -4976,6 +4988,143 @@ body { overflow: hidden; }
     /* ── Seiten-Uebergang ── */
     #crypto2Modal .c2-page.active { animation: c2xPageIn .28s ease both; }
     @keyframes c2xPageIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+
+    /* ═══════════ Überblick, Radar, Watchlist, Onchain ═══════════ */
+    .c2-ov-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .c2-ov-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+    .c2-ov-ampel-body { display: flex; flex-direction: column; gap: 10px; margin-top: 0.9rem; }
+    .c2-ov-zeile { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .c2-ov-zeile .k { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+        color: rgba(249,237,224,0.5); }
+    .c2-ov-zeile .v { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; font-weight: 600; }
+    .c2-ov-ampelbar { height: 5px; border-radius: 5px; background: rgba(255,255,255,0.08);
+        overflow: hidden; margin-top: 3px; }
+    .c2-ov-ampelbar i { display: block; height: 100%; border-radius: 5px; transition: width .5s; }
+    .c2-ov-verdict { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; margin: 2px 0 4px; }
+    .c2-ov-verdict-sub { font-size: 0.72rem; color: rgba(249,237,224,0.55); line-height: 1.5; }
+
+    .c2-ov-briefing { margin-top: 0.9rem; max-height: 340px; overflow-y: auto; padding-right: 6px; }
+    .c2-ov-briefing h4 { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.16em;
+        text-transform: uppercase; color: #ffb56b; margin: 0.9rem 0 0.4rem; }
+    .c2-ov-briefing h4:first-child { margin-top: 0; }
+    .c2-ov-briefing p { font-size: 0.8rem; line-height: 1.65; margin: 0 0 0.45rem;
+        color: rgba(249,237,224,0.88); }
+    .c2-ov-briefing p::before { content: '· '; color: rgba(249,237,224,0.35); }
+
+    .c2-ov-list { display: flex; flex-direction: column; gap: 2px; margin-top: 0.8rem;
+        max-height: 300px; overflow-y: auto; }
+    .c2-ov-row { display: grid; grid-template-columns: 22px 1fr minmax(58px, auto); gap: 9px; align-items: center;
+        padding: 7px 6px; border-radius: 8px; cursor: pointer; transition: background .15s; }
+    .c2-ov-row:hover { background: rgba(255,255,255,0.05); }
+    .c2-ov-row img { width: 22px; height: 22px; border-radius: 50%; }
+    .c2-ov-row .nm { font-size: 0.78rem; font-weight: 600; }
+    .c2-ov-row .sub { font-size: 0.62rem; color: rgba(249,237,224,0.45); }
+    .c2-ov-row .val { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem;
+        text-align: right; white-space: nowrap; }
+    .c2-ov-row .val b { font-family: 'JetBrains Mono', monospace; font-weight: 650; margin-right: 2px; }
+    .c2-ov-news { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 10px; margin-top: 0.9rem; }
+    .c2-ov-news a { display: block; padding: 11px 13px; border-radius: 11px;
+        background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+        text-decoration: none; color: inherit; transition: border-color .18s; }
+    .c2-ov-news a:hover { border-color: rgba(255,154,60,0.4); }
+    .c2-ov-news .t { font-size: 0.78rem; font-weight: 600; line-height: 1.4; }
+    .c2-ov-news .m { font-size: 0.6rem; color: rgba(249,237,224,0.45); margin-top: 5px;
+        letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Radar */
+    .c2-radar-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 9px; }
+    .c2-radar-stat { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 11px; padding: 10px 12px; }
+    .c2-radar-stat .k { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.13em;
+        text-transform: uppercase; color: rgba(249,237,224,0.45); }
+    .c2-radar-stat .v { font-family: 'JetBrains Mono', monospace; font-size: 1.05rem;
+        font-weight: 650; margin-top: 4px; }
+    .c2-scorebadge { display: inline-block; min-width: 38px; padding: 3px 9px;
+        border-radius: 8px; border: 1px solid transparent;
+        font-family: 'JetBrains Mono', 'Menlo', monospace; font-size: 0.8rem;
+        font-weight: 600; text-align: center; line-height: 1.6; }
+    .c2-scorebadge.leer { color: rgba(249,237,224,0.35); border-color: rgba(255,255,255,0.1); }
+    .c2-score-bar { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+        line-height: 1.4; }
+    /* font-weight 650 gibt es in JetBrains Mono nicht als eigener Schnitt. Der
+       Browser rechnet ihn dann selbst hoch, was beim Rendern der Videokarten zu
+       zerfransten Ziffern fuehrte. 600 ist ein echter Schnitt und sieht ueberall
+       gleich aus. */
+    .c2-score-num { font-family: 'JetBrains Mono', 'Menlo', monospace; font-weight: 600;
+        font-size: 0.8rem; min-width: 22px; text-align: right; display: inline-block;
+        line-height: 1.5; }
+    .c2-score-track { width: 38px; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.1);
+        overflow: hidden; }
+    .c2-score-track i { display: block; height: 100%; border-radius: 4px; }
+    .c2-trendtag { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.08em; padding: 2px 7px;
+        border-radius: 999px; text-transform: uppercase; }
+    .c2-trendtag.up { background: rgba(63,185,80,0.15); color: #6ee7a0; }
+    .c2-trendtag.mid { background: rgba(255,209,102,0.14); color: #ffd166; }
+    .c2-trendtag.down { background: rgba(248,81,73,0.15); color: #ff8f86; }
+
+    .c2-div-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 10px; margin-top: 0.4rem; }
+    .c2-div-card { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+        border-left-width: 3px; border-radius: 11px; padding: 12px 14px; cursor: pointer;
+        transition: border-color .18s, transform .18s; }
+    .c2-div-card:hover { transform: translateY(-2px); }
+    .c2-div-card.bullisch { border-left-color: #3FB950; }
+    .c2-div-card.bärisch { border-left-color: #F85149; }
+    .c2-div-card.beobachten { border-left-color: #E3B341; }
+    .c2-div-sym { font-size: 0.95rem; font-weight: 750; }
+    .c2-div-typ { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+        color: rgba(249,237,224,0.5); margin: 2px 0 7px; }
+    .c2-div-text { font-size: 0.76rem; line-height: 1.55; color: rgba(249,237,224,0.82); }
+
+    /* Watchlist */
+    .c2-watch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+    .c2-watch-card { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 13px; padding: 14px; }
+    .c2-watch-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .c2-watch-head img { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+    .c2-watch-nm { font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .c2-watch-sym { font-size: 0.62rem; color: rgba(249,237,224,0.45); text-transform: uppercase; }
+    .c2-watch-rm { margin-left: auto; background: none; border: none; color: rgba(249,237,224,0.35);
+        cursor: pointer; font-size: 0.9rem; }
+    .c2-watch-rm:hover { color: #F85149; }
+    .c2-watch-price { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 650; }
+    .c2-watch-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 11px 0; }
+    .c2-watch-metric { background: rgba(0,0,0,0.18); border-radius: 8px; padding: 7px 8px; }
+    .c2-watch-metric .k { font-size: 0.52rem; letter-spacing: 0.11em; text-transform: uppercase;
+        color: rgba(249,237,224,0.42); }
+    .c2-watch-metric .v { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; font-weight: 600; margin-top: 2px; }
+    .c2-watch-note { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 9px; color: inherit; font-family: inherit; font-size: 0.74rem; padding: 8px 10px;
+        resize: vertical; min-height: 54px; outline: none; }
+    .c2-watch-note:focus { border-color: rgba(255,154,60,0.45); }
+    .c2-watch-empty-big { text-align: center; padding: 3rem 1rem; color: rgba(249,237,224,0.45);
+        font-size: 0.85rem; line-height: 1.7; }
+
+    /* Onchain */
+    .c2-onchain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 11px; margin-top: 0.9rem; }
+    .c2-onchain-card { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px; padding: 13px 15px; }
+    .c2-onchain-card .k { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.13em;
+        text-transform: uppercase; color: rgba(249,237,224,0.45); }
+    .c2-onchain-card .v { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem;
+        font-weight: 650; margin-top: 5px; }
+    .c2-onchain-card .s { font-size: 0.63rem; color: rgba(249,237,224,0.5); margin-top: 3px; line-height: 1.45; }
+    .c2-news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 10px; margin-top: 0.9rem; }
+
+    @media (max-width: 1100px) {
+        .c2-ov-grid { grid-template-columns: 1fr; }
+        .c2-ov-grid3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 900px) {
+        .c2-ov-grid3 { grid-template-columns: 1fr; }
+        .c2-radar-stats { grid-template-columns: 1fr 1fr; }
+        .c2-watch-grid, .c2-div-grid, .c2-news-grid, .c2-ov-news { grid-template-columns: 1fr; }
+        #crypto2Modal .c2-ov-briefing { max-height: none; }
+    }
 
     /* ── Responsive ── */
     @media (max-width: 1100px) {
@@ -5118,13 +5267,17 @@ body { overflow: hidden; }
             <!-- Sidebar -->
             <aside class="c2-sidebar">
                 <div class="c2-navgroup">Heute</div>
-                <a class="c2-nav active" data-page="perfect">Perfect Portfolio</a>
+                <a class="c2-nav active" data-page="overview">Überblick</a>
+                <a class="c2-nav" data-page="radar">Radar</a>
+                <a class="c2-nav" data-page="perfect">Perfect Portfolio</a>
 
                 <div class="c2-navgroup">Markt</div>
                 <a class="c2-nav" data-page="markets">Markets</a>
+                <a class="c2-nav" data-page="watchlist">Watchlist</a>
                 <a class="c2-nav" data-page="movers">Movers</a>
                 <a class="c2-nav" data-page="finder">Finder</a>
                 <a class="c2-nav" data-page="narratives">Narratives</a>
+                <a class="c2-nav" data-page="onchain">Onchain &amp; News</a>
                 <a class="c2-nav" data-page="heatmap">Heat Map</a>
                 <a class="c2-nav" data-page="social">Social Buzz</a>
                 <a class="c2-nav" data-page="gems">Hidden Gems</a>
@@ -5145,6 +5298,101 @@ body { overflow: hidden; }
 
             <!-- Main Content -->
             <main class="c2-main">
+
+                <!-- ÜBERBLICK: die Startseite, alles Wichtige auf einen Blick -->
+                <section class="c2-page active" data-page="overview">
+                    <div class="c2-ov-grid">
+                        <div class="c2-card c2-ov-ampel">
+                            <div class="c2-eyebrow">Marktampel</div>
+                            <div class="c2-ov-ampel-body" id="ovAmpel"></div>
+                        </div>
+                        <div class="c2-card">
+                            <div class="c2-eyebrow">Was heute zählt</div>
+                            <div id="ovBriefing" class="c2-ov-briefing"></div>
+                        </div>
+                    </div>
+                    <div class="c2-ov-grid3">
+                        <div class="c2-card">
+                            <div class="c2-eyebrow">Stärkste Signale</div>
+                            <div id="ovSignals" class="c2-ov-list"></div>
+                        </div>
+                        <div class="c2-card">
+                            <div class="c2-eyebrow">Sektoren, 7 Tage</div>
+                            <div id="ovSektoren" class="c2-ov-list"></div>
+                        </div>
+                        <div class="c2-card">
+                            <div class="c2-eyebrow">Deine Watchlist</div>
+                            <div id="ovWatch" class="c2-ov-list"></div>
+                        </div>
+                    </div>
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Schlagzeilen</div>
+                        <div id="ovNews" class="c2-ov-news"></div>
+                    </div>
+                </section>
+
+                <!-- RADAR: Signal-Engine, Scores und Divergenzen -->
+                <section class="c2-page" data-page="radar">
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Signal Engine</div>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Radar</h2>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Ein Gesamt-Score je Coin aus fünf Bausteinen: Momentum, Trend, Risiko, Aufmerksamkeit und Substanz. Darunter die Divergenzen, also die Fälle in denen zwei Signale auseinanderlaufen. Genau dort liegt die Chance, weil der Markt eine Seite noch nicht eingepreist hat.</p>
+                        <div class="c2-radar-stats" id="radarStats"></div>
+                        <div class="c2-filter-row" style="margin-top:1.2rem;">
+                            <button class="c2-chip active" data-radar-sort="score">Gesamt-Score</button>
+                            <button class="c2-chip" data-radar-sort="momentum">Momentum</button>
+                            <button class="c2-chip" data-radar-sort="trend">Trend</button>
+                            <button class="c2-chip" data-radar-sort="risiko">Risiko</button>
+                            <button class="c2-chip" data-radar-sort="rsi_low">RSI niedrig</button>
+                            <button class="c2-chip" data-radar-sort="vol_trend">Volumen-Schub</button>
+                            <span class="c2-count" id="radarCount"></span>
+                        </div>
+                        <div class="c2-table-wrap">
+                            <table class="c2-tbl">
+                                <thead><tr>
+                                    <th>#</th><th>Coin</th><th>Score</th><th>RSI</th>
+                                    <th>Vola</th><th>Beta</th><th>Trend</th><th>7d</th>
+                                </tr></thead>
+                                <tbody id="radarBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Divergenzen</div>
+                        <p class="c2-sub" style="margin-bottom:1rem;">Wo Aufmerksamkeit, Substanz und Kurs nicht zusammenpassen.</p>
+                        <div id="radarDivs" class="c2-div-grid"></div>
+                    </div>
+                </section>
+
+                <!-- WATCHLIST: eigene Seite mit Notizen -->
+                <section class="c2-page" data-page="watchlist">
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Deine Auswahl</div>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Watchlist</h2>
+                        <p class="c2-sub" style="margin-bottom:1.4rem;">Die Coins, die du mit dem Stern markiert hast. Mit Kennzahlen aus dem Radar und Platz für eine eigene Notiz je Coin. Notizen bleiben in diesem Browser gespeichert.</p>
+                        <div id="watchEmpty" class="c2-watch-empty-big">Noch keine Coins markiert. Setz in Markets oder im Detail-Panel einen Stern.</div>
+                        <div id="watchGrid" class="c2-watch-grid"></div>
+                    </div>
+                </section>
+
+                <!-- ONCHAIN & NEWS -->
+                <section class="c2-page" data-page="onchain">
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Bitcoin Netzwerk</div>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Onchain</h2>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Die Zahlen unter dem Kurs: Gebühren, Rechenleistung, Schwierigkeit und der Weg zur nächsten Halbierung.</p>
+                        <div class="c2-onchain-grid" id="onchainGrid"></div>
+                    </div>
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Taker-Druck, 24 Stunden</div>
+                        <p class="c2-sub" style="margin-bottom:1rem;">Verhältnis von aggressiven Käufen zu Verkäufen an den Terminmärkten. Über eins heißt, die Käufer nehmen den Preis.</p>
+                        <div id="onchainTaker" class="c2-ov-list"></div>
+                    </div>
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Nachrichten</div>
+                        <div id="onchainNews" class="c2-news-grid"></div>
+                    </div>
+                </section>
 
                 <!-- MARKETS PAGE -->
                 <section class="c2-page" data-page="markets">
@@ -6190,7 +6438,7 @@ body { overflow: hidden; }
                 <!-- MY PORTFOLIO PAGE -->
 
                 <!-- PERFECT PORTFOLIO PAGE -->
-                <section class="c2-page active" data-page="perfect">
+                <section class="c2-page" data-page="perfect">
                     <div class="c2-card" style="padding-right:28px;">
                         <div class="c2-eyebrow">Allocation Engine</div>
                         <h2 class="c2-h1" style="font-size:1.6rem;">Perfect Portfolio</h2>
@@ -6255,6 +6503,8 @@ body { overflow: hidden; }
                     <button data-tf="4h" class="c2x-tf">4H</button>
                     <button data-tf="1d" class="c2x-tf active">1D</button>
                     <button data-tf="1w" class="c2x-tf">1W</button>
+                    <button class="c2x-tf c2x-tog" id="c2xToggleEma" title="Gleitende Durchschnitte 50 und 200">EMA</button>
+                    <button class="c2x-tf c2x-tog active" id="c2xToggleVol" title="Volumen einblenden">VOL</button>
                     <span class="c2x-p-chartnote" id="c2xPChartNote"></span>
                 </div>
                 <div class="c2x-p-chart" id="c2xPChart"><div class="c2x-skel c2x-skel-chart"></div></div>
@@ -6265,19 +6515,28 @@ body { overflow: hidden; }
 
             <div class="c2x-p-compare" id="c2xPCompare">
                 <div class="c2x-p-comp-head">
-                    <span>Vergleich <span class="c2x-p-comp-hint">(30 Tage, normalisiert)</span></span>
+                    <span>Vergleich <span class="c2x-p-comp-hint" id="c2xCompHint">(30 Tage, normalisiert)</span></span>
                     <button class="c2x-p-btn c2x-p-comp-clear" id="c2xCompClear" title="Vergleich leeren">Leeren</button>
+                </div>
+                <div class="c2x-p-comp-range">
+                    <button class="c2x-tf" data-comp-days="7">7T</button>
+                    <button class="c2x-tf active" data-comp-days="30">30T</button>
+                    <button class="c2x-tf" data-comp-days="90">90T</button>
+                    <button class="c2x-tf" data-comp-days="365">1J</button>
                 </div>
                 <div class="c2x-p-comp-chips" id="c2xCompChips"></div>
                 <div class="c2x-p-comp-chart"><canvas id="c2xCompCanvas"></canvas></div>
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202608221125"></script>
-<script src="data/extras_data.js?v=202608221125"></script>
-<script src="data/series_data.js?v=202608221125"></script>
-<script src="data/social_data.js?v=202608221125"></script>
-<script src="data/gems_data.js?v=202608221125"></script>
+<script src="data/crypto_data.js?v=202608221928"></script>
+<script src="data/extras_data.js?v=202608221928"></script>
+<script src="data/series_data.js?v=202608221928"></script>
+<script src="data/social_data.js?v=202608221928"></script>
+<script src="data/gems_data.js?v=202608221928"></script>
+<script src="data/signals_data.js?v=202608221928"></script>
+<script src="data/onchain_data.js?v=202608221928"></script>
+<script src="data/briefing_data.js?v=202608221928"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -7106,6 +7365,13 @@ window.c2xProxy = function (u) { return u; };
                     if (sort === 'watch' && !data.length) {
                         body.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center;padding:2rem;">Deine Watchlist ist leer. Setz einen Stern in der Market-Cap-Ansicht.</td></tr>';
                     }
+                    // Ueber tausend Zeilen auf einmal zu zeichnen kostet auf
+                    // schwaecheren Geraeten spuerbar Zeit und Speicher. Sichtbar
+                    // ist ohnehin nur ein Bruchteil, also legen wir portionsweise
+                    // nach, sobald der Nutzer ans Ende scrollt.
+                    const BATCH = 120;
+                    tableRest = data.slice(BATCH);
+                    data = data.slice(0, BATCH);
                     data.forEach((c, i) => {
                         const chg24 = c.price_change_percentage_24h || 0;
                         const chg7  = c.price_change_percentage_7d_in_currency || 0;
@@ -7130,7 +7396,61 @@ window.c2xProxy = function (u) { return u; };
                             <td class="muted">${dom}%</td>`;
                         body.appendChild(tr);
                     });
+                    appendSentinel(body, totalMcap, watch);
                     renderWatchStrip();
+                }
+
+                // ── Nachladen beim Scrollen ──
+                let tableRest = [];
+                let tableIO = null;
+                function rowHtml(c, i, totalMcap, watch) {
+                    const chg24 = c.price_change_percentage_24h || 0;
+                    const chg7  = c.price_change_percentage_7d_in_currency || 0;
+                    const dom   = totalMcap ? ((c.market_cap||0)/totalMcap*100).toFixed(2) : '—';
+                    const sym   = (c.symbol||'').toUpperCase();
+                    const on    = watch.has(sym);
+                    return `<td class="muted">${c.market_cap_rank || i+1}</td>
+                            <td>
+                                <span class="c2-star${on ? ' on' : ''}" data-watch="${sym}" title="Watchlist">${on ? '★' : '☆'}</span>
+                                <img class="c2-coin-row-img" src="${c.image||''}" alt="" loading="lazy" onerror="this.style.display='none'">
+                                <strong>${c.name}</strong>
+                                <span class="muted" style="margin-left:6px;">${sym}</span>
+                            </td>
+                            <td style="font-family:'JetBrains Mono',monospace;">${fmt(c.current_price)}</td>
+                            <td>${pct(chg24)}</td>
+                            <td>${pct(chg7)}</td>
+                            <td class="muted">${fmt(c.market_cap)}</td>
+                            <td class="muted">${dom}%</td>`;
+                }
+                function appendSentinel(body, totalMcap, watch) {
+                    if (tableIO) { tableIO.disconnect(); tableIO = null; }
+                    const alt = body.querySelector('#c2TableSentinel');
+                    if (alt) alt.remove();
+                    if (!tableRest.length) return;
+                    const tr = document.createElement('tr');
+                    tr.id = 'c2TableSentinel';
+                    tr.innerHTML = '<td colspan="7" class="muted" style="text-align:center;padding:1rem;font-size:0.7rem;">' +
+                                   tableRest.length + ' weitere Coins laden …</td>';
+                    body.appendChild(tr);
+                    tableIO = new IntersectionObserver(entries => {
+                        if (!entries.some(e => e.isIntersecting)) return;
+                        const naechste = tableRest.splice(0, 120);
+                        const frag = document.createDocumentFragment();
+                        const start = body.querySelectorAll('tr[data-sym]').length;
+                        naechste.forEach((c, i) => {
+                            const row = document.createElement('tr');
+                            row.dataset.sym = (c.symbol||'').toUpperCase();
+                            row.classList.add('c2x-rowlink');
+                            row.innerHTML = rowHtml(c, start + i, totalMcap, watch);
+                            frag.appendChild(row);
+                        });
+                        body.insertBefore(frag, tr);
+                        if (!tableRest.length) { tableIO.disconnect(); tableIO = null; tr.remove(); }
+                        else tr.firstElementChild.textContent = tableRest.length + ' weitere Coins laden …';
+                    // Die Tabelle scrollt in ihrem eigenen Kasten, nicht im Fenster.
+                    // Ohne diesen root wuerde der Beobachter nie ausloesen.
+                    }, { root: body.closest('.c2-table-wrap') || null, rootMargin: '500px' });
+                    tableIO.observe(tr);
                 }
 
                 // ── Movers list rows ──
@@ -10876,7 +11196,10 @@ window.c2xProxy = function (u) { return u; };
                     render();
                     tickClock();
                     if (!clockInterval) clockInterval = setInterval(tickClock, 1000);
-                    switchPage('script');
+                    // Startseite ist der Ueberblick: Ampel, Briefing, Signale und
+                    // Watchlist auf einen Blick. Das Daily Script bleibt einen Klick
+                    // entfernt, statt beim Oeffnen die ganze Aufmerksamkeit zu binden.
+                    switchPage('overview');
                     if (typeof renderScriptAll === 'function') renderScriptAll();
                     // Immer frisch fetchen bei jedem Öffnen
                     sessionStorage.removeItem(LIVE_CACHE_KEY);
@@ -11385,7 +11708,21 @@ window.c2xProxy = function (u) { return u; };
     let panelSym = null;
     let chart = null, chartSeries = null, chartRO = null;
     let currentTf = '1d';
-    const klineCache = {};
+    let showEma = false, showVol = true;
+    let volSeries = null, emaLines = [];
+    const klineCache = {}, klineVol = {};
+    // Gleitender Durchschnitt ueber die Schlusskurse, als Reihe fuer den Chart
+    function emaSeries(bars, closes, period) {
+        if (closes.length < period) return [];
+        const k = 2 / (period + 1), out = [];
+        let e = closes.slice(0, period).reduce((a, b) => a + b, 0) / period;
+        out.push({ time: bars[period - 1].time, value: e });
+        for (let i = period; i < closes.length; i++) {
+            e = closes[i] * k + e * (1 - k);
+            out.push({ time: bars[i].time, value: e });
+        }
+        return out;
+    }
 
     function openPanel(sym) {
         const c = coinBySym(sym);
@@ -11528,6 +11865,7 @@ window.c2xProxy = function (u) { return u; };
     function destroyChart() {
         if (chartRO) { chartRO.disconnect(); chartRO = null; }
         if (chart) { try { chart.remove(); } catch (e) {} chart = null; chartSeries = null; }
+        volSeries = null; emaLines = [];
     }
     function makeChart(el) {
         destroyChart();
@@ -11548,7 +11886,12 @@ window.c2xProxy = function (u) { return u; };
     }
     async function loadChart(c, tf) {
         currentTf = tf;
-        modal.querySelectorAll('.c2x-tf').forEach(b => b.classList.toggle('active', b.dataset.tf === tf));
+        // Nur die Zeitfenster umschalten. Die Schalter fuer EMA und Volumen
+        // tragen dieselbe Klasse, behalten ihren Zustand aber selbst.
+        modal.querySelectorAll('.c2x-tf[data-tf]').forEach(b => b.classList.toggle('active', b.dataset.tf === tf));
+        const te = $('c2xToggleEma'), tv = $('c2xToggleVol');
+        if (te) te.classList.toggle('active', showEma);
+        if (tv) tv.classList.toggle('active', showVol);
         const el = $('c2xPChart');
         const note = $('c2xPChartNote');
         el.innerHTML = '<div class="c2x-skel c2x-skel-chart"></div>';
@@ -11567,6 +11910,10 @@ window.c2xProxy = function (u) { return u; };
                         time: Math.floor(k[0] / 1000),
                         open: +k[1], high: +k[2], low: +k[3], close: +k[4]
                     }));
+                    klineVol[key] = raw.map(k => ({
+                        time: Math.floor(k[0] / 1000), value: +k[7],
+                        color: (+k[4] >= +k[1]) ? 'rgba(70,209,130,0.3)' : 'rgba(255,107,94,0.3)'
+                    }));
                 }
                 if (panelSym !== (mySym || '').toUpperCase()) return; // Panel wurde inzwischen gewechselt
                 const ch = makeChart(el);
@@ -11575,8 +11922,31 @@ window.c2xProxy = function (u) { return u; };
                     wickUpColor: '#46d182', wickDownColor: '#ff6b5e', borderVisible: false
                 });
                 chartSeries.setData(klineCache[key]);
+                // Volumen als flaches Histogramm im unteren Viertel. Eigene
+                // Preisskala, damit es die Kerzen nicht staucht.
+                if (showVol && klineVol[key]) {
+                    volSeries = ch.addHistogramSeries({
+                        priceFormat: { type: 'volume' }, priceScaleId: 'vol',
+                        color: 'rgba(255,255,255,0.22)'
+                    });
+                    ch.priceScale('vol').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+                    volSeries.setData(klineVol[key]);
+                }
+                // Gleitende Durchschnitte: zeigen die Trendlage auf einen Blick
+                if (showEma) {
+                    const closes = klineCache[key].map(k => k.close);
+                    [[50, '#58a6ff'], [200, '#ffd166']].forEach(([p, col]) => {
+                        const line = emaSeries(klineCache[key], closes, p);
+                        if (!line.length) return;
+                        const ser = ch.addLineSeries({ color: col, lineWidth: 1,
+                            priceLineVisible: false, lastValueVisible: false });
+                        ser.setData(line);
+                        emaLines.push(ser);
+                    });
+                }
                 ch.timeScale().fitContent();
-                note.textContent = 'Binance · ' + c.binance;
+                note.textContent = 'Binance · ' + c.binance +
+                    (showEma ? ' · EMA 50/200' : '');
                 return;
             }
             // Fallback 1: CoinGecko Tages-Chart (ueber den lokalen Proxy, s.o.)
@@ -11621,12 +11991,14 @@ window.c2xProxy = function (u) { return u; };
     let compChart = null;
     const COMP_COLORS = ['#ff9a3c', '#46d182', '#58a6ff'];
     const dailyCache = {};
+    let compDays = 30;
     async function dailySeries(c) {
-        const key = (c.symbol || '').toLowerCase();
+        const key = (c.symbol || '').toLowerCase() + '|' + compDays;
         if (dailyCache[key]) return dailyCache[key];
         try {
             if (c.binance) {
-                const res = await fetch('https://api.binance.com/api/v3/klines?symbol=' + c.binance + '&interval=1d&limit=30');
+                const res = await fetch('https://api.binance.com/api/v3/klines?symbol=' +
+                                        c.binance + '&interval=1d&limit=' + compDays);
                 const raw = await res.json();
                 if (Array.isArray(raw)) {
                     dailyCache[key] = raw.map(k => ({ t: k[0], p: +k[4] }));
@@ -11635,7 +12007,7 @@ window.c2xProxy = function (u) { return u; };
             }
             const res = await fetch(viaProxy('https://api.coingecko.com/api/v3/coins/' +
                                     encodeURIComponent(c.id) +
-                                    '/market_chart?vs_currency=usd&days=30&interval=daily'));
+                                    '/market_chart?vs_currency=usd&days=' + compDays + '&interval=daily'));
             const data = await res.json();
             if (data && Array.isArray(data.prices)) {
                 dailyCache[key] = data.prices.map(p => ({ t: p[0], p: p[1] }));
@@ -11843,7 +12215,21 @@ window.c2xProxy = function (u) { return u; };
         const b = e.target.closest('.c2x-tf');
         if (!b || !panelSym) return;
         const c = coinBySym(panelSym);
-        if (c) loadChart(c, b.dataset.tf);
+        if (!c) return;
+        if (b.id === 'c2xToggleEma') { showEma = !showEma; b.classList.toggle('active', showEma); }
+        else if (b.id === 'c2xToggleVol') { showVol = !showVol; b.classList.toggle('active', showVol); }
+        else if (!b.dataset.tf) return;
+        loadChart(c, b.dataset.tf || currentTf);
+    });
+    // Zeitraum des Vergleichs umstellen
+    $('c2xPCompare').addEventListener('click', e => {
+        const b = e.target.closest('[data-comp-days]');
+        if (!b) return;
+        compDays = +b.dataset.compDays;
+        modal.querySelectorAll('[data-comp-days]').forEach(x => x.classList.toggle('active', x === b));
+        const hint = $('c2xCompHint');
+        if (hint) hint.textContent = '(' + (compDays >= 365 ? '1 Jahr' : compDays + ' Tage') + ', normalisiert)';
+        renderCompare();
     });
     $('c2xRefreshBtn').addEventListener('click', e => triggerRefresh(e.shiftKey));
     $('c2xRefreshBtn').title = REFRESH_TIP;
@@ -11908,6 +12294,575 @@ window.c2xProxy = function (u) { return u; };
     } catch (e) {}
 })();
 </script>
+<script id="c2yModule">
+/* ═══════════════════════════════════════════════════════════════════
+   C2Y — Überblick, Radar, Watchlist, Onchain und der Live-Stream.
+   Getrennt vom C2X-Modul, damit beide unabhängig voneinander bleiben.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+    'use strict';
+    const modal = document.getElementById('crypto2Modal');
+    if (!modal || !document.querySelector('[data-page="overview"]')) return;
+
+    const $ = id => document.getElementById(id);
+    const DB = () => (typeof CRYPTO_DB !== 'undefined' ? CRYPTO_DB : []);
+    const SIG = () => (typeof SIGNALS_DATA !== 'undefined' ? SIGNALS_DATA : null);
+    const ONC = () => (typeof ONCHAIN_DATA !== 'undefined' ? ONCHAIN_DATA : null);
+    const BRIEF = () => (typeof BRIEFING_DATA !== 'undefined' ? BRIEFING_DATA : null);
+    const EXT = () => (typeof EXTRAS_DATA !== 'undefined' ? EXTRAS_DATA : null);
+
+    /* ── Formatierung ── */
+    function fBig(n) {
+        if (n == null || isNaN(n)) return '—';
+        if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
+        if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+        if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+        if (n >= 1e3) return '$' + Math.round(n).toLocaleString('de-DE');
+        return '$' + (+n).toFixed(2);
+    }
+    function fPrice(n) {
+        if (n == null || isNaN(n)) return '—';
+        if (n >= 1000) return '$' + n.toLocaleString('de-DE', { maximumFractionDigits: 2 });
+        if (n >= 1) return '$' + n.toFixed(3);
+        if (n >= 0.01) return '$' + n.toFixed(4);
+        return '$' + (+n).toPrecision(3);
+    }
+    function fPct(v, d) {
+        if (v == null || isNaN(v)) return '—';
+        return (v >= 0 ? '+' : '') + v.toFixed(d == null ? 1 : d) + '%';
+    }
+    function cls(v) { return v == null ? '' : v >= 0 ? 'c2-up' : 'c2-down'; }
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[<>&"]/g, c =>
+            ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]);
+    }
+    function coin(sym) {
+        sym = (sym || '').toLowerCase();
+        let best = null;
+        DB().forEach(c => {
+            if ((c.symbol || '').toLowerCase() !== sym) return;
+            if (!best || (c.market_cap_rank || 1e9) < (best.market_cap_rank || 1e9)) best = c;
+        });
+        return best;
+    }
+    function openCoin(sym) {
+        const row = document.createElement('div');
+        row.dataset.sym = (sym || '').toUpperCase();
+        row.className = 'c2x-rowlink';
+        document.body.appendChild(row);
+        row.click();
+        row.remove();
+    }
+    // Der Score als kompaktes farbiges Feld. Frueher stand hier eine Zahl neben
+    // einem Fortschrittsbalken; beim Rendern der Videokarten wurden die Ziffern
+    // dabei zerschnitten. Ein Feld mit Hintergrund ist eindeutig und bleibt in
+    // jeder Groesse lesbar.
+    function scoreBadge(v) {
+        if (v == null) return '<span class="c2-scorebadge leer">—</span>';
+        const f = scoreColor(v);
+        return '<span class="c2-scorebadge" style="color:' + f + ';border-color:' + f +
+               '55;background:' + f + '1f">' + v.toFixed(0) + '</span>';
+    }
+    function scoreColor(v) {
+        if (v == null) return 'rgba(255,255,255,0.2)';
+        if (v >= 70) return '#3FB950';
+        if (v >= 55) return '#9df5ad';
+        if (v >= 45) return '#E3B341';
+        return '#F85149';
+    }
+
+    /* ── Watchlist (gleicher Speicher wie das Hauptsystem) ── */
+    const WATCH_KEY = 'c2_watchlist', NOTE_KEY = 'c2_watch_notes';
+    function watchList() {
+        try { return (JSON.parse(localStorage.getItem(WATCH_KEY) || '[]') || [])
+            .map(s => (s || '').toUpperCase()); } catch (e) { return []; }
+    }
+    function notes() {
+        try { return JSON.parse(localStorage.getItem(NOTE_KEY) || '{}') || {}; }
+        catch (e) { return {}; }
+    }
+    function saveNote(sym, text) {
+        const n = notes(); 
+        if (text) n[sym] = text; else delete n[sym];
+        try { localStorage.setItem(NOTE_KEY, JSON.stringify(n)); } catch (e) {}
+    }
+    function unwatch(sym) {
+        const s = new Set(watchList());
+        s.delete((sym || '').toUpperCase());
+        try { localStorage.setItem(WATCH_KEY, JSON.stringify([...s])); } catch (e) {}
+        renderWatchlist(); renderOverview();
+    }
+
+    /* ══════════ ÜBERBLICK ══════════ */
+    function renderAmpel() {
+        const el = $('ovAmpel');
+        if (!el) return;
+        const s = SIG(), ex = EXT();
+        const m = (s && s.market) || {};
+        const fng = ex && ex.fng_history && ex.fng_history.length
+            ? ex.fng_history[ex.fng_history.length - 1] : null;
+
+        // Gesamturteil aus Marktbreite, Stimmung und durchschnittlichem Score
+        let punkte = 0, teile = 0;
+        if (m.pct_above_ema50 != null) { punkte += m.pct_above_ema50; teile++; }
+        if (m.avg_score != null) { punkte += m.avg_score; teile++; }
+        if (fng) { punkte += fng.value; teile++; }
+        const gesamt = teile ? punkte / teile : null;
+        const urteil = gesamt == null ? 'Keine Daten'
+            : gesamt >= 68 ? 'Risiko an' : gesamt >= 52 ? 'Vorsichtig positiv'
+            : gesamt >= 38 ? 'Abwartend' : 'Risiko aus';
+        const erklaerung = gesamt == null ? ''
+            : gesamt >= 68 ? 'Breite, Stimmung und Momentum ziehen in dieselbe Richtung.'
+            : gesamt >= 52 ? 'Mehr Rücken- als Gegenwind, aber ohne Übertreibung.'
+            : gesamt >= 38 ? 'Gemischtes Bild. Einzelne Coins statt breiter Einstieg.'
+            : 'Die Mehrheit liegt unter ihren Durchschnitten. Geduld schlägt Aktion.';
+
+        const zeilen = [];
+        function zeile(k, v, val, max, farbe) {
+            zeilen.push('<div><div class="c2-ov-zeile"><span class="k">' + k +
+                '</span><span class="v">' + v + '</span></div>' +
+                (val != null ? '<div class="c2-ov-ampelbar"><i style="width:' +
+                    Math.max(2, Math.min(100, val / max * 100)) + '%;background:' + farbe + '"></i></div>' : '') +
+                '</div>');
+        }
+        if (m.pct_above_ema50 != null)
+            zeile('Über 50-Tage-Linie', m.pct_above_ema50 + '%', m.pct_above_ema50, 100, scoreColor(m.pct_above_ema50));
+        if (m.pct_above_ema200 != null)
+            zeile('Über 200-Tage-Linie', m.pct_above_ema200 + '%', m.pct_above_ema200, 100, scoreColor(m.pct_above_ema200));
+        if (fng) zeile('Angst und Gier', fng.value + ' · ' + esc(fng.label || ''), fng.value, 100, scoreColor(fng.value));
+        if (m.avg_rsi != null) zeile('Ø RSI', m.avg_rsi.toFixed(0), m.avg_rsi, 100, scoreColor(100 - Math.abs(m.avg_rsi - 50) * 2));
+        if (m.avg_score != null) zeile('Ø Signal-Score', m.avg_score.toFixed(0), m.avg_score, 100, scoreColor(m.avg_score));
+
+        el.innerHTML = '<div class="c2-ov-verdict" style="color:' + scoreColor(gesamt) + '">' + urteil + '</div>' +
+            '<div class="c2-ov-verdict-sub">' + erklaerung + '</div>' +
+            '<div style="height:6px"></div>' + zeilen.join('');
+    }
+
+    function renderBriefing() {
+        const el = $('ovBriefing');
+        if (!el) return;
+        const b = BRIEF();
+        if (!b || !b.blocks || !b.blocks.length) {
+            el.innerHTML = '<p style="color:rgba(249,237,224,0.45)">Noch kein Briefing. ' +
+                'Es entsteht beim nächsten Lauf von generate_briefing.py.</p>';
+            return;
+        }
+        el.innerHTML = b.blocks.map(bl =>
+            '<h4>' + esc(bl.titel) + '</h4>' +
+            bl.punkte.map(p => '<p>' + esc(p) + '</p>').join('')).join('');
+    }
+
+    function ovRow(sym, name, img, sub, val, valCls) {
+        return '<div class="c2-ov-row" data-open="' + esc(sym) + '">' +
+            '<img src="' + esc(img || '') + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
+            '<div><div class="nm">' + esc(name) + '</div><div class="sub">' + esc(sub) + '</div></div>' +
+            '<div class="val ' + (valCls || '') + '">' + val + '</div></div>';
+    }
+
+    function renderOvSignals() {
+        const el = $('ovSignals');
+        if (!el) return;
+        const s = SIG();
+        const rows = (s && s.coins) || [];
+        if (!rows.length) { el.innerHTML = '<div class="c2-ov-row"><div class="sub">Signal-Engine noch nicht gelaufen.</div></div>'; return; }
+        el.innerHTML = rows.slice(0, 8).map(r => {
+            const c = coin(r.symbol) || {};
+            return ovRow(r.symbol.toUpperCase(), r.name || r.symbol.toUpperCase(), c.image || r.image,
+                (r.cat && r.cat !== 'Other' ? r.cat + ' · ' : '') + 'RSI ' + (r.rsi != null ? r.rsi.toFixed(0) : '—'),
+                scoreBadge(r.score), '');
+        }).join('');
+    }
+
+    function renderOvSektoren() {
+        const el = $('ovSektoren');
+        if (!el) return;
+        const acc = {};
+        DB().forEach(c => {
+            const k = c.cat, v = c.price_change_percentage_7d_in_currency;
+            if (!k || k === 'Other' || k === 'Wrapped' || k === 'LST' || v == null) return;
+            (acc[k] = acc[k] || []).push(v);
+        });
+        const rows = Object.keys(acc).filter(k => acc[k].length >= 3)
+            .map(k => ({ k, avg: acc[k].reduce((a, b) => a + b, 0) / acc[k].length, n: acc[k].length }))
+            .sort((a, b) => b.avg - a.avg);
+        if (!rows.length) { el.innerHTML = '<div class="c2-ov-row"><div class="sub">Keine Sektordaten.</div></div>'; return; }
+        const max = Math.max(...rows.map(r => Math.abs(r.avg))) || 1;
+        el.innerHTML = rows.slice(0, 8).map(r =>
+            '<div class="c2-ov-row" data-sektor="' + esc(r.k) + '">' +
+            '<div style="width:22px;text-align:center;font-size:0.9rem">' +
+            (({ AI: '🤖', L1: '⛓️', L2: '🪜', DeFi: '🏦', RWA: '🏛️', DePIN: '📡', Gaming: '🎮',
+                SocialFi: '💬', Oracle: '🔮', Payments: '💸', Privacy: '🕶️', Meme: '🐸',
+                Exchange: '🏦' })[r.k] || '•') + '</div>' +
+            '<div><div class="nm">' + esc(r.k) + '</div>' +
+            '<div class="c2-ov-ampelbar" style="width:100%"><i style="width:' +
+            Math.max(3, Math.abs(r.avg) / max * 100) + '%;background:' +
+            (r.avg >= 0 ? '#3FB950' : '#F85149') + '"></i></div></div>' +
+            '<div class="val ' + cls(r.avg) + '">' + fPct(r.avg) + '</div></div>').join('');
+    }
+
+    function renderOvWatch() {
+        const el = $('ovWatch');
+        if (!el) return;
+        const list = watchList();
+        if (!list.length) {
+            el.innerHTML = '<div style="padding:14px 6px;font-size:0.74rem;color:rgba(249,237,224,0.45);line-height:1.6">' +
+                'Noch keine Coins markiert. Setz in Markets einen Stern, dann erscheinen sie hier.</div>';
+            return;
+        }
+        el.innerHTML = list.slice(0, 10).map(sym => {
+            const c = coin(sym);
+            if (!c) return ovRow(sym, sym, '', 'nicht in den Daten', '—', '');
+            return ovRow(sym, c.name, c.image, sym, fPct(c.price_change_percentage_24h),
+                cls(c.price_change_percentage_24h));
+        }).join('');
+    }
+
+    function renderOvNews() {
+        const el = $('ovNews');
+        if (!el) return;
+        const o = ONC();
+        const news = (o && o.news) || [];
+        if (!news.length) { el.innerHTML = '<div style="font-size:0.76rem;color:rgba(249,237,224,0.45)">Keine Nachrichten geladen.</div>'; return; }
+        el.innerHTML = news.slice(0, 6).map(n =>
+            '<a href="' + esc(n.link) + '" target="_blank" rel="noopener">' +
+            '<div class="t">' + esc(n.title) + '</div>' +
+            '<div class="m">' + esc(n.source) + (n.ts ? ' · ' + zeitHer(n.ts) : '') + '</div></a>').join('');
+    }
+    function zeitHer(ts) {
+        const min = Math.round((Date.now() / 1000 - ts) / 60);
+        if (min < 60) return min + ' Min';
+        if (min < 1440) return Math.round(min / 60) + ' Std';
+        return Math.round(min / 1440) + ' Tage';
+    }
+
+    function renderOverview() {
+        renderAmpel(); renderBriefing(); renderOvSignals();
+        renderOvSektoren(); renderOvWatch(); renderOvNews();
+    }
+
+    /* ══════════ RADAR ══════════ */
+    let radarSort = 'score';
+    function renderRadar() {
+        const s = SIG();
+        const stats = $('radarStats'), body = $('radarBody');
+        if (!body) return;
+        if (!s || !s.coins || !s.coins.length) {
+            body.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:2rem">' +
+                'Die Signal-Engine ist noch nicht gelaufen. Starte sie mit compute_signals.py ' +
+                'oder über den Refresh-Knopf.</td></tr>';
+            if (stats) stats.innerHTML = '';
+            return;
+        }
+        const m = s.market || {};
+        if (stats) {
+            const karten = [
+                ['Coins gerechnet', m.coins],
+                ['Ø Signal-Score', m.avg_score != null ? m.avg_score.toFixed(0) : '—'],
+                ['Ø RSI', m.avg_rsi != null ? m.avg_rsi.toFixed(0) : '—'],
+                ['Ø Volatilität', m.avg_vol != null ? m.avg_vol.toFixed(0) + '%' : '—'],
+                ['Über EMA 50', m.pct_above_ema50 != null ? m.pct_above_ema50 + '%' : '—'],
+                ['Über EMA 200', m.pct_above_ema200 != null ? m.pct_above_ema200 + '%' : '—'],
+                ['Golden Cross', m.pct_golden_cross != null ? m.pct_golden_cross + '%' : '—'],
+            ];
+            stats.innerHTML = karten.map(k =>
+                '<div class="c2-radar-stat"><div class="k">' + k[0] + '</div>' +
+                '<div class="v">' + k[1] + '</div></div>').join('');
+        }
+
+        let rows = s.coins.slice();
+        const sorters = {
+            score: (a, b) => (b.score || 0) - (a.score || 0),
+            momentum: (a, b) => ((b.parts || {}).momentum || 0) - ((a.parts || {}).momentum || 0),
+            trend: (a, b) => ((b.parts || {}).trend || 0) - ((a.parts || {}).trend || 0),
+            risiko: (a, b) => ((b.parts || {}).risiko || 0) - ((a.parts || {}).risiko || 0),
+            rsi_low: (a, b) => (a.rsi == null ? 999 : a.rsi) - (b.rsi == null ? 999 : b.rsi),
+            vol_trend: (a, b) => (b.vol_trend || -999) - (a.vol_trend || -999),
+        };
+        rows.sort(sorters[radarSort] || sorters.score);
+        const cnt = $('radarCount');
+        if (cnt) cnt.textContent = rows.length + ' Coins';
+
+        body.innerHTML = rows.slice(0, 60).map((r, i) => {
+            const trend = r.above_ema200 && r.above_ema50 ? ['up', 'Aufwärts']
+                : r.above_ema50 ? ['mid', 'Erholung']
+                : r.above_ema200 ? ['mid', 'Korrektur'] : ['down', 'Abwärts'];
+            const c = coin(r.symbol) || {};
+            return '<tr class="c2x-rowlink" data-sym="' + esc(r.symbol.toUpperCase()) + '">' +
+                '<td class="muted">' + (i + 1) + '</td>' +
+                '<td><img class="c2-coin-row-img" src="' + esc(c.image || r.image || '') +
+                    '" alt="" onerror="this.style.display=\'none\'"><strong>' + esc(r.name || r.symbol) +
+                    '</strong> <span class="muted">' + esc(r.symbol.toUpperCase()) + '</span></td>' +
+                '<td>' + scoreBadge(r.score) + '</td>' +
+                '<td style="font-family:\'JetBrains Mono\',monospace">' +
+                    (r.rsi != null ? '<span class="' + (r.rsi >= 70 ? 'c2-down' : r.rsi <= 32 ? 'c2-up' : '') + '">' +
+                     r.rsi.toFixed(0) + '</span>' : '—') + '</td>' +
+                '<td class="muted" style="font-family:\'JetBrains Mono\',monospace">' +
+                    (r.vol30 != null ? r.vol30.toFixed(0) + '%' : '—') + '</td>' +
+                '<td class="muted" style="font-family:\'JetBrains Mono\',monospace">' +
+                    (r.beta != null ? r.beta.toFixed(2) : '—') + '</td>' +
+                '<td><span class="c2-trendtag ' + trend[0] + '">' + trend[1] + '</span></td>' +
+                '<td>' + '<span class="' + cls(r.chg7) + '">' + fPct(r.chg7) + '</span></td></tr>';
+        }).join('');
+
+        const divs = $('radarDivs');
+        if (divs) {
+            const d = s.divergences || [];
+            divs.innerHTML = d.length ? d.map(x =>
+                '<div class="c2-div-card ' + esc(x.richtung) + ' c2x-rowlink" data-sym="' +
+                esc(x.symbol.toUpperCase()) + '">' +
+                '<div class="c2-div-sym">' + esc(x.symbol.toUpperCase()) + '</div>' +
+                '<div class="c2-div-typ">' + esc(x.typ) + ' · ' + esc(x.richtung) + '</div>' +
+                '<div class="c2-div-text">' + esc(x.text) + '</div></div>').join('')
+                : '<div style="color:rgba(249,237,224,0.45);font-size:0.8rem;padding:1rem 0">' +
+                  'Gerade laufen keine Signale auseinander. Das ist selbst eine Information: ' +
+                  'der Markt bewegt sich einheitlich.</div>';
+        }
+    }
+
+    /* ══════════ WATCHLIST ══════════ */
+    function renderWatchlist() {
+        const grid = $('watchGrid'), leer = $('watchEmpty');
+        if (!grid) return;
+        const list = watchList();
+        if (leer) leer.style.display = list.length ? 'none' : '';
+        const s = SIG();
+        const sigBy = {};
+        ((s && s.coins) || []).forEach(r => { sigBy[r.symbol.toUpperCase()] = r; });
+        const nts = notes();
+        grid.innerHTML = list.map(sym => {
+            const c = coin(sym), r = sigBy[sym] || {};
+            const name = c ? c.name : sym;
+            const preis = c ? fPrice(c.current_price) : '—';
+            const chg = c ? c.price_change_percentage_24h : null;
+            return '<div class="c2-watch-card">' +
+                '<div class="c2-watch-head">' +
+                '<img src="' + esc((c && c.image) || '') + '" alt="" data-open="' + esc(sym) +
+                    '" onerror="this.style.visibility=\'hidden\'">' +
+                '<div><div class="c2-watch-nm" data-open="' + esc(sym) + '">' + esc(name) + '</div>' +
+                '<div class="c2-watch-sym">' + esc(sym) + (r.cat && r.cat !== 'Other' ? ' · ' + esc(r.cat) : '') + '</div></div>' +
+                '<button class="c2-watch-rm" data-unwatch="' + esc(sym) + '" title="Entfernen">✕</button></div>' +
+                '<div class="c2-watch-price">' + preis + ' <span style="font-size:0.8rem" class="' +
+                    cls(chg) + '">' + fPct(chg) + '</span></div>' +
+                '<div class="c2-watch-metrics">' +
+                '<div class="c2-watch-metric"><div class="k">Score</div><div class="v" style="color:' +
+                    scoreColor(r.score) + '">' + (r.score != null ? r.score.toFixed(0) : '—') + '</div></div>' +
+                '<div class="c2-watch-metric"><div class="k">RSI</div><div class="v">' +
+                    (r.rsi != null ? r.rsi.toFixed(0) : '—') + '</div></div>' +
+                '<div class="c2-watch-metric"><div class="k">7 Tage</div><div class="v ' +
+                    cls(r.chg7 != null ? r.chg7 : (c && c.price_change_percentage_7d_in_currency)) + '">' +
+                    fPct(r.chg7 != null ? r.chg7 : (c && c.price_change_percentage_7d_in_currency)) + '</div></div>' +
+                '</div>' +
+                '<textarea class="c2-watch-note" data-note="' + esc(sym) +
+                    '" placeholder="Notiz zu ' + esc(sym) + ' …">' + esc(nts[sym] || '') + '</textarea>' +
+                '</div>';
+        }).join('');
+    }
+
+    /* ══════════ ONCHAIN ══════════ */
+    function renderOnchain() {
+        const o = ONC();
+        const grid = $('onchainGrid');
+        if (!grid) return;
+        if (!o || !o.btc_network) {
+            grid.innerHTML = '<div style="color:rgba(249,237,224,0.45);font-size:0.8rem">' +
+                'Noch keine Onchain-Daten. Sie kommen beim nächsten vollen Lauf.</div>';
+            return;
+        }
+        const n = o.btc_network, k = [];
+        function karte(titel, wert, sub) {
+            k.push('<div class="c2-onchain-card"><div class="k">' + titel + '</div>' +
+                '<div class="v">' + wert + '</div>' +
+                (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>');
+        }
+        if (n.fees) karte('Gebühr, schnell', n.fees.fast + ' sat/vB',
+            'Halbe Stunde: ' + n.fees.halfhour + ' · Stunde: ' + n.fees.hour);
+        if (n.hashrate) karte('Rechenleistung', (n.hashrate / 1e18).toFixed(0) + ' EH/s',
+            n.hashrate_chg_30d != null ? fPct(n.hashrate_chg_30d, 1) + ' in 30 Tagen' : '');
+        if (n.difficulty_adjustment) {
+            const d = n.difficulty_adjustment;
+            karte('Nächste Anpassung', fPct(d.change, 1),
+                d.remaining_blocks + ' Blöcke, ' + (d.progress || 0).toFixed(0) + '% der Periode');
+        }
+        if (n.halving) karte('Nächste Halbierung', Math.round(n.halving.days_left) + ' Tage',
+            n.halving.blocks_left.toLocaleString('de-DE') + ' Blöcke bis ' +
+            n.halving.block.toLocaleString('de-DE'));
+        if (n.block_height) karte('Blockhöhe', n.block_height.toLocaleString('de-DE'), '');
+        if (n.mempool) karte('Wartende Zahlungen', (n.mempool.count || 0).toLocaleString('de-DE'),
+            'im Mempool');
+        grid.innerHTML = k.join('');
+
+        const t = $('onchainTaker'), tk = o.taker || {};
+        if (t) {
+            const rows = (tk.rows || []).slice().sort((a, b) => (b.ratio || 0) - (a.ratio || 0));
+            t.innerHTML = (tk.ratio != null
+                ? '<div style="font-size:0.8rem;margin-bottom:0.7rem;color:rgba(249,237,224,0.75)">' +
+                  'Über alle beobachteten Perpetuals liegt das Verhältnis bei <b>' + tk.ratio.toFixed(2) +
+                  '</b>. ' + (tk.ratio >= 1 ? 'Die Käufer sind aggressiver.' : 'Die Verkäufer sind aggressiver.') +
+                  '</div>' : '') +
+                rows.slice(0, 12).map(r => {
+                    const c = coin(r.symbol) || {};
+                    return ovRow(r.symbol.toUpperCase(), c.name || r.symbol.toUpperCase(), c.image,
+                        'Käufe ' + fBig(r.buy_vol), (r.ratio != null ? r.ratio.toFixed(2) : '—'),
+                        r.ratio >= 1 ? 'c2-up' : 'c2-down');
+                }).join('');
+        }
+        const nEl = $('onchainNews');
+        if (nEl) {
+            const news = o.news || [];
+            nEl.innerHTML = news.length ? news.slice(0, 24).map(x =>
+                '<a href="' + esc(x.link) + '" target="_blank" rel="noopener">' +
+                '<div class="t">' + esc(x.title) + '</div>' +
+                '<div class="m">' + esc(x.source) + (x.ts ? ' · vor ' + zeitHer(x.ts) : '') + '</div></a>').join('')
+                : '<div style="color:rgba(249,237,224,0.45);font-size:0.8rem">Keine Nachrichten geladen.</div>';
+            nEl.className = 'c2-ov-news';
+        }
+    }
+
+    /* ══════════ Live-Stream über WebSocket ══════════ */
+    let ws = null, wsTimer = null, wsBuf = {}, wsFlush = null;
+    function streamSymbols() {
+        const set = new Set();
+        DB().slice().sort((a, b) => (a.market_cap_rank || 1e9) - (b.market_cap_rank || 1e9))
+            .slice(0, 60).forEach(c => { if (c.binance) set.add(c.binance.toLowerCase()); });
+        watchList().forEach(s => { const c = coin(s); if (c && c.binance) set.add(c.binance.toLowerCase()); });
+        ['btcusdt', 'ethusdt'].forEach(s => set.add(s));
+        return [...set].slice(0, 80);
+    }
+    function startStream() {
+        if (ws || typeof WebSocket === 'undefined') return;
+        const syms = streamSymbols();
+        if (!syms.length) return;
+        const streams = syms.map(s => s + '@miniTicker').join('/');
+        try {
+            ws = new WebSocket('wss://stream.binance.com:9443/stream?streams=' + streams);
+        } catch (e) { return; }
+        ws.onmessage = ev => {
+            try {
+                const d = JSON.parse(ev.data).data;
+                if (d && d.s) wsBuf[d.s] = { p: parseFloat(d.c), o: parseFloat(d.o), v: parseFloat(d.q) };
+            } catch (e) {}
+        };
+        ws.onclose = () => { ws = null; clearTimeout(wsTimer); wsTimer = setTimeout(startStream, 8000); };
+        ws.onerror = () => { try { ws.close(); } catch (e) {} };
+        // Gebündelt anwenden: der Stream liefert im Sekundentakt, das DOM
+        // braucht das nicht so oft. Zwei Aktualisierungen je Sekunde reichen.
+        clearInterval(wsFlush);
+        wsFlush = setInterval(applyStream, 500);
+    }
+    function applyStream() {
+        const keys = Object.keys(wsBuf);
+        if (!keys.length) return;
+        const byBase = {};
+        DB().forEach(c => {
+            const t = c.binance && wsBuf[c.binance];
+            if (!t || !isFinite(t.p) || t.p <= 0) return;
+            c.current_price = t.p;
+            if (t.o) c.price_change_percentage_24h = (t.p / t.o - 1) * 100;
+            if (isFinite(t.v)) c.total_volume = t.v;
+            byBase[(c.symbol || '').toUpperCase()] = c;
+        });
+        wsBuf = {};
+        // Sichtbare Zellen nachziehen, ohne neu zu rendern
+        modal.querySelectorAll('#c2TableBody tr[data-sym], #radarBody tr[data-sym]').forEach(tr => {
+            const c = byBase[tr.dataset.sym];
+            if (!c) return;
+            const tds = tr.children;
+            if (tr.parentElement && tr.parentElement.id === 'c2TableBody') {
+                if (tds[2]) tds[2].textContent = fPrice(c.current_price);
+                if (tds[3]) tds[3].innerHTML = '<span class="' + cls(c.price_change_percentage_24h) +
+                    '">' + fPct(c.price_change_percentage_24h, 2) + '</span>';
+            }
+        });
+        modal.querySelectorAll('.c2-watch-card').forEach(card => {
+            const sym = (card.querySelector('[data-unwatch]') || {}).dataset;
+            const c = sym && byBase[sym.unwatch];
+            if (!c) return;
+            const p = card.querySelector('.c2-watch-price');
+            if (p) p.innerHTML = fPrice(c.current_price) + ' <span style="font-size:0.8rem" class="' +
+                cls(c.price_change_percentage_24h) + '">' + fPct(c.price_change_percentage_24h) + '</span>';
+        });
+        const ov = document.querySelector('.c2-page.active');
+        if (ov && ov.dataset.page === 'overview') { renderOvWatch(); renderAmpel(); }
+    }
+    function stopStream() {
+        clearInterval(wsFlush);
+        if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} ws = null; }
+    }
+
+    /* ══════════ Klicks und Tastatur ══════════ */
+    document.addEventListener('click', e => {
+        const open = e.target.closest('[data-open]');
+        if (open && !e.target.closest('[data-unwatch]')) { openCoin(open.dataset.open); return; }
+        const un = e.target.closest('[data-unwatch]');
+        if (un) { unwatch(un.dataset.unwatch); return; }
+        const sek = e.target.closest('[data-sektor]');
+        if (sek) {
+            const nav = modal.querySelector('.c2-nav[data-page="narratives"]');
+            if (nav) nav.click();
+            return;
+        }
+        const rs = e.target.closest('[data-radar-sort]');
+        if (rs) {
+            radarSort = rs.dataset.radarSort;
+            modal.querySelectorAll('[data-radar-sort]').forEach(b => b.classList.toggle('active', b === rs));
+            renderRadar();
+        }
+    });
+    document.addEventListener('input', e => {
+        const n = e.target.closest('[data-note]');
+        if (n) saveNote(n.dataset.note, n.value.trim());
+    });
+
+    // j und k blättern im geöffneten Detail-Panel durch die Liste
+    document.addEventListener('keydown', e => {
+        if (getComputedStyle(modal).display === 'none') return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '')) return;
+        const panel = $('c2xPanel');
+        if (!panel || !panel.classList.contains('open')) return;
+        const key = e.key.toLowerCase();
+        if (key !== 'j' && key !== 'k') return;
+        const sym = ($('c2xPSym') || {}).textContent;
+        const rows = [...modal.querySelectorAll('.c2-page.active tr[data-sym], .c2-page.active [data-sym]')]
+            .map(r => r.dataset.sym).filter((v, i, a) => v && a.indexOf(v) === i);
+        if (!rows.length) return;
+        let i = rows.indexOf(sym);
+        if (i < 0) i = 0;
+        const next = rows[(i + (key === 'j' ? 1 : -1) + rows.length) % rows.length];
+        if (next) { e.preventDefault(); openCoin(next); }
+    });
+
+    /* ══════════ Anstoß beim Seitenwechsel ══════════ */
+    function renderFor(page) {
+        if (page === 'overview') renderOverview();
+        else if (page === 'radar') renderRadar();
+        else if (page === 'watchlist') renderWatchlist();
+        else if (page === 'onchain') renderOnchain();
+    }
+    modal.addEventListener('click', e => {
+        const nav = e.target.closest('.c2-nav[data-page]');
+        if (nav) setTimeout(() => renderFor(nav.dataset.page), 30);
+    });
+
+    let gestartet = false;
+    setInterval(() => {
+        const sichtbar = getComputedStyle(modal).display !== 'none';
+        if (sichtbar && !gestartet) {
+            gestartet = true;
+            const act = document.querySelector('.c2-page.active');
+            renderFor(act ? act.dataset.page : 'overview');
+            startStream();
+        } else if (!sichtbar && gestartet) {
+            gestartet = false;
+            stopStream();
+        }
+    }, 1200);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stopStream();
+        else if (getComputedStyle(modal).display !== 'none') startStream();
+    });
+})();
+</script>
 <script>
 /* Das Dashboard oeffnet sich im Original per Knopf und startet auf einer
    Seite, die es hier nicht mehr gibt. Also: Knopf ausloesen, damit alles
@@ -11922,7 +12877,8 @@ window.c2xProxy = function (u) { return u; };
         setTimeout(function () {
             var wanted = (location.hash || '').replace('#', '');
             var nav = wanted && document.querySelector('.c2-nav[data-page="' + wanted + '"]');
-            if (!nav) nav = document.querySelector('.c2-nav[data-page="markets"]')
+            if (!nav) nav = document.querySelector('.c2-nav[data-page="overview"]')
+                        || document.querySelector('.c2-nav[data-page="markets"]')
                         || document.querySelector('.c2-nav[data-page]');
             if (nav) nav.click();
         }, 60);
@@ -11948,6 +12904,13 @@ window.c2xProxy = function (u) { return u; };
     if (document.readyState === 'loading')
         document.addEventListener('DOMContentLoaded', function () { start(); setTimeout(rewireRefresh, 400); });
     else { start(); setTimeout(rewireRefresh, 400); }
+    /* Offline-Faehigkeit: der Service Worker legt den letzten Stand ab,
+       damit die Seite auch im Funkloch etwas anzeigt statt einer Fehlermeldung. */
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('./sw.js').catch(function () {});
+        });
+    }
     /* Seite in der Adresse merken, damit Teilen und Zurueck funktionieren */
     document.addEventListener('click', function (e) {
         var n = e.target.closest('.c2-nav[data-page]');
