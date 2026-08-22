@@ -1,37 +1,66 @@
 # Crypto Biz Dashboard
 
-Öffentliche Marktübersicht: Live-Kurse, Sektor-Rotation, Social Buzz, Hidden Gems und Marktstimmung.
+Öffentliche Version des Crypto-Dashboards. Live-Kurse, Sektor-Rotation, Social Buzz,
+Hidden Gems, Marktstimmung und Trading-Werkzeuge.
 
 **Live:** https://nadercbz.github.io/crypto-vip-dashboard/
 
-## Was drin ist
+Auf dem Handy lässt sich die Seite über "Zum Home-Bildschirm" als App ablegen.
 
-- **Markt** — Top 500 nach Marktkapitalisierung, Kurse laufend live über die Binance-API
-- **Movers** — stärkste Gewinner und Verlierer der letzten 24 Stunden
-- **Sektoren** — Wochenperformance je Narrativ plus Chain-TVL von DefiLlama
-- **Social Buzz** — Aufmerksamkeits-Ranking, bevor der Preis reagiert
-- **Hidden Gems** — Coins mit Divergenz zwischen Fundamentaldaten und Bewertung
-- **Stimmung** — Fear and Greed Index mit 90-Tage-Verlauf und Marktbreite
+## Seiten
 
-Jeder Coin lässt sich antippen: Detailansicht mit Candlestick-Chart (1H bis 1W),
-Marktdaten, Float, FDV, Funding Rate und Open Interest.
+| Bereich | Inhalt |
+|---|---|
+| Perfect Portfolio | Mechanisch gefilterte Allokation aus dem Live-Universe |
+| Markets | Alle Coins mit Preis, Momentum, Dominanz und Watchlist |
+| Movers | Stärkste Gewinner und Verlierer |
+| Finder | Screener mit freien Filtern |
+| Narratives | Sektor-Rotation, welches Narrativ gerade führt |
+| Heat Map | Der Markt als Kachelbild |
+| Social Buzz | Aufmerksamkeits-Ranking, bevor der Preis reagiert |
+| Hidden Gems | Divergenz zwischen Fundamentaldaten und Bewertung |
+| Sentiment | Fear and Greed mit Verlauf |
+| Ranking | Bestenliste aus den eigenen Arena-Duellen |
+| Killzones | Handelszeiten nach Sessions, Berliner Zeit |
+| Calculator | Positionsgröße und Risiko |
+| Checklist | Checkliste vor dem Einstieg |
+| Breakouts | Ausbruchskandidaten |
+| Arena | Zwei Coins im direkten Vergleich |
+| Playbook | Strategie-Wissen |
+| Links | Sammlung nützlicher Quellen |
 
-Die Seite läuft ohne Server und lässt sich auf dem Handy zum Homescreen hinzufügen.
+Jeder Coin lässt sich anklicken: Detailansicht mit Candlestick-Chart (1H bis 1W),
+Marktdaten, Float, FDV, Funding Rate, Open Interest und Long/Short-Verhältnis.
 
-## Daten aktualisieren
+## Wie die Seite entsteht
 
-Die Datendateien unter `data/` werden aus dem lokalen Agent Dashboard gebaut:
+Sie wird nicht von Hand gepflegt, sondern aus dem lokalen Agent Dashboard gebaut:
 
 ```bash
 python3 build_public_site.py --deploy
 ```
 
-Das Skript nimmt ausschließlich Marktdaten mit. Portfolio, Skripte, Telemetrie
-und andere private Dateien bleiben lokal und sind durch eine Whitelist plus
-einen Abbruch-Check im Build abgesichert.
+Das Skript schneidet Markup, CSS und JavaScript des Crypto-Dashboards heraus und
+setzt daraus eine eigenständige Seite zusammen. Dadurch bleiben beide Versionen
+automatisch im gleichen Stand. Der volle Tageslauf (`refresh_all.py`, morgens um
+7:30) stößt den Build selbst an.
 
-## Quellen
+**Direkt bearbeiten bringt nichts:** `index.html` und `data/` werden bei jedem
+Build überschrieben. Änderungen gehören ins Agent Dashboard oder in
+`build_public_site.py`.
+
+## Datenschutz
+
+Nur Marktdaten gehen raus. Portfolio, Video-Skripte, Milestones, Telemetrie und
+persönliche Notizen bleiben lokal, abgesichert durch eine Whitelist im Build und
+einen Abbruch-Check, der das Veröffentlichen stoppt, sobald eine private Datei im
+Zielordner auftaucht.
+
+## Datenquellen
 
 CoinPaprika, CoinGecko, Binance, DefiLlama, alternative.me
+
+Kurse aktualisieren sich im Browser laufend über die Binance-API. Die übrigen
+Daten stammen aus dem letzten Build.
 
 Keine Finanzberatung. Alle Angaben ohne Gewähr.
