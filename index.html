@@ -5078,6 +5078,17 @@ body { overflow: hidden; }
         color: rgba(249,237,224,0.5); margin: 2px 0 7px; }
     .c2-div-text { font-size: 0.76rem; line-height: 1.55; color: rgba(249,237,224,0.82); }
 
+    /* VIP: zusaetzliche Tiefe hinter einem Zugangscode. Bewusst nur eine
+       Huerde, kein Schloss. Ohne Server laesst sich im Browser nichts wirklich
+       verbergen, wer den Quelltext liest kommt hinein. Fuer den Zweck, Mitglieder
+       von Zufallsbesuchern zu trennen, reicht es. */
+    .c2-vip-card { border-color: rgba(255,209,102,0.28); }
+    .c2-vip-h { font-size: 1.05rem; font-weight: 700; margin: 0.6rem 0 0; }
+    .c2-vip-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .c2-vip-hint { font-size: 0.72rem; color: rgba(249,237,224,0.55); }
+    .c2-vip-hint.ok { color: #6ee7a0; }
+    .c2-vip-hint.fehler { color: #ff8f86; }
+
     /* Watchlist */
     .c2-watch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
     .c2-watch-card { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
@@ -5357,6 +5368,35 @@ body { overflow: hidden; }
                             </table>
                         </div>
                     </div>
+                    <div class="c2-card c2-vip-card" id="vipCard">
+                        <div class="c2-eyebrow">VIP Analyse</div>
+                        <div id="vipLock">
+                            <h3 class="c2-vip-h">Die fünf Bausteine hinter jedem Score</h3>
+                            <p class="c2-sub" style="margin:0.5rem 0 1rem;">Momentum, Trend, Risiko, Aufmerksamkeit und Substanz einzeln aufgeschlüsselt, dazu Korrelation, Volumen-Trend und Funding je Coin. Damit siehst du nicht nur was hoch bewertet ist, sondern warum.</p>
+                            <div class="c2-vip-row">
+                                <input class="c2-input" id="vipCode" type="text" placeholder="Zugangscode" autocomplete="off" spellcheck="false" style="max-width:220px;">
+                                <button class="c2-chip" id="vipGo">Freischalten</button>
+                                <span class="c2-vip-hint" id="vipHint"></span>
+                            </div>
+                        </div>
+                        <div id="vipBody" style="display:none;">
+                            <div class="c2-filter-row" style="margin-bottom:0.8rem;">
+                                <span class="c2-count" id="vipCount"></span>
+                                <button class="c2-chip" id="vipLockAgain" style="margin-left:auto;">Sperren</button>
+                            </div>
+                            <div class="c2-table-wrap">
+                                <table class="c2-tbl">
+                                    <thead><tr>
+                                        <th>Coin</th><th>Score</th><th>Momentum</th><th>Trend</th>
+                                        <th>Risiko</th><th>Buzz</th><th>Substanz</th>
+                                        <th>Korrelation</th><th>Volumen</th><th>Funding</th>
+                                    </tr></thead>
+                                    <tbody id="vipBodyRows"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="c2-card">
                         <div class="c2-eyebrow">Divergenzen</div>
                         <p class="c2-sub" style="margin-bottom:1rem;">Wo Aufmerksamkeit, Substanz und Kurs nicht zusammenpassen.</p>
@@ -6529,14 +6569,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202608221928"></script>
-<script src="data/extras_data.js?v=202608221928"></script>
-<script src="data/series_data.js?v=202608221928"></script>
-<script src="data/social_data.js?v=202608221928"></script>
-<script src="data/gems_data.js?v=202608221928"></script>
-<script src="data/signals_data.js?v=202608221928"></script>
-<script src="data/onchain_data.js?v=202608221928"></script>
-<script src="data/briefing_data.js?v=202608221928"></script>
+<script src="data/crypto_data.js?v=202608221938"></script>
+<script src="data/extras_data.js?v=202608221938"></script>
+<script src="data/series_data.js?v=202608221938"></script>
+<script src="data/social_data.js?v=202608221938"></script>
+<script src="data/gems_data.js?v=202608221938"></script>
+<script src="data/signals_data.js?v=202608221938"></script>
+<script src="data/onchain_data.js?v=202608221938"></script>
+<script src="data/briefing_data.js?v=202608221938"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -12619,6 +12659,68 @@ window.c2xProxy = function (u) { return u; };
         }
     }
 
+    /* ══════════ VIP-Bereich ══════════
+       Zeigt die Bausteine hinter jedem Score. Der Code wird nicht im Klartext
+       hinterlegt, sondern nur seine Pruefsumme. Das haelt neugierige Blicke im
+       Quelltext ab, ist aber ausdruecklich kein Sicherheitsmerkmal: ohne Server
+       laesst sich im Browser nichts wirklich schuetzen. */
+    const VIP_KEY = 'c2_vip_frei';
+    const VIP_HASH = 499389620;   // Pruefsumme des gueltigen Codes
+    function pruefsumme(text) {
+        let h = 0;
+        const t = (text || '').trim().toLowerCase();
+        for (let i = 0; i < t.length; i++) {
+            h = ((h << 5) - h + t.charCodeAt(i)) | 0;
+        }
+        return h >>> 0;
+    }
+    function vipFrei() {
+        try { return localStorage.getItem(VIP_KEY) === '1'; } catch (e) { return false; }
+    }
+    function vipSetzen(an) {
+        try { an ? localStorage.setItem(VIP_KEY, '1') : localStorage.removeItem(VIP_KEY); }
+        catch (e) {}
+        renderVip();
+    }
+    function renderVip() {
+        const lock = $('vipLock'), body = $('vipBody');
+        if (!lock || !body) return;
+        const frei = vipFrei();
+        lock.style.display = frei ? 'none' : '';
+        body.style.display = frei ? '' : 'none';
+        if (!frei) return;
+        const rows = ((SIG() || {}).coins) || [];
+        const cnt = $('vipCount');
+        if (cnt) cnt.textContent = rows.length + ' Coins mit allen Bausteinen';
+        const tb = $('vipBodyRows');
+        if (!tb) return;
+        function teil(v) {
+            if (v == null) return '<span class="muted">—</span>';
+            const f = scoreColor(v);
+            return '<span style="color:' + f + ';font-family:\'JetBrains Mono\',monospace">' +
+                   v.toFixed(0) + '</span>';
+        }
+        tb.innerHTML = rows.slice(0, 80).map(r => {
+            const p = r.parts || {};
+            const fund = r.funding != null ? (r.funding * 100) : null;
+            return '<tr class="c2x-rowlink" data-sym="' + esc(r.symbol.toUpperCase()) + '">' +
+                '<td><strong>' + esc(r.symbol.toUpperCase()) + '</strong> ' +
+                    '<span class="muted">' + esc((r.name || '').slice(0, 18)) + '</span></td>' +
+                '<td>' + scoreBadge(r.score) + '</td>' +
+                '<td>' + teil(p.momentum) + '</td>' +
+                '<td>' + teil(p.trend) + '</td>' +
+                '<td>' + teil(p.risiko) + '</td>' +
+                '<td>' + teil(p.buzz) + '</td>' +
+                '<td>' + teil(p.substanz) + '</td>' +
+                '<td class="muted" style="font-family:\'JetBrains Mono\',monospace">' +
+                    (r.corr != null ? r.corr.toFixed(2) : '—') + '</td>' +
+                '<td class="' + cls(r.vol_trend) + '" style="font-family:\'JetBrains Mono\',monospace">' +
+                    (r.vol_trend != null ? fPct(r.vol_trend, 0) : '—') + '</td>' +
+                '<td class="' + cls(fund) + '" style="font-family:\'JetBrains Mono\',monospace">' +
+                    (fund != null ? fPct(fund, 3) : '—') + '</td></tr>';
+        }).join('');
+    }
+
     /* ══════════ WATCHLIST ══════════ */
     function renderWatchlist() {
         const grid = $('watchGrid'), leer = $('watchEmpty');
@@ -12801,6 +12903,17 @@ window.c2xProxy = function (u) { return u; };
             if (nav) nav.click();
             return;
         }
+        if (e.target.closest('#vipGo')) {
+            const feld = $('vipCode'), hinweis = $('vipHint');
+            const ok = pruefsumme(feld ? feld.value : '') === VIP_HASH;
+            if (hinweis) {
+                hinweis.textContent = ok ? 'Freigeschaltet.' : 'Der Code stimmt nicht.';
+                hinweis.className = 'c2-vip-hint ' + (ok ? 'ok' : 'fehler');
+            }
+            if (ok) { if (feld) feld.value = ''; vipSetzen(true); }
+            return;
+        }
+        if (e.target.closest('#vipLockAgain')) { vipSetzen(false); return; }
         const rs = e.target.closest('[data-radar-sort]');
         if (rs) {
             radarSort = rs.dataset.radarSort;
@@ -12811,6 +12924,13 @@ window.c2xProxy = function (u) { return u; };
     document.addEventListener('input', e => {
         const n = e.target.closest('[data-note]');
         if (n) saveNote(n.dataset.note, n.value.trim());
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && e.target && e.target.id === 'vipCode') {
+            e.preventDefault();
+            const go = $('vipGo');
+            if (go) go.click();
+        }
     });
 
     // j und k blättern im geöffneten Detail-Panel durch die Liste
@@ -12835,7 +12955,7 @@ window.c2xProxy = function (u) { return u; };
     /* ══════════ Anstoß beim Seitenwechsel ══════════ */
     function renderFor(page) {
         if (page === 'overview') renderOverview();
-        else if (page === 'radar') renderRadar();
+        else if (page === 'radar') { renderRadar(); renderVip(); }
         else if (page === 'watchlist') renderWatchlist();
         else if (page === 'onchain') renderOnchain();
     }
