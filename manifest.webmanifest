@@ -1,0 +1,13 @@
+{
+  "name": "Crypto Biz Dashboard",
+  "short_name": "Crypto Biz",
+  "description": "Live-Marktdaten, Sektoren, Social Buzz, Hidden Gems und Trading-Werkzeuge.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1a0600",
+  "theme_color": "#1a0600",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
