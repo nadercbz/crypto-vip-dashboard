@@ -6569,14 +6569,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202608221940"></script>
-<script src="data/extras_data.js?v=202608221940"></script>
-<script src="data/series_data.js?v=202608221940"></script>
-<script src="data/social_data.js?v=202608221940"></script>
-<script src="data/gems_data.js?v=202608221940"></script>
-<script src="data/signals_data.js?v=202608221940"></script>
-<script src="data/onchain_data.js?v=202608221940"></script>
-<script src="data/briefing_data.js?v=202608221940"></script>
+<script src="data/crypto_data.js?v=202608221942"></script>
+<script src="data/extras_data.js?v=202608221942"></script>
+<script src="data/series_data.js?v=202608221942"></script>
+<script src="data/social_data.js?v=202608221942"></script>
+<script src="data/gems_data.js?v=202608221942"></script>
+<script src="data/signals_data.js?v=202608221942"></script>
+<script src="data/onchain_data.js?v=202608221942"></script>
+<script src="data/briefing_data.js?v=202608221942"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -13028,7 +13028,20 @@ window.c2xProxy = function (u) { return u; };
        damit die Seite auch im Funkloch etwas anzeigt statt einer Fehlermeldung. */
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
         window.addEventListener('load', function () {
-            navigator.serviceWorker.register('./sw.js').catch(function () {});
+            navigator.serviceWorker.register('./sw.js').then(function (reg) {
+                // Kommt eine neue Fassung an, einmal neu laden. Sonst sieht ein
+                // wiederkehrender Besucher nach einem Update weiter den alten
+                // Stand aus dem Speicher.
+                reg.addEventListener('updatefound', function () {
+                    var neu = reg.installing;
+                    if (!neu) return;
+                    neu.addEventListener('statechange', function () {
+                        if (neu.state === 'installed' && navigator.serviceWorker.controller) {
+                            location.reload();
+                        }
+                    });
+                });
+            }).catch(function () {});
         });
     }
     /* Seite in der Adresse merken, damit Teilen und Zurueck funktionieren */
