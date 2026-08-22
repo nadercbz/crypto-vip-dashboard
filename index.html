@@ -25,6 +25,117 @@ body { overflow: hidden; }
     #crypto2Modal .c2-main { padding-bottom: max(4rem, env(safe-area-inset-bottom)); }
 }
 
+        :root {
+            --bg-color: #dbe0eb;
+            --glass-bg: rgba(255, 255, 255, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #3b4255;
+            --text-muted: #848c9e;
+            --accent-pink: #f25b90;
+            --accent-pink-rgb: 242, 91, 144;
+            --accent-pink-glow: rgba(242, 91, 144, 0.4);
+            --accent-cyan: #3fd1ee;
+            --accent-cyan-rgb: 63, 209, 238;
+            --node-title-color: #000;
+            --node-title-master-color: #000;
+            --node-subtitle-color: #222;
+            --dropdown-bg: rgba(255, 255, 255, 0.7);
+            --dropdown-menu-bg: rgba(255, 255, 255, 0.95);
+        }
+
+
+        @keyframes siFloat {
+            from { transform: translateY(-3px) scale(1); }
+            to   { transform: translateY(3px) scale(1.08); }
+        }
+
+
+        @keyframes siPulse {
+            from { transform: translate(-50%, -50%) scale(1);   opacity: 0.8; }
+            to   { transform: translate(-50%, -50%) scale(1.15); opacity: 1;   }
+        }
+
+
+        @keyframes siLevelUp {
+            0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0; filter: blur(8px); }
+            20%  { transform: translate(-50%, -50%) scale(1.2); opacity: 1; filter: blur(0); }
+            70%  { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+            100% { transform: translate(-50%, -80%) scale(0.9); opacity: 0; }
+        }
+
+
+        @keyframes siShake {
+            0%,100% { transform: translate(0,0); }
+            10% { transform: translate(-4px,-2px); }
+            20% { transform: translate(4px,2px); }
+            30% { transform: translate(-3px,3px); }
+            40% { transform: translate(3px,-3px); }
+            50% { transform: translate(-2px,-2px); }
+            60% { transform: translate(2px,2px); }
+            70% { transform: translate(-2px,2px); }
+            80% { transform: translate(2px,-2px); }
+            90% { transform: translate(-1px,1px); }
+        }
+
+
+        @keyframes siStarScroll {
+            from { background-position: 0 0; }
+            to   { background-position: 0 720px; }
+        }
+
+
+        @keyframes siCombo {
+            0% { transform: scale(1.6); opacity: 0; }
+            20% { transform: scale(0.9); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+
+        @keyframes siCardIn {
+            0% { transform: translateY(40px) scale(0.9); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 5px var(--accent-pink-glow);
+            }
+
+            to {
+                box-shadow: 0 0 20px rgba(242, 91, 144, 0.8);
+            }
+        }
+
+
+        @keyframes pulse-energy {
+            0% {
+                box-shadow: 0 0 5px rgba(13, 242, 214, 0.4);
+                opacity: 0.8;
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(13, 242, 214, 1);
+                opacity: 1;
+            }
+
+            100% {
+                box-shadow: 0 0 5px rgba(13, 242, 214, 0.4);
+                opacity: 0.8;
+            }
+        }
+
+
+        @keyframes energy-flow {
+            0% {
+                transform: translateX(-150%);
+            }
+
+            100% {
+                transform: translateX(250%);
+            }
+        }
+
 
         @keyframes fadeInLog {
             from {
@@ -39,10 +150,159 @@ body { overflow: hidden; }
         }
 
 
-        /* Feedback banner animation */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translate(-50%, -40%); }
-            to { opacity: 1; transform: translate(-50%, -50%); }
+        @keyframes invader-animate {
+            0%, 100% { background-image: url('assets/Space%20Invader%20Bot%20Transparent/1.png'); }
+            50%       { background-image: url('assets/Space%20Invader%20Bot%20Transparent/2.png'); }
+        }
+
+        @keyframes agent-float-b {
+            0%, 100% { transform: translate(0px,  0px); }
+            30%       { transform: translate( 4px, -6px); }
+            70%       { transform: translate(-3px, -4px); }
+        }
+
+        @keyframes agent-float-c {
+            0%, 100% { transform: translateY(0px)  rotate(0deg); }
+            40%       { transform: translateY(-7px) rotate( 2deg); }
+            65%       { transform: translateY(-4px) rotate(-1.5deg); }
+        }
+
+        @keyframes inv-pulse {
+            0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+            50% { filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 12px currentColor); }
+        }
+
+        @keyframes walk-wobble {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1px); }
+        }
+
+        @keyframes pixel-trail {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0; transform: scale(3); }
+        }
+
+        @keyframes chat-pop {
+            0% { transform: scale(0.3) translateY(4px); opacity: 0; }
+            60% { transform: scale(1.08); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes chat-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+        }
+
+
+        @keyframes blink-eyes {
+            0%, 95%, 100% { height: 4px; }
+            97% { height: 1px; }
+        }
+
+
+        @keyframes arm-swing-l {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+        }
+
+        @keyframes arm-swing-r {
+            0%, 100% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+        }
+
+        @keyframes leg-swing-l {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        @keyframes leg-swing-r {
+            0%, 100% { transform: rotate(10deg); }
+            50% { transform: rotate(-10deg); }
+        }
+
+
+        @keyframes type-l {
+            0%, 100% { transform: rotate(-25deg); }
+            50% { transform: rotate(-35deg); }
+        }
+
+        @keyframes type-r {
+            0%, 100% { transform: rotate(25deg); }
+            50% { transform: rotate(35deg); }
+        }
+
+
+        @keyframes idle-breathe {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+        }
+
+
+        @keyframes antenna-blink {
+            0%, 80%, 100% { opacity: 0.4; box-shadow: 0 0 2px currentColor; }
+            85% { opacity: 1; box-shadow: 0 0 8px currentColor; }
+        }
+
+
+        @keyframes bubble-float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-3px); }
+        }
+
+
+        @keyframes chat-pop {
+            0% { transform: translateX(-50%) scale(0); opacity: 0; }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+
+
+        @keyframes visit-glow {
+            0%, 100% { box-shadow: 0 0 4px rgba(242, 91, 144, 0.2); }
+            50% { box-shadow: 0 0 8px rgba(242, 91, 144, 0.5); }
+        }
+
+
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+
+
+        @keyframes screen-scroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+
+        @keyframes dockFloat {
+            0%, 100% { transform: translateY(-2px); }
+            50%      { transform: translateY(2px); }
+        }
+
+        @keyframes dockBounce {
+            0%   { transform: scale(0.92); }
+            50%  { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+
+        @keyframes aWin {
+            0%   { box-shadow: 0 0 0 0 rgba(13,242,214,0); border-color: var(--glass-border); }
+            40%  { box-shadow: 0 0 40px 6px rgba(13,242,214,0.35); border-color: #0df2d6; transform: scale(1.04); }
+            100% { box-shadow: 0 0 0 0 transparent; transform: scale(1); }
+        }
+
+        @keyframes aLose {
+            0%,100% { transform: translateX(0); }
+            20%  { transform: translateX(-7px); }
+            40%  { transform: translateX(7px); }
+            60%  { transform: translateX(-3px); }
+            80%  { transform: translateX(3px); }
+        }
+
+        @keyframes aSlideIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
 
@@ -1417,6 +1677,8 @@ body { overflow: hidden; }
             animation-delay: calc(var(--i) * 0.06s);
             transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
         }
+
+        @keyframes narrIn { to { opacity: 1; transform: translateY(0); } }
 
         .c2-narr-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; opacity: 0.9; }
 
@@ -4441,6 +4703,21 @@ body { overflow: hidden; }
             line-height: 1.4;
         }
 
+        @keyframes liwModalIn {
+            from { transform: scale(0.88) translateY(30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes voiceBtnPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(242,91,144,0.5), 0 4px 16px rgba(0,0,0,0.3); }
+            50%      { box-shadow: 0 0 0 8px rgba(242,91,144,0), 0 4px 16px rgba(0,0,0,0.3); }
+        }
+
+        @keyframes topBtnPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(129,140,248,0.5), 0 4px 16px rgba(0,0,0,0.3); }
+            50%      { box-shadow: 0 0 0 9px rgba(129,140,248,0), 0 4px 16px rgba(0,0,0,0.3); }
+        }
+
     /* ═══════════ C2X — Crypto Dashboard Upgrade (Design-Tokens + neue Komponenten) ═══════════ */
     #crypto2Modal {
         /* Design-Tokens: eine Quelle fuer Farben/Abstaende der neuen Komponenten.
@@ -4733,6 +5010,35 @@ body { overflow: hidden; }
                     #crypto2Modal.c2-dark .cycle-stat { background:rgba(255,255,255,0.06); }
 
                     #crypto2Modal.c2-dark .cycle-fazit { background:rgba(249,115,22,0.12); }
+
+        @keyframes yb-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+
+        @keyframes yb-page-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+        @keyframes yb-shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+        @keyframes kFloat {
+            0%,100% { transform: translateY(0); }
+            50%     { transform: translateY(-3px); }
+        }
+
+        @keyframes kPulse {
+            0%,100% { transform: scale(1); opacity: 0.85; }
+            50%     { transform: scale(1.04); opacity: 1; }
+        }
+
+        @keyframes kSpin {
+            from { transform: translate(-50%,-50%) rotate(0deg); }
+            to   { transform: translate(-50%,-50%) rotate(360deg); }
+        }
+
+        @keyframes kRowIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes kRowOut {
+            to { opacity: 0; transform: translateX(-30px); padding: 0 4px; max-height: 0; border-bottom-color: transparent; }
+        }
 </style>
 </head>
 <body>
@@ -5931,11 +6237,11 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202608221117"></script>
-<script src="data/extras_data.js?v=202608221117"></script>
-<script src="data/series_data.js?v=202608221117"></script>
-<script src="data/social_data.js?v=202608221117"></script>
-<script src="data/gems_data.js?v=202608221117"></script>
+<script src="data/crypto_data.js?v=202608221121"></script>
+<script src="data/extras_data.js?v=202608221121"></script>
+<script src="data/series_data.js?v=202608221121"></script>
+<script src="data/social_data.js?v=202608221121"></script>
+<script src="data/gems_data.js?v=202608221121"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
