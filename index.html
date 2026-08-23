@@ -6697,14 +6697,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202608231002"></script>
-<script src="data/extras_data.js?v=202608231002"></script>
-<script src="data/series_data.js?v=202608231002"></script>
-<script src="data/social_data.js?v=202608231002"></script>
-<script src="data/gems_data.js?v=202608231002"></script>
-<script src="data/signals_data.js?v=202608231002"></script>
-<script src="data/onchain_data.js?v=202608231002"></script>
-<script src="data/briefing_data.js?v=202608231002"></script>
+<script src="data/crypto_data.js?v=202608231004"></script>
+<script src="data/extras_data.js?v=202608231004"></script>
+<script src="data/series_data.js?v=202608231004"></script>
+<script src="data/social_data.js?v=202608231004"></script>
+<script src="data/gems_data.js?v=202608231004"></script>
+<script src="data/signals_data.js?v=202608231004"></script>
+<script src="data/onchain_data.js?v=202608231004"></script>
+<script src="data/briefing_data.js?v=202608231004"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -10032,11 +10032,19 @@ window.c2xProxy = function (u) { return u; };
                         return '<g class="c2-hm-svgtile" data-sector="' + schutz(t.name) + '">' +
                             '<title>' + schutz(t.name) + ' · ' + sign + t.avg.toFixed(2) +
                             '% · ' + t.count + ' Coins</title>' +
+                            // Zwei Lagen: erst ein dunkler Grund, darauf die Farbe.
+                            // heatColor liefert bewusst halbdurchsichtige Toene;
+                            // ohne den Grund scheint der orange Verlauf der Seite
+                            // durch und Rot und Gruen sehen fast gleich aus.
+                            '<rect x="' + t.x.toFixed(1) + '" y="' + t.y.toFixed(1) +
+                            '" width="' + Math.max(0, t.b - 3).toFixed(1) +
+                            '" height="' + Math.max(0, t.h - 3).toFixed(1) +
+                            '" rx="9" fill="#140a04"/>' +
                             '<rect x="' + t.x.toFixed(1) + '" y="' + t.y.toFixed(1) +
                             '" width="' + Math.max(0, t.b - 3).toFixed(1) +
                             '" height="' + Math.max(0, t.h - 3).toFixed(1) +
                             '" rx="9" fill="' + heatColor(t.avg) +
-                            '" stroke="rgba(10,5,2,0.5)" stroke-width="1.5"/>' +
+                            '" stroke="rgba(255,255,255,0.09)" stroke-width="1.5"/>' +
                             (platzName ? '<text x="' + px + '" y="' +
                                 (t.y + nameGr + 8).toFixed(1) + '" class="c2-hm-svgname" ' +
                                 'style="font-size:' + nameGr + 'px">' +
