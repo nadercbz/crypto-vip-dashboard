@@ -5041,6 +5041,18 @@ body { overflow: hidden; }
         text-transform: uppercase; color: rgba(249,237,224,0.45); }
     .c2-radar-stat .v { font-family: 'JetBrains Mono', monospace; font-size: 1.05rem;
         font-weight: 650; margin-top: 4px; }
+    /* Kurven in Tabellen und Listen */
+    .c2-spark { display: block; overflow: visible; }
+    .c2-sparkcell { width: 78px; padding-top: 4px !important; padding-bottom: 4px !important; }
+    .c2-list-spark { margin-left: auto; flex-shrink: 0; opacity: 0.9; }
+    .c2-list-row .c2-list-price { margin-left: 14px; }
+    .c2-linechart { display: block; width: 100%; }
+    @media (max-width: 900px) {
+        /* Auf dem Handy ist die Kurve das Erste was weichen kann */
+        #crypto2Modal .c2-sparkcell { display: none; }
+        .c2-list-spark { display: none; }
+    }
+
     .c2-scorebadge { display: inline-block; min-width: 38px; padding: 3px 9px;
         border-radius: 8px; border: 1px solid transparent;
         font-family: 'JetBrains Mono', 'Menlo', monospace; font-size: 0.8rem;
@@ -5461,6 +5473,7 @@ body { overflow: hidden; }
                                         <th>Preis</th>
                                         <th>24h</th>
                                         <th>7d</th>
+                                        <th>30 Tage</th>
                                         <th>Market Cap</th>
                                         <th>Dominanz</th>
                                     </tr>
@@ -6569,14 +6582,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202608221942"></script>
-<script src="data/extras_data.js?v=202608221942"></script>
-<script src="data/series_data.js?v=202608221942"></script>
-<script src="data/social_data.js?v=202608221942"></script>
-<script src="data/gems_data.js?v=202608221942"></script>
-<script src="data/signals_data.js?v=202608221942"></script>
-<script src="data/onchain_data.js?v=202608221942"></script>
-<script src="data/briefing_data.js?v=202608221942"></script>
+<script src="data/crypto_data.js?v=202608230929"></script>
+<script src="data/extras_data.js?v=202608230929"></script>
+<script src="data/series_data.js?v=202608230929"></script>
+<script src="data/social_data.js?v=202608230929"></script>
+<script src="data/gems_data.js?v=202608230929"></script>
+<script src="data/signals_data.js?v=202608230929"></script>
+<script src="data/onchain_data.js?v=202608230929"></script>
+<script src="data/briefing_data.js?v=202608230929"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -7403,7 +7416,7 @@ window.c2xProxy = function (u) { return u; };
                     if (countEl) countEl.textContent = data.length + ' Coins';
 
                     if (sort === 'watch' && !data.length) {
-                        body.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center;padding:2rem;">Deine Watchlist ist leer. Setz einen Stern in der Market-Cap-Ansicht.</td></tr>';
+                        body.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:2rem;">Deine Watchlist ist leer. Setz einen Stern in der Market-Cap-Ansicht.</td></tr>';
                     }
                     // Ueber tausend Zeilen auf einmal zu zeichnen kostet auf
                     // schwaecheren Geraeten spuerbar Zeit und Speicher. Sichtbar
@@ -7432,6 +7445,7 @@ window.c2xProxy = function (u) { return u; };
                             <td style="font-family:'JetBrains Mono',monospace;">${fmt(c.current_price)}</td>
                             <td>${pct(chg24)}</td>
                             <td>${pct(chg7)}</td>
+                            <td class="c2-sparkcell">${window.c2Spark ? window.c2Spark(c.symbol) : ''}</td>
                             <td class="muted">${fmt(c.market_cap)}</td>
                             <td class="muted">${dom}%</td>`;
                         body.appendChild(tr);
@@ -7459,6 +7473,7 @@ window.c2xProxy = function (u) { return u; };
                             <td style="font-family:'JetBrains Mono',monospace;">${fmt(c.current_price)}</td>
                             <td>${pct(chg24)}</td>
                             <td>${pct(chg7)}</td>
+                            <td class="c2-sparkcell">${window.c2Spark ? window.c2Spark(c.symbol) : ''}</td>
                             <td class="muted">${fmt(c.market_cap)}</td>
                             <td class="muted">${dom}%</td>`;
                 }
@@ -7469,7 +7484,7 @@ window.c2xProxy = function (u) { return u; };
                     if (!tableRest.length) return;
                     const tr = document.createElement('tr');
                     tr.id = 'c2TableSentinel';
-                    tr.innerHTML = '<td colspan="7" class="muted" style="text-align:center;padding:1rem;font-size:0.7rem;">' +
+                    tr.innerHTML = '<td colspan="8" class="muted" style="text-align:center;padding:1rem;font-size:0.7rem;">' +
                                    tableRest.length + ' weitere Coins laden …</td>';
                     body.appendChild(tr);
                     tableIO = new IntersectionObserver(entries => {
@@ -7509,6 +7524,7 @@ window.c2xProxy = function (u) { return u; };
                                 <div class="c2-list-name">${c.name}</div>
                                 <div class="c2-list-sub">${c.symbol}</div>
                             </div>
+                            <div class="c2-list-spark">${window.c2Spark ? window.c2Spark(c.symbol, 58, 20) : ''}</div>
                             <div class="c2-list-price">${fmt(c.current_price)}</div>
                             <div class="c2-list-pct ${isGainer?'c2-up':'c2-down'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div>`;
                         el.appendChild(row);
@@ -12376,6 +12392,87 @@ window.c2xProxy = function (u) { return u; };
         return String(s == null ? '' : s).replace(/[<>&"]/g, c =>
             ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]);
     }
+    /* ══════════ Kleine Diagramme ══════════
+       Alles als eingebettetes SVG. Keine Bibliothek, kein Canvas: so lassen
+       sich die Kurven in jede Tabellenzeile setzen, ohne dass die Seite bei
+       hundert Stueck ins Stocken geraet. Die Werte kommen aus signals_data.js
+       und sind bereits als relative Veraenderung in Prozent abgelegt. */
+    const sparkCache = {};
+    function sparkline(werte, breite, hoehe, farbe) {
+        if (!werte || werte.length < 3) return '';
+        breite = breite || 68; hoehe = hoehe || 22;
+        const min = Math.min(...werte), max = Math.max(...werte);
+        const spanne = (max - min) || 1;
+        const schritt = breite / (werte.length - 1);
+        const y = v => hoehe - 2 - ((v - min) / spanne) * (hoehe - 4);
+        let d = '', flaeche = '';
+        werte.forEach((v, i) => {
+            const x = (i * schritt).toFixed(1), yy = y(v).toFixed(1);
+            d += (i ? 'L' : 'M') + x + ' ' + yy;
+            flaeche += (i ? 'L' : 'M' + x + ' ' + hoehe + 'L') + x + ' ' + yy;
+        });
+        flaeche += 'L' + breite + ' ' + hoehe + 'Z';
+        const steigt = werte[werte.length - 1] >= werte[0];
+        const f = farbe || (steigt ? '#3FB950' : '#F85149');
+        const id = 'sp' + Math.random().toString(36).slice(2, 8);
+        return '<svg class="c2-spark" width="' + breite + '" height="' + hoehe +
+            '" viewBox="0 0 ' + breite + ' ' + hoehe + '" preserveAspectRatio="none">' +
+            '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1">' +
+            '<stop offset="0%" stop-color="' + f + '" stop-opacity="0.28"/>' +
+            '<stop offset="100%" stop-color="' + f + '" stop-opacity="0"/></linearGradient></defs>' +
+            '<path d="' + flaeche + '" fill="url(#' + id + ')"/>' +
+            '<path d="' + d + '" fill="none" stroke="' + f + '" stroke-width="1.3" ' +
+            'stroke-linejoin="round" stroke-linecap="round"/></svg>';
+    }
+    // Sparkline zu einem Symbol, gepuffert weil dieselben Coins mehrfach auftauchen
+    function sparkFor(sym, breite, hoehe) {
+        sym = (sym || '').toLowerCase();
+        const key = sym + '|' + (breite || 68) + '|' + (hoehe || 22);
+        if (sparkCache[key] !== undefined) return sparkCache[key];
+        const s = SIG();
+        const r = s && (s.coins || []).find(c => c.symbol === sym);
+        const html = (r && r.spark && r.spark.length >= 3)
+            ? sparkline(r.spark, breite, hoehe) : '';
+        sparkCache[key] = html;
+        return html;
+    }
+    // Mehrere Reihen uebereinander, fuer Verlaeufe mit Vergleich
+    function linienChart(reihen, breite, hoehe, opt) {
+        opt = opt || {};
+        const alle = reihen.flatMap(r => r.werte).filter(v => v != null);
+        if (alle.length < 3) return '';
+        const min = Math.min(...alle, opt.min != null ? opt.min : Infinity);
+        const max = Math.max(...alle, opt.max != null ? opt.max : -Infinity);
+        const spanne = (max - min) || 1;
+        const y = v => hoehe - 14 - ((v - min) / spanne) * (hoehe - 24);
+        let out = '<svg class="c2-linechart" width="100%" height="' + hoehe +
+            '" viewBox="0 0 ' + breite + ' ' + hoehe + '" preserveAspectRatio="none">';
+        // Nulllinie, wenn der Bereich sie enthaelt
+        if (min < 0 && max > 0) {
+            out += '<line x1="0" x2="' + breite + '" y1="' + y(0).toFixed(1) +
+                   '" y2="' + y(0).toFixed(1) + '" stroke="rgba(255,255,255,0.16)" ' +
+                   'stroke-width="1" stroke-dasharray="3 3"/>';
+        }
+        reihen.forEach(r => {
+            const n = r.werte.length;
+            if (n < 2) return;
+            const schritt = breite / (n - 1);
+            let d = '';
+            r.werte.forEach((v, i) => {
+                d += (i ? 'L' : 'M') + (i * schritt).toFixed(1) + ' ' + y(v).toFixed(1);
+            });
+            out += '<path d="' + d + '" fill="none" stroke="' + r.farbe +
+                   '" stroke-width="' + (r.dick ? 2.2 : 1.4) + '" stroke-linejoin="round" ' +
+                   'stroke-linecap="round" opacity="' + (r.schwach ? 0.45 : 1) + '"/>';
+        });
+        return out + '</svg>';
+    }
+
+    // Markets-Tabelle und Movers liegen im C2X-Modul. Damit sie dieselben
+    // Kurven zeichnen koennen, ohne den Code zu doppeln, hier bereitstellen.
+    window.c2Spark = sparkFor;
+    window.c2SparkRaw = sparkline;
+
     function coin(sym) {
         sym = (sym || '').toLowerCase();
         let best = null;
