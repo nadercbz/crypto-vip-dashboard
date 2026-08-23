@@ -5041,6 +5041,74 @@ body { overflow: hidden; }
         text-transform: uppercase; color: rgba(249,237,224,0.45); }
     .c2-radar-stat .v { font-family: 'JetBrains Mono', monospace; font-size: 1.05rem;
         font-weight: 650; margin-top: 4px; }
+    /* Heat Map als Treemap. Gezeichnet wird als SVG, damit die Flaechen
+       unabhaengig vom umgebenden Layout stimmen. */
+    #crypto2Modal .c2-heatmap-grid.c2-hm-treemap { display: block; }
+    .c2-hm-svg { width: 100%; height: auto; aspect-ratio: 1000 / 560; display: block; }
+    .c2-hm-svgtile { cursor: pointer; }
+    .c2-hm-svgtile rect { transition: filter .18s; }
+    .c2-hm-svgtile:hover rect { filter: brightness(1.2); }
+    .c2-hm-svgtile.active rect { stroke: #ffd166; stroke-width: 3; }
+    .c2-hm-svgname { fill: #fff; font-size: 19px; font-weight: 700;
+        font-family: 'Inter', system-ui, sans-serif; pointer-events: none; }
+    .c2-hm-svgpct { font-size: 17px; font-weight: 600;
+        font-family: 'JetBrains Mono', monospace; pointer-events: none; }
+    .c2-hm-svgcount { fill: rgba(255,255,255,0.55); font-size: 13px;
+        font-family: 'Inter', system-ui, sans-serif; pointer-events: none; }
+    @media (max-width: 900px) {
+        .c2-hm-svg { aspect-ratio: 1000 / 820; }
+        .c2-hm-svgname { font-size: 26px; }
+        .c2-hm-svgpct { font-size: 23px; }
+        .c2-hm-svgcount { display: none; }
+    }
+
+    .c2-onchain-spark { margin-top: 9px; }
+    .c2-onchain-spark svg { width: 100%; height: 40px; }
+    .c2-gem-spark { margin: 10px 0 6px; }
+    .c2-gem-spark svg { width: 100%; height: 34px; }
+    .c2-sb-spark { display: inline-block; vertical-align: middle; margin-left: 10px; }
+
+    .c2-narr-verlauf { margin: 10px 0 4px; position: relative; }
+    .c2-narr-verlauf svg { width: 100%; height: 34px; }
+    .c2-narr-verlauf-lbl { display: block; font-size: 0.58rem; letter-spacing: 0.08em;
+        text-transform: uppercase; color: rgba(249,237,224,0.4); margin-top: 2px; }
+
+    .c2-rank-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 10px; }
+    .c2-rank-card { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px; padding: 12px 14px; }
+    .c2-rank-card .kopf { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em;
+        text-transform: uppercase; color: #ffb56b; margin-bottom: 9px; }
+    .c2-rank-zeile { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px;
+        align-items: center; padding: 5px 2px; cursor: pointer; border-radius: 6px; }
+    .c2-rank-zeile:hover { background: rgba(255,255,255,0.05); }
+    .c2-rank-zeile .n { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+        color: rgba(249,237,224,0.4); }
+    .c2-rank-zeile .s { font-size: 0.78rem; font-weight: 600; }
+    .c2-rank-zeile .w { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; }
+
+    .c2-calc-extra { margin-top: 1.2rem; display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .c2-calc-box { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 11px; padding: 11px 13px; }
+    .c2-calc-box .k { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.13em;
+        text-transform: uppercase; color: rgba(249,237,224,0.45); }
+    .c2-calc-box .v { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
+        font-weight: 600; margin-top: 4px; }
+    .c2-calc-box .s { font-size: 0.62rem; color: rgba(249,237,224,0.5); margin-top: 3px; line-height: 1.45; }
+
+    .c2-kz-chart { width: 100%; }
+    .c2-kz-chart svg { width: 100%; height: auto; display: block; }
+    .c2-kz-bar { transition: opacity .15s; }
+    .c2-kz-bar:hover { opacity: 0.75; }
+    .c2-kz-label { fill: rgba(249,237,224,0.5); font-size: 11px;
+        font-family: 'JetBrains Mono', monospace; }
+    .c2-kz-jetzt { fill: #ffd166; font-size: 11px; font-weight: 700;
+        font-family: 'JetBrains Mono', monospace; }
+    .c2-kz-hinweis { margin-top: 1rem; font-size: 0.78rem; line-height: 1.6;
+        color: rgba(249,237,224,0.72); }
+    .c2-kz-hinweis b { color: #ffd166; }
+
     /* Kurven in Tabellen und Listen */
     .c2-spark { display: block; overflow: visible; }
     .c2-sparkcell { width: 78px; padding-top: 4px !important; padding-bottom: 4px !important; }
@@ -5113,6 +5181,8 @@ body { overflow: hidden; }
         cursor: pointer; font-size: 0.9rem; }
     .c2-watch-rm:hover { color: #F85149; }
     .c2-watch-price { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 650; }
+    .c2-watch-spark { margin: 9px 0 2px; opacity: 0.95; }
+    .c2-watch-spark svg { width: 100%; height: 44px; }
     .c2-watch-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 11px 0; }
     .c2-watch-metric { background: rgba(0,0,0,0.18); border-radius: 8px; padding: 7px 8px; }
     .c2-watch-metric .k { font-size: 0.52rem; letter-spacing: 0.11em; text-transform: uppercase;
@@ -5373,8 +5443,8 @@ body { overflow: hidden; }
                         <div class="c2-table-wrap">
                             <table class="c2-tbl">
                                 <thead><tr>
-                                    <th>#</th><th>Coin</th><th>Score</th><th>RSI</th>
-                                    <th>Vola</th><th>Beta</th><th>Trend</th><th>7d</th>
+                                    <th>#</th><th>Coin</th><th>Score</th><th>30 Tage</th>
+                                    <th>RSI</th><th>Vola</th><th>Beta</th><th>Trend</th><th>7d</th>
                                 </tr></thead>
                                 <tbody id="radarBody"></tbody>
                             </table>
@@ -5517,8 +5587,18 @@ body { overflow: hidden; }
                 <section class="c2-page" data-page="movers">
                     <div class="c2-card">
                         <div class="c2-eyebrow">Momentum</div>
-                        <h2 class="c2-h1" style="font-size:1.6rem;">Top Movers 24h</h2>
-                        <p class="c2-sub" style="margin-bottom:1.5rem;">Wer bewegt sich heute am stärksten? Die Gainers und Losers der letzten 24 Stunden.</p>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Top Movers</h2>
+                        <p class="c2-sub" style="margin-bottom:1rem;">Wer bewegt sich am stärksten. Der Filter nach Marktgröße hält Coins draußen, die zwar prozentual explodieren, aber mangels Handelsvolumen nicht investierbar sind.</p>
+                        <div class="c2-filter-row" style="margin-bottom:1.2rem;">
+                            <button class="c2-chip active" data-mv-tf="24h">24 Stunden</button>
+                            <button class="c2-chip" data-mv-tf="7d">7 Tage</button>
+                            <button class="c2-chip" data-mv-tf="30d">30 Tage</button>
+                            <span style="width:14px"></span>
+                            <button class="c2-chip" data-mv-min="0">Alle</button>
+                            <button class="c2-chip active" data-mv-min="50000000">ab 50 Mio</button>
+                            <button class="c2-chip" data-mv-min="1000000000">ab 1 Mrd</button>
+                            <span class="c2-count" id="mvCount"></span>
+                        </div>
                         <div class="c2-two-col">
                             <div>
                                 <div class="c2-col-title c2-up">↑ Top Gainers</div>
@@ -5559,6 +5639,13 @@ body { overflow: hidden; }
                         <p class="c2-sub" style="margin-bottom:1.5rem;">Die aktiven Sessions werden live markiert. Die goldenen Stunden für Volatilität und Volumen.</p>
                         <div class="c2-killzone" id="c2KillzoneList"></div>
                     </div>
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Tagesverlauf</div>
+                        <h3 class="c2-h1" style="font-size:1.25rem;">Wann wirklich gehandelt wird</h3>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Durchschnittliches Bitcoin-Volumen je Stunde der letzten 14 Tage, in Berliner Zeit. Die Sessions sind Theorie, das hier ist die Praxis.</p>
+                        <div id="c2KzChart" class="c2-kz-chart"></div>
+                        <div id="c2KzHinweis" class="c2-kz-hinweis"></div>
+                    </div>
                 </section>
 
                 <!-- CALCULATOR PAGE -->
@@ -5566,7 +5653,14 @@ body { overflow: hidden; }
                     <div class="c2-card">
                         <div class="c2-eyebrow">Risk Management</div>
                         <h2 class="c2-h1" style="font-size:1.6rem;">Position Size Calculator</h2>
-                        <p class="c2-sub" style="margin-bottom:1.5rem;">Rechne präzise deine Größe aus. Kapital, Risiko, Entry und Stop. Der Rest ist Disziplin.</p>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Rechne präzise deine Größe aus. Wähl einen Coin, dann kommen Kurs und ein Stop-Vorschlag aus der gemessenen Volatilität. Der Rest ist Disziplin.</p>
+                        <div class="c2-filter-row" style="margin-bottom:1.2rem;">
+                            <input class="c2-input" id="c2CalcCoin" type="text" placeholder="Coin wählen, z.B. BTC" autocomplete="off" style="max-width:230px;">
+                            <button class="c2-chip" data-calc-atr="1">Stop 1x Tagesspanne</button>
+                            <button class="c2-chip active" data-calc-atr="1.5">1,5x</button>
+                            <button class="c2-chip" data-calc-atr="2">2x</button>
+                            <span class="c2-vip-hint" id="c2CalcCoinInfo"></span>
+                        </div>
                         <div class="c2-form">
                             <div class="c2-field">
                                 <label>Account Kapital ($)</label>
@@ -5586,6 +5680,7 @@ body { overflow: hidden; }
                             </div>
                         </div>
                         <div class="c2-calc-result" id="c2CalcResult"></div>
+                        <div class="c2-calc-extra" id="c2CalcExtra"></div>
                     </div>
                 </section>
 
@@ -5657,6 +5752,17 @@ body { overflow: hidden; }
                             <button class="c2-preset" data-preset="gems">Hidden Gems</button>
                             <button class="c2-preset" data-preset="meme">Meme Degen</button>
                             <button class="c2-preset" data-preset="portfolio">Mein Portfolio</button>
+                        </div>
+                        <div class="c2-preset-row" id="c2FSignal">
+                            <span class="c2-preset-lbl">Signale</span>
+                            <button class="c2-preset" data-sigf="rsi_tief">RSI unter 35</button>
+                            <button class="c2-preset" data-sigf="rsi_hoch">RSI über 70</button>
+                            <button class="c2-preset" data-sigf="trend">Über beiden Linien</button>
+                            <button class="c2-preset" data-sigf="score">Score über 65</button>
+                            <button class="c2-preset" data-sigf="ruhig">Volatilität unter 60</button>
+                            <button class="c2-preset" data-sigf="beta">Beta über 1,2</button>
+                            <button class="c2-preset" data-sigf="volumen">Volumen-Schub</button>
+                            <button class="c2-preset" data-sigf="funding">Funding negativ</button>
                         </div>
 
                         <div class="c2-slider-group">
@@ -5846,7 +5952,11 @@ body { overflow: hidden; }
                     <div class="c2-card">
                         <div class="c2-eyebrow">Arena Leaderboard</div>
                         <h2 class="c2-h1" style="font-size:1.6rem;">Ranking</h2>
-                        <p class="c2-sub" style="margin-bottom:1.5rem;">Deine persönliche Bestenliste. Sortiert nach ELO Rating aus deinen Arena Battles.</p>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Zwei Bestenlisten: die gemessene aus der Signal-Engine und deine eigene aus den Arena-Duellen. Wo beide auseinanderlaufen, lohnt ein zweiter Blick.</p>
+
+                        <div id="c2RankAuto" class="c2-rank-auto"></div>
+
+                        <div class="c2-eyebrow" style="margin:1.6rem 0 0.5rem;">Deine Arena-Wertung</div>
 
                         <div class="c2-filter-row">
                             <input class="c2-input" id="c2RSearch" type="text" placeholder="Coin suchen...">
@@ -5891,7 +6001,12 @@ body { overflow: hidden; }
                     <div class="c2-card">
                         <div class="c2-eyebrow">Sector Intelligence</div>
                         <h2 class="c2-h1" style="font-size:1.6rem;">Narrative Heat Map</h2>
-                        <p class="c2-sub" style="margin-bottom:1rem;">Wo fließt das Geld? Jede Kachel ist ein Sektor. Je grüner, desto stärker die 24h-Performance. Klick auf eine Kachel für die Top-Coins.</p>
+                        <p class="c2-sub" style="margin-bottom:1rem;">Wo fließt das Geld? Jede Kachel ist ein Sektor. Die Fläche entspricht der Marktkapitalisierung, die Farbe der Performance. Klick auf eine Kachel für die Top-Coins.</p>
+                        <div class="c2-filter-row" style="margin-bottom:1rem;">
+                            <button class="c2-chip active" data-hm-tf="24h">24 Stunden</button>
+                            <button class="c2-chip" data-hm-tf="7d">7 Tage</button>
+                            <button class="c2-chip" data-hm-tf="30d">30 Tage</button>
+                        </div>
                         <div class="c2-heatmap-legend">
                             <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:#ff6b6b"></span>&lt; -3%</span>
                             <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:#ffb5a8"></span>-3% bis 0%</span>
@@ -6582,14 +6697,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202608230929"></script>
-<script src="data/extras_data.js?v=202608230929"></script>
-<script src="data/series_data.js?v=202608230929"></script>
-<script src="data/social_data.js?v=202608230929"></script>
-<script src="data/gems_data.js?v=202608230929"></script>
-<script src="data/signals_data.js?v=202608230929"></script>
-<script src="data/onchain_data.js?v=202608230929"></script>
-<script src="data/briefing_data.js?v=202608230929"></script>
+<script src="data/crypto_data.js?v=202608231002"></script>
+<script src="data/extras_data.js?v=202608231002"></script>
+<script src="data/series_data.js?v=202608231002"></script>
+<script src="data/social_data.js?v=202608231002"></script>
+<script src="data/gems_data.js?v=202608231002"></script>
+<script src="data/signals_data.js?v=202608231002"></script>
+<script src="data/onchain_data.js?v=202608231002"></script>
+<script src="data/briefing_data.js?v=202608231002"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -7103,18 +7218,21 @@ window.c2xProxy = function (u) { return u; };
                 };
 
                 // Compute sector performance from live data
-                function computeTopNarratives(db) {
+                function computeTopNarratives(db, feld) {
+                    feld = feld || 'price_change_percentage_24h';
                     const sectorPerf = Object.create(null);
                     for (const coin of db) {
                         const tags = SECTORS[coin.id];
                         if (!tags) continue;
-                        const chg = coin.price_change_percentage_24h;
+                        const chg = coin[feld];
                         if (chg == null) continue;
                         for (const tag of tags) {
-                            if (!sectorPerf[tag]) sectorPerf[tag] = { sum: 0, count: 0, coins: [] };
+                            if (!sectorPerf[tag]) sectorPerf[tag] = { sum: 0, count: 0, coins: [], mcap: 0 };
                             sectorPerf[tag].sum += chg;
                             sectorPerf[tag].count++;
                             sectorPerf[tag].coins.push(coin.symbol);
+                            // Fuer die Flaeche in der Treemap: wie schwer ist der Sektor?
+                            sectorPerf[tag].mcap += (coin.market_cap || 0);
                         }
                     }
                     // Filter: require at least 2 coins per sector for meaningful data
@@ -7123,7 +7241,8 @@ window.c2xProxy = function (u) { return u; };
                         .map(([name, s]) => ({
                             name,
                             avg: s.sum / s.count,
-                            count: s.count
+                            count: s.count,
+                            mcap: s.mcap
                         }))
                         .sort((a, b) => b.avg - a.avg);
                     return ranked;
@@ -7318,12 +7437,8 @@ window.c2xProxy = function (u) { return u; };
                     // Markets table
                     renderTable(db, 'mcap');
 
-                    // Movers
-                    const sorted24 = db.filter(c => c.price_change_percentage_24h != null);
-                    const gainers = [...sorted24].sort((a,b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0, 12);
-                    const losers  = [...sorted24].sort((a,b) => a.price_change_percentage_24h - b.price_change_percentage_24h).slice(0, 12);
-                    renderList('c2GainersList', gainers, true);
-                    renderList('c2LosersList',  losers,  false);
+                    // Movers, mit dem gewaehlten Zeitraum und der Mindestgroesse
+                    renderMovers();
 
                     // Narratives, killzones, checklist, links, calculator, gauge
                     renderNarratives();
@@ -7508,13 +7623,50 @@ window.c2xProxy = function (u) { return u; };
                     tableIO.observe(tr);
                 }
 
+                // ── Movers ──
+                // Zeitraum und Mindest-Marktkapitalisierung sind waehlbar. Ohne
+                // Groessenfilter stehen dort fast nur Kleinstwerte, die zwar
+                // dreistellig zulegen, aber kaum handelbar sind.
+                let mvFeld = 'price_change_percentage_24h';
+                let mvMin = 50000000;
+                function renderMovers() {
+                    if (typeof CRYPTO_DB === 'undefined') return;
+                    const passend = CRYPTO_DB.filter(c =>
+                        c[mvFeld] != null && (c.market_cap || 0) >= mvMin);
+                    const gain = [...passend].sort((a, b) => b[mvFeld] - a[mvFeld]).slice(0, 12);
+                    const loss = [...passend].sort((a, b) => a[mvFeld] - b[mvFeld]).slice(0, 12);
+                    renderList('c2GainersList', gain, true, mvFeld);
+                    renderList('c2LosersList', loss, false, mvFeld);
+                    const zaehler = document.getElementById('mvCount');
+                    if (zaehler) zaehler.textContent = passend.length + ' Coins im Filter';
+                }
+                document.addEventListener('click', e => {
+                    const tf = e.target.closest('[data-mv-tf]');
+                    if (tf) {
+                        mvFeld = tf.dataset.mvTf === '7d' ? 'price_change_percentage_7d_in_currency'
+                               : tf.dataset.mvTf === '30d' ? 'price_change_percentage_30d'
+                               : 'price_change_percentage_24h';
+                        document.querySelectorAll('[data-mv-tf]').forEach(b =>
+                            b.classList.toggle('active', b === tf));
+                        renderMovers();
+                        return;
+                    }
+                    const mn = e.target.closest('[data-mv-min]');
+                    if (mn) {
+                        mvMin = +mn.dataset.mvMin;
+                        document.querySelectorAll('[data-mv-min]').forEach(b =>
+                            b.classList.toggle('active', b === mn));
+                        renderMovers();
+                    }
+                });
+
                 // ── Movers list rows ──
-                function renderList(elId, coins, isGainer) {
+                function renderList(elId, coins, isGainer, feld) {
                     const el = document.getElementById(elId);
                     if (!el) return;
                     el.innerHTML = '';
                     coins.forEach(c => {
-                        const chg = c.price_change_percentage_24h || 0;
+                        const chg = c[feld || 'price_change_percentage_24h'] || 0;
                         const row = document.createElement('div');
                         row.className = 'c2-list-row c2x-rowlink';
                         row.dataset.sym = (c.symbol||'').toUpperCase();
@@ -7529,6 +7681,23 @@ window.c2xProxy = function (u) { return u; };
                             <div class="c2-list-pct ${isGainer?'c2-up':'c2-down'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div>`;
                         el.appendChild(row);
                     });
+                }
+
+                // Verlauf eines Narrativs als kleine Kurve. Der Endstand allein
+                // sagt wenig: ein Sektor der sich von unten heranarbeitet ist
+                // etwas anderes als einer der gerade abbricht, obwohl beide
+                // heute denselben Wert zeigen koennen.
+                function narrVerlauf(cat, avg) {
+                    const sh = (typeof SIGNALS_DATA !== 'undefined' && SIGNALS_DATA.sector_history)
+                        ? SIGNALS_DATA.sector_history[cat] : null;
+                    if (!sh || !sh.serie || sh.serie.length < 6 || !window.c2SparkRaw) return '';
+                    const farbe = avg >= 0 ? '#3FB950' : '#F85149';
+                    const start = sh.serie[0], ende = sh.serie[sh.serie.length - 1];
+                    const richtung = ende > start ? 'zieht an' : ende < start ? 'gibt nach' : 'seitwärts';
+                    return '<div class="c2-narr-verlauf">' +
+                        window.c2SparkRaw(sh.serie, 230, 34, farbe) +
+                        '<span class="c2-narr-verlauf-lbl">' + sh.serie.length +
+                        ' Tage · ' + richtung + '</span></div>';
                 }
 
                 // ── Narratives v2 (Live Rotation Tracker) ──
@@ -7651,6 +7820,7 @@ window.c2xProxy = function (u) { return u; };
                             </div>
                             <div class="c2-narr-mom" style="color:${col}">${fmtPct(n.avg)}</div>
                         </div>
+                        ${narrVerlauf(n.cat, n.avg)}
                         <div class="c2-narr-breadth">
                             <div class="c2-narr-breadth-track"><div class="c2-narr-breadth-fill" data-w="${n.breadth.toFixed(0)}"></div></div>
                             <div class="c2-narr-breadth-lbl">${n.green}/${n.total} grün · ${capShort(n.cap)} · ${n.count} Coins</div>
@@ -8555,7 +8725,7 @@ window.c2xProxy = function (u) { return u; };
                         if (r.telegram) sig.push(`<span>✈ ${fmtViews(r.telegram)} Telegram</span>`);
                         const cc = catColor[r.cat] || 'rgba(249,237,224,0.4)';
                         return `
-                            <div class="c2-social-row">
+                            <div class="c2-social-row c2x-rowlink" data-sym="${(r.symbol||'').toUpperCase()}">
                                 <div class="c2-social-rank">${r.rank}</div>
                                 ${r.image ? `<img class="c2-social-img" src="${r.image}" alt="" onerror="this.style.visibility='hidden'">` : '<div class="c2-social-img"></div>'}
                                 <div class="c2-social-main">
@@ -8563,6 +8733,7 @@ window.c2xProxy = function (u) { return u; };
                                     <div class="c2-social-sig">${sig.join('')}</div>
                                 </div>
                                 <div class="c2-social-right">
+                                    ${window.c2Spark ? `<span class="c2-sb-spark">${window.c2Spark(r.symbol, 62, 24)}</span>` : ''}
                                     <div class="c2-social-bar-wrap"><div class="c2-social-bar-track"><div class="c2-social-bar-fill" style="width:${Math.max(3, r.score)}%;"></div></div></div>
                                     <div class="c2-social-score-num">${r.score}</div>
                                     <div class="c2-social-delta ${dCls}">${dTxt}</div>
@@ -8714,6 +8885,7 @@ window.c2xProxy = function (u) { return u; };
                                     </div>
                                     <div class="c2-gem-card-score">${c.score}</div>
                                 </div>
+                                ${window.c2Spark ? `<div class="c2-gem-spark">${window.c2Spark(c.symbol, 240, 34)}</div>` : ''}
                                 <div class="c2-gem-why">
                                     ${(c.why || []).map(w => `<div>${esc(w)}</div>`).join('')}
                                     <div>${fmtCap(c.mcap)} Cap${c.floatPct != null ? ` · ${c.floatPct}% Float` : ''}${c.watchlist != null ? ` · ${fmtNum(c.watchlist)} Beobachter` : ''}</div>
@@ -9096,6 +9268,9 @@ window.c2xProxy = function (u) { return u; };
                 }
 
                 const finderState = {
+                    // Zusatzfilter auf den Kennzahlen der Signal-Engine.
+                    // Mehrere lassen sich kombinieren, sie wirken alle zugleich.
+                    signale: new Set(),
                     sectors: new Set(['all']),
                     search: '',
                     count: 100,
@@ -9147,6 +9322,25 @@ window.c2xProxy = function (u) { return u; };
                     if (!st.sectors.has('all') && st.sectors.size && !st.sectors.has(c.cat)) return false;
                     if (st.liqOnly && (c._vm < 0.01)) return false;
                     if (st.watchOnly && !st.watch.has((c.symbol||'').toLowerCase())) return false;
+                    // Kennzahlen aus der Signal-Engine. Coins ausserhalb der
+                    // gerechneten Menge fallen raus, sobald ein Signalfilter
+                    // aktiv ist: ohne Zahlen laesst sich nichts pruefen.
+                    if (st.signale.size) {
+                        const sg = (typeof SIGNALS_DATA !== 'undefined' && SIGNALS_DATA.coins)
+                            ? SIGNALS_DATA.coins.find(x => x.symbol === (c.symbol||'').toLowerCase())
+                            : null;
+                        if (!sg) return false;
+                        for (const f of st.signale) {
+                            if (f === 'rsi_tief'  && !(sg.rsi != null && sg.rsi < 35)) return false;
+                            if (f === 'rsi_hoch'  && !(sg.rsi != null && sg.rsi > 70)) return false;
+                            if (f === 'trend'     && !(sg.above_ema50 && sg.above_ema200)) return false;
+                            if (f === 'score'     && !(sg.score != null && sg.score > 65)) return false;
+                            if (f === 'ruhig'     && !(sg.vol30 != null && sg.vol30 < 60)) return false;
+                            if (f === 'beta'      && !(sg.beta != null && sg.beta > 1.2)) return false;
+                            if (f === 'volumen'   && !(sg.vol_trend != null && sg.vol_trend > 40)) return false;
+                            if (f === 'funding'   && !(sg.funding != null && sg.funding < 0)) return false;
+                        }
+                    }
                     if (st.search) {
                         const q = st.search;
                         if (!((c.name||'').toLowerCase().includes(q) || (c.symbol||'').toLowerCase().includes(q))) return false;
@@ -9278,6 +9472,17 @@ window.c2xProxy = function (u) { return u; };
                     meme:      { s:[70,90,80,40,70], sectors:['Meme'],         mom:'24h', sort:'c24',   label:'Meme Degen' },
                     portfolio: { s:[50,50,50,50,50], sectors:['all'], watch:true, mom:'7d', sort:'score', label:'Mein Portfolio' }
                 };
+                // Signalfilter an- und abschalten, mehrere gleichzeitig moeglich
+                document.addEventListener('click', e => {
+                    const b = e.target.closest('[data-sigf]');
+                    if (!b) return;
+                    const f = b.dataset.sigf;
+                    if (finderState.signale.has(f)) finderState.signale.delete(f);
+                    else finderState.signale.add(f);
+                    b.classList.toggle('active', finderState.signale.has(f));
+                    if (typeof runScan === 'function') runScan();
+                });
+
                 function applyPreset(key) {
                     const p = FINDER_PRESETS[key];
                     if (!p) return;
@@ -9705,28 +9910,157 @@ window.c2xProxy = function (u) { return u; };
                     if (avg >= -3) return 'rgba(255,181,168,0.2)';
                     return 'rgba(255,107,107,0.35)';
                 }
+                // Zeitraum der Heat Map. Gilt fuer Farbe und Beschriftung.
+                let hmFeld = 'price_change_percentage_24h';
+                document.addEventListener('click', e => {
+                    const b = e.target.closest('[data-hm-tf]');
+                    if (!b) return;
+                    hmFeld = b.dataset.hmTf === '7d' ? 'price_change_percentage_7d_in_currency'
+                           : b.dataset.hmTf === '30d' ? 'price_change_percentage_30d'
+                           : 'price_change_percentage_24h';
+                    document.querySelectorAll('[data-hm-tf]').forEach(x => x.classList.toggle('active', x === b));
+                    if (typeof CRYPTO_DB !== 'undefined') renderHeatmap(CRYPTO_DB);
+                });
+
+                // Flaechen nach dem Squarified-Verfahren aufteilen: jede Kachel
+                // bekommt so viel Platz wie ihr Anteil am Gesamtwert, und die
+                // Seitenverhaeltnisse bleiben moeglichst quadratisch. Sonst
+                // entstehen lange Streifen, in denen nichts mehr lesbar ist.
+                //
+                // Umgesetzt nach Bruls, Huizing und van Wijk. Wichtig ist, die
+                // Werte vorab auf die Zielflaeche zu normieren; rechnet man die
+                // Skala in jedem Schritt neu, driften Flaeche und Restsumme
+                // auseinander und es entstehen genau die duennen Streifen, die
+                // das Verfahren eigentlich vermeiden soll.
+                function squarify(eintraege, x, y, breite, hoehe) {
+                    const summe = eintraege.reduce((a, b) => a + b.wert, 0);
+                    if (!summe || breite <= 0 || hoehe <= 0) return [];
+                    const faktor = (breite * hoehe) / summe;
+                    const rest = eintraege
+                        .map(e => ({ ...e, flaeche: e.wert * faktor }))
+                        .sort((a, b) => b.flaeche - a.flaeche);
+
+                    const out = [];
+                    let px = x, py = y, pb = breite, ph = hoehe;
+
+                    // Schlechtestes Seitenverhaeltnis einer Reihe, wenn sie auf
+                    // der kurzen Seite der Restflaeche liegt
+                    function schlechtestes(reihe, kurz) {
+                        if (!reihe.length || !kurz) return Infinity;
+                        const s = reihe.reduce((a, b) => a + b.flaeche, 0);
+                        if (!s) return Infinity;
+                        const max = Math.max(...reihe.map(r => r.flaeche));
+                        const min = Math.min(...reihe.map(r => r.flaeche));
+                        const k2 = kurz * kurz, s2 = s * s;
+                        return Math.max((k2 * max) / s2, s2 / (k2 * min));
+                    }
+
+                    let i = 0;
+                    while (i < rest.length) {
+                        const kurz = Math.min(pb, ph);
+                        const reihe = [rest[i]];
+                        let j = i + 1;
+                        while (j < rest.length &&
+                               schlechtestes(reihe.concat(rest[j]), kurz) <=
+                               schlechtestes(reihe, kurz)) {
+                            reihe.push(rest[j]);
+                            j++;
+                        }
+                        const reihenFlaeche = reihe.reduce((a, b) => a + b.flaeche, 0);
+                        const dicke = reihenFlaeche / kurz;
+                        let versatz = 0;
+                        reihe.forEach(r => {
+                            const laenge = r.flaeche / dicke;
+                            if (pb >= ph) {
+                                // Restflaeche ist breiter als hoch: Reihe steht senkrecht
+                                out.push({ ...r, x: px, y: py + versatz, b: dicke, h: laenge });
+                            } else {
+                                out.push({ ...r, x: px + versatz, y: py, b: laenge, h: dicke });
+                            }
+                            versatz += laenge;
+                        });
+                        if (pb >= ph) { px += dicke; pb -= dicke; }
+                        else { py += dicke; ph -= dicke; }
+                        i = j;
+                        if (pb <= 0.5 || ph <= 0.5) break;
+                    }
+                    return out;
+                }
+
                 function renderHeatmap(db) {
-                    const ranked = computeTopNarratives(db);
+                    const ranked = computeTopNarratives(db, hmFeld);
                     const grid = document.getElementById('c2HeatmapGrid');
                     if (!grid || !ranked.length) return;
-                    grid.innerHTML = ranked.map(s => {
-                        const col = s.avg >= 0 ? '#9df5ad' : '#ffb5a8';
-                        const sign = s.avg >= 0 ? '+' : '';
-                        return `<div class="c2-hm-tile" data-sector="${s.name}" style="background:${heatColor(s.avg)}">
-                            <div class="c2-hm-tile-name">${s.name}</div>
-                            <div class="c2-hm-tile-row">
-                                <span class="c2-hm-tile-pct" style="color:${col}">${sign}${s.avg.toFixed(2)}%</span>
-                                <span class="c2-hm-tile-count">${s.count} coins</span>
-                            </div>
-                        </div>`;
+                    const B = 1000, H = 560;
+                    // Nur die schwersten Sektoren zeigen. Bei ueber vierzig
+                    // Kacheln wird die kleinste zum Strich und die Karte
+                    // unlesbar. Sortiert wird nach Gewicht, nicht nach
+                    // Performance, sonst springen die Flaechen taeglich.
+                    const gross = ranked.slice()
+                        .sort((a, b) => (b.mcap || 0) - (a.mcap || 0))
+                        .slice(0, 18)
+                        .map(s => ({ ...s, wert: Math.max(s.mcap || 1, 1) }));
+                    const kacheln = squarify(gross, 0, 0, B, H);
+
+                    // Als SVG zeichnen statt mit absolut gesetzten Kaesten.
+                    // Ein viewBox skaliert zuverlaessig mit, waehrend
+                    // Prozentangaben eine Elternbreite brauchen, die im
+                    // Kartenlayout nicht immer feststeht.
+                    function schutz(t) {
+                        return String(t == null ? '' : t).replace(/[<>&"]/g, ch =>
+                            ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[ch]);
+                    }
+                    const teile = kacheln.map(t => {
+                        const col = t.avg >= 0 ? '#9df5ad' : '#ffb5a8';
+                        const sign = t.avg >= 0 ? '+' : '';
+                        // Schrift an die Kachel anpassen: eine grosse Flaeche
+                        // vertraegt eine grosse Zeile, eine schmale nur eine
+                        // kleine. Passt selbst die nicht mehr, bleibt die
+                        // Kachel leer und die Farbe traegt die Information.
+                        const kurz = Math.min(t.b, t.h);
+                        const gross = kurz > 150, mittel = kurz > 78;
+                        const nameGr = gross ? 21 : mittel ? 16 : 12;
+                        const pctGr = gross ? 18 : mittel ? 14 : 11;
+                        const platzName = t.b > 62 && t.h > 34;
+                        const platzZahl = t.b > 44 && t.h > 20;
+                        const platzAnzahl = t.b > 112 && t.h > 84;
+                        const px = (t.x + (mittel ? 12 : 6)).toFixed(1);
+                        // Name kuerzen, wenn er ueber die Kachel hinausragen wuerde
+                        const maxZeichen = Math.floor((t.b - 14) / (nameGr * 0.56));
+                        const name = t.name.length > maxZeichen
+                            ? t.name.slice(0, Math.max(3, maxZeichen - 1)) + '…' : t.name;
+                        return '<g class="c2-hm-svgtile" data-sector="' + schutz(t.name) + '">' +
+                            '<title>' + schutz(t.name) + ' · ' + sign + t.avg.toFixed(2) +
+                            '% · ' + t.count + ' Coins</title>' +
+                            '<rect x="' + t.x.toFixed(1) + '" y="' + t.y.toFixed(1) +
+                            '" width="' + Math.max(0, t.b - 3).toFixed(1) +
+                            '" height="' + Math.max(0, t.h - 3).toFixed(1) +
+                            '" rx="9" fill="' + heatColor(t.avg) +
+                            '" stroke="rgba(10,5,2,0.5)" stroke-width="1.5"/>' +
+                            (platzName ? '<text x="' + px + '" y="' +
+                                (t.y + nameGr + 8).toFixed(1) + '" class="c2-hm-svgname" ' +
+                                'style="font-size:' + nameGr + 'px">' +
+                                schutz(name) + '</text>' : '') +
+                            (platzZahl ? '<text x="' + px + '" y="' +
+                                (t.y + (platzName ? nameGr + pctGr + 14 : pctGr + 6)).toFixed(1) +
+                                '" class="c2-hm-svgpct" style="font-size:' + pctGr +
+                                'px" fill="' + col + '">' +
+                                sign + t.avg.toFixed(1) + '%</text>' : '') +
+                            (platzAnzahl ? '<text x="' + px + '" y="' +
+                                (t.y + t.h - 16).toFixed(1) + '" class="c2-hm-svgcount">' +
+                                t.count + ' Coins</text>' : '') +
+                            '</g>';
                     }).join('');
-                    // Click handler for drill-down
-                    grid.querySelectorAll('.c2-hm-tile').forEach(tile => {
+                    grid.classList.add('c2-hm-treemap');
+                    grid.innerHTML = '<svg viewBox="0 0 ' + B + ' ' + H +
+                        '" preserveAspectRatio="none" class="c2-hm-svg">' + teile + '</svg>';
+
+                    // Klick auf eine Flaeche oeffnet die Coins des Sektors
+                    grid.querySelectorAll('.c2-hm-svgtile').forEach(tile => {
                         tile.addEventListener('click', () => {
-                            const sectorName = tile.dataset.sector;
-                            grid.querySelectorAll('.c2-hm-tile').forEach(t => t.classList.remove('active'));
+                            grid.querySelectorAll('.c2-hm-svgtile').forEach(t => t.classList.remove('active'));
                             tile.classList.add('active');
-                            drilldownSector(sectorName, db);
+                            drilldownSector(tile.dataset.sector, db);
                         });
                     });
                 }
@@ -12431,8 +12765,22 @@ window.c2xProxy = function (u) { return u; };
         if (sparkCache[key] !== undefined) return sparkCache[key];
         const s = SIG();
         const r = s && (s.coins || []).find(c => c.symbol === sym);
-        const html = (r && r.spark && r.spark.length >= 3)
-            ? sparkline(r.spark, breite, hoehe) : '';
+        let werte = (r && r.spark && r.spark.length >= 3) ? r.spark : null;
+        // Kein Binance-Paar, also keine Kerzen. Dann die eigene Historie
+        // nehmen: sie waechst mit jedem Tageslauf und schliesst die Luecke
+        // nach und nach von selbst. Genau dafuer wird sie gesammelt.
+        if (!werte) {
+            const sd = (typeof SERIES_DATA !== 'undefined') ? SERIES_DATA : null;
+            const reihe = sd && sd.coins && sd.coins[sym];
+            if (reihe) {
+                const gueltig = reihe.filter(v => v != null);
+                if (gueltig.length >= 3) {
+                    const basis = gueltig[0] || 1;
+                    werte = gueltig.map(v => (v / basis - 1) * 100);
+                }
+            }
+        }
+        const html = werte ? sparkline(werte, breite, hoehe) : '';
         sparkCache[key] = html;
         return html;
     }
@@ -12604,12 +12952,17 @@ window.c2xProxy = function (u) { return u; };
         if (!rows.length) { el.innerHTML = '<div class="c2-ov-row"><div class="sub">Signal-Engine noch nicht gelaufen.</div></div>'; return; }
         el.innerHTML = rows.slice(0, 8).map(r => {
             const c = coin(r.symbol) || {};
+            const kurve = r.spark && r.spark.length >= 3 ? sparkline(r.spark, 54, 20) : '';
             return ovRow(r.symbol.toUpperCase(), r.name || r.symbol.toUpperCase(), c.image || r.image,
                 (r.cat && r.cat !== 'Other' ? r.cat + ' · ' : '') + 'RSI ' + (r.rsi != null ? r.rsi.toFixed(0) : '—'),
-                scoreBadge(r.score), '');
+                '<span style="display:inline-flex;align-items:center;gap:8px">' + kurve +
+                scoreBadge(r.score) + '</span>', '');
         }).join('');
     }
 
+    const SEC_ICON_OV = { AI: '🤖', L1: '⛓️', L2: '🪜', DeFi: '🏦', RWA: '🏛️', DePIN: '📡',
+        Gaming: '🎮', SocialFi: '💬', Oracle: '🔮', Payments: '💸', Privacy: '🕶️',
+        Meme: '🐸', Exchange: '🏦' };
     function renderOvSektoren() {
         const el = $('ovSektoren');
         if (!el) return;
@@ -12624,17 +12977,26 @@ window.c2xProxy = function (u) { return u; };
             .sort((a, b) => b.avg - a.avg);
         if (!rows.length) { el.innerHTML = '<div class="c2-ov-row"><div class="sub">Keine Sektordaten.</div></div>'; return; }
         const max = Math.max(...rows.map(r => Math.abs(r.avg))) || 1;
-        el.innerHTML = rows.slice(0, 8).map(r =>
-            '<div class="c2-ov-row" data-sektor="' + esc(r.k) + '">' +
-            '<div style="width:22px;text-align:center;font-size:0.9rem">' +
-            (({ AI: '🤖', L1: '⛓️', L2: '🪜', DeFi: '🏦', RWA: '🏛️', DePIN: '📡', Gaming: '🎮',
-                SocialFi: '💬', Oracle: '🔮', Payments: '💸', Privacy: '🕶️', Meme: '🐸',
-                Exchange: '🏦' })[r.k] || '•') + '</div>' +
-            '<div><div class="nm">' + esc(r.k) + '</div>' +
-            '<div class="c2-ov-ampelbar" style="width:100%"><i style="width:' +
-            Math.max(3, Math.abs(r.avg) / max * 100) + '%;background:' +
-            (r.avg >= 0 ? '#3FB950' : '#F85149') + '"></i></div></div>' +
-            '<div class="val ' + cls(r.avg) + '">' + fPct(r.avg) + '</div></div>').join('');
+        const verlauf = ((SIG() || {}).sector_history) || {};
+        el.innerHTML = rows.slice(0, 8).map(r => {
+            const h = verlauf[r.k];
+            // Der Verlauf sagt mehr als der Endstand: ein Sektor der von
+            // minus zehn auf null laeuft ist etwas anderes als einer der von
+            // plus zehn zurueckfaellt, obwohl beide heute gleich aussehen.
+            const kurve = (h && h.serie && h.serie.length >= 5)
+                ? sparkline(h.serie, 70, 22, r.avg >= 0 ? '#3FB950' : '#F85149')
+                : '<div class="c2-ov-ampelbar" style="width:70px"><i style="width:' +
+                  Math.max(3, Math.abs(r.avg) / max * 100) + '%;background:' +
+                  (r.avg >= 0 ? '#3FB950' : '#F85149') + '"></i></div>';
+            return '<div class="c2-ov-row" data-sektor="' + esc(r.k) + '">' +
+                '<div style="width:22px;text-align:center;font-size:0.9rem">' +
+                (SEC_ICON_OV[r.k] || '•') + '</div>' +
+                '<div><div class="nm">' + esc(r.k) + '</div>' +
+                '<div class="sub">' + r.n + ' Coins</div></div>' +
+                '<div style="display:flex;align-items:center;gap:9px">' + kurve +
+                '<span class="val ' + cls(r.avg) + '" style="min-width:52px">' +
+                fPct(r.avg) + '</span></div></div>';
+        }).join('');
     }
 
     function renderOvWatch() {
@@ -12684,7 +13046,7 @@ window.c2xProxy = function (u) { return u; };
         const stats = $('radarStats'), body = $('radarBody');
         if (!body) return;
         if (!s || !s.coins || !s.coins.length) {
-            body.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:2rem">' +
+            body.innerHTML = '<tr><td colspan="9" class="muted" style="text-align:center;padding:2rem">' +
                 'Die Signal-Engine ist noch nicht gelaufen. Starte sie mit compute_signals.py ' +
                 'oder über den Refresh-Knopf.</td></tr>';
             if (stats) stats.innerHTML = '';
@@ -12730,6 +13092,8 @@ window.c2xProxy = function (u) { return u; };
                     '" alt="" onerror="this.style.display=\'none\'"><strong>' + esc(r.name || r.symbol) +
                     '</strong> <span class="muted">' + esc(r.symbol.toUpperCase()) + '</span></td>' +
                 '<td>' + scoreBadge(r.score) + '</td>' +
+                '<td class="c2-sparkcell">' +
+                    (r.spark && r.spark.length >= 3 ? sparkline(r.spark, 70, 22) : '') + '</td>' +
                 '<td style="font-family:\'JetBrains Mono\',monospace">' +
                     (r.rsi != null ? '<span class="' + (r.rsi >= 70 ? 'c2-down' : r.rsi <= 32 ? 'c2-up' : '') + '">' +
                      r.rsi.toFixed(0) + '</span>' : '—') + '</td>' +
@@ -12754,6 +13118,247 @@ window.c2xProxy = function (u) { return u; };
                   'Gerade laufen keine Signale auseinander. Das ist selbst eine Information: ' +
                   'der Markt bewegt sich einheitlich.</div>';
         }
+    }
+
+    /* ══════════ Killzones: echter Tagesverlauf ══════════
+       Die Sessions sind gesetzte Zeitfenster. Interessanter ist, wann
+       tatsaechlich gehandelt wird. Dafuer holen wir einmal zwei Wochen
+       Stundenkerzen von Bitcoin und mitteln das Volumen je Tagesstunde. */
+    let kzDaten = null, kzLaeuft = false;
+    async function ladeKillzoneVerlauf() {
+        if (kzDaten || kzLaeuft) return kzDaten;
+        kzLaeuft = true;
+        try {
+            const res = await fetch('https://api.binance.com/api/v3/klines' +
+                                    '?symbol=BTCUSDT&interval=1h&limit=336');
+            const raw = await res.json();
+            if (!Array.isArray(raw) || raw.length < 48) throw 0;
+            const summe = new Array(24).fill(0), anzahl = new Array(24).fill(0);
+            const spanne = new Array(24).fill(0);
+            raw.forEach(k => {
+                // Berliner Zeit, damit die Stunden zu den Sessions passen
+                const stunde = new Date(k[0]).getHours();
+                summe[stunde] += parseFloat(k[7]) || 0;      // Quote-Volumen
+                const hoch = parseFloat(k[2]), tief = parseFloat(k[3]);
+                if (hoch && tief) spanne[stunde] += (hoch / tief - 1) * 100;
+                anzahl[stunde]++;
+            });
+            kzDaten = {
+                volumen: summe.map((v, i) => anzahl[i] ? v / anzahl[i] : 0),
+                spanne: spanne.map((v, i) => anzahl[i] ? v / anzahl[i] : 0),
+                tage: Math.round(raw.length / 24)
+            };
+        } catch (e) {
+            kzDaten = null;
+        }
+        kzLaeuft = false;
+        return kzDaten;
+    }
+
+    async function renderKillzoneVerlauf() {
+        const el = $('c2KzChart'), hinweis = $('c2KzHinweis');
+        if (!el) return;
+        if (!kzDaten) {
+            el.innerHTML = '<div class="c2-skel-line"></div>';
+            await ladeKillzoneVerlauf();
+        }
+        if (!kzDaten) {
+            el.innerHTML = '<div style="color:rgba(249,237,224,0.45);font-size:0.8rem">' +
+                'Stundendaten gerade nicht erreichbar.</div>';
+            return;
+        }
+        const B = 960, H = 240, links = 8, unten = 26;
+        const max = Math.max(...kzDaten.volumen) || 1;
+        const breite = (B - links * 2) / 24;
+        const jetzt = new Date().getHours();
+        // Die Sessions als Hintergrundband, damit Theorie und Praxis
+        // nebeneinander liegen
+        const sessions = [
+            { von: 1, bis: 9, name: 'Asien', farbe: 'rgba(88,166,255,0.10)' },
+            { von: 9, bis: 17, name: 'London', farbe: 'rgba(157,245,173,0.10)' },
+            { von: 15, bis: 22, name: 'New York', farbe: 'rgba(255,209,102,0.10)' }
+        ];
+        let svg = '<svg viewBox="0 0 ' + B + ' ' + H + '" preserveAspectRatio="none">';
+        sessions.forEach(se => {
+            const x = links + se.von * breite;
+            svg += '<rect x="' + x.toFixed(1) + '" y="0" width="' +
+                   ((se.bis - se.von) * breite).toFixed(1) + '" height="' + (H - unten) +
+                   '" fill="' + se.farbe + '"/>' +
+                   '<text x="' + (x + 6).toFixed(1) + '" y="15" class="c2-kz-label">' +
+                   se.name + '</text>';
+        });
+        kzDaten.volumen.forEach((v, i) => {
+            const h = Math.max(2, (v / max) * (H - unten - 26));
+            const x = links + i * breite + 2;
+            const y = H - unten - h;
+            const aktiv = i === jetzt;
+            const farbe = aktiv ? '#ffd166'
+                : v / max > 0.75 ? '#3FB950' : v / max > 0.45 ? '#9df5ad' : 'rgba(249,237,224,0.3)';
+            svg += '<rect class="c2-kz-bar" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) +
+                   '" width="' + (breite - 4).toFixed(1) + '" height="' + h.toFixed(1) +
+                   '" rx="3" fill="' + farbe + '"><title>' + i + ' Uhr: ' +
+                   fBig(v) + ' Volumen, Spanne ' + kzDaten.spanne[i].toFixed(2) +
+                   '%</title></rect>';
+            if (i % 3 === 0 || aktiv) {
+                svg += '<text x="' + (x + breite / 2 - 2).toFixed(1) + '" y="' + (H - 8) +
+                       '" text-anchor="middle" class="' +
+                       (aktiv ? 'c2-kz-jetzt' : 'c2-kz-label') + '">' + i + '</text>';
+            }
+        });
+        el.innerHTML = svg + '</svg>';
+
+        if (hinweis) {
+            const sortiert = kzDaten.volumen.map((v, i) => ({ i, v }))
+                .sort((a, b) => b.v - a.v);
+            const beste = sortiert.slice(0, 3).map(x => x.i + ' Uhr').join(', ');
+            const ruhig = sortiert.slice(-3).map(x => x.i + ' Uhr').reverse().join(', ');
+            const jetztRang = sortiert.findIndex(x => x.i === jetzt) + 1;
+            hinweis.innerHTML =
+                'Aus ' + kzDaten.tage + ' Tagen Stundendaten: am meisten läuft um <b>' + beste +
+                '</b>, am wenigsten um ' + ruhig + '. ' +
+                'Gerade ist es <b>' + jetzt + ' Uhr</b>, das ist Rang ' + jetztRang +
+                ' von 24 im Volumen. ' +
+                (jetztRang <= 8 ? 'Gute Zeit für Ausführungen, die Spreads sind eng.'
+                                : 'Ruhige Phase. Größere Orders bewegen den Kurs stärker als üblich.');
+        }
+    }
+
+    /* ══════════ Rechner: Coin-Auswahl und Stop aus der Volatilitaet ══════════
+       Bisher waren alle vier Felder von Hand zu fuellen. Mit einem Coin im
+       Feld kommen Kurs und ein Stop-Vorschlag aus der tatsaechlichen
+       Tagesspanne, statt aus dem Bauch. */
+    let calcAtrFaktor = 1.5;
+    function calcCoinSetzen(sym) {
+        const c = coin(sym);
+        const info = $('c2CalcCoinInfo');
+        if (!c) {
+            if (info) { info.textContent = 'Coin nicht gefunden.'; info.className = 'c2-vip-hint fehler'; }
+            return;
+        }
+        const s = SIG();
+        const r = s && (s.coins || []).find(x => x.symbol === (c.symbol || '').toLowerCase());
+        const preis = c.current_price;
+        const entry = $('c2CalcEntry'), stop = $('c2CalcStop');
+        if (entry) entry.value = preis < 1 ? preis.toFixed(6) : preis.toFixed(2);
+        // Tagesspanne aus der annualisierten Volatilitaet zurueckrechnen:
+        // geteilt durch die Wurzel aus 365 ergibt die uebliche Tagesbewegung
+        let tagesSpanne = null;
+        if (r && r.vol30) tagesSpanne = (r.vol30 / Math.sqrt(365)) / 100;
+        if (tagesSpanne && stop) {
+            const abstand = preis * tagesSpanne * calcAtrFaktor;
+            const wert = preis - abstand;
+            stop.value = wert < 1 ? wert.toFixed(6) : wert.toFixed(2);
+        }
+        if (entry) entry.dispatchEvent(new Event('input', { bubbles: true }));
+        if (info) {
+            info.className = 'c2-vip-hint ok';
+            info.textContent = c.name + ' bei ' + fPrice(preis) +
+                (tagesSpanne ? ', übliche Tagesspanne ' + (tagesSpanne * 100).toFixed(1) + '%' : '');
+        }
+        calcExtra(c, r, tagesSpanne);
+    }
+    function calcExtra(c, r, tagesSpanne) {
+        const el = $('c2CalcExtra');
+        if (!el) return;
+        const kapital = parseFloat(($('c2CalcCapital') || {}).value) || 0;
+        const risikoProz = parseFloat(($('c2CalcRisk') || {}).value) || 0;
+        const entry = parseFloat(($('c2CalcEntry') || {}).value) || 0;
+        const stop = parseFloat(($('c2CalcStop') || {}).value) || 0;
+        const risikoBetrag = kapital * risikoProz / 100;
+        const abstand = entry - stop;
+        const menge = abstand > 0 ? risikoBetrag / abstand : 0;
+        const einsatz = menge * entry;
+        const anteil = kapital ? einsatz / kapital * 100 : 0;
+        function box(k, v, sub, farbe) {
+            return '<div class="c2-calc-box"><div class="k">' + k + '</div>' +
+                '<div class="v"' + (farbe ? ' style="color:' + farbe + '"' : '') + '>' + v + '</div>' +
+                (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>';
+        }
+        const teile = [];
+        if (einsatz > 0) {
+            teile.push(box('Einsatz', fBig(einsatz),
+                anteil.toFixed(0) + '% vom Kapital',
+                anteil > 40 ? '#F85149' : anteil > 20 ? '#E3B341' : '#3FB950'));
+            teile.push(box('Stop-Abstand', (abstand / entry * 100).toFixed(2) + '%',
+                tagesSpanne ? ((abstand / entry) / tagesSpanne).toFixed(1) + 'x Tagesspanne' : ''));
+        }
+        if (r) {
+            teile.push(box('Volatilität', r.vol30 != null ? r.vol30.toFixed(0) + '%' : '—',
+                'annualisiert'));
+            teile.push(box('RSI', r.rsi != null ? r.rsi.toFixed(0) : '—',
+                r.rsi >= 70 ? 'überkauft, Rücksetzer möglich'
+                    : r.rsi <= 32 ? 'überverkauft' : 'neutral'));
+            if (r.beta != null) teile.push(box('Beta zu BTC', r.beta.toFixed(2),
+                r.beta > 1.3 ? 'bewegt sich stärker als Bitcoin'
+                    : r.beta < 0.8 ? 'ruhiger als Bitcoin' : 'läuft mit Bitcoin'));
+            // Zielmarken auf Basis der ueblichen Bewegung
+            if (tagesSpanne && entry) {
+                const z1 = entry * (1 + tagesSpanne * 2), z2 = entry * (1 + tagesSpanne * 3);
+                teile.push(box('Ziele', fPrice(z1) + ' / ' + fPrice(z2),
+                    'zwei und drei Tagesspannen, Verhältnis ' +
+                    (abstand > 0 ? ((z1 - entry) / abstand).toFixed(1) + ' zu 1' : '—')));
+            }
+        }
+        el.innerHTML = teile.join('');
+    }
+    // Bedienung
+    document.addEventListener('input', e => {
+        const f = e.target;
+        if (f && f.id === 'c2CalcCoin') {
+            const t = f.value.trim();
+            if (t.length >= 2) calcCoinSetzen(t);
+            return;
+        }
+        if (f && ['c2CalcCapital','c2CalcRisk','c2CalcEntry','c2CalcStop'].includes(f.id)) {
+            const sym = ($('c2CalcCoin') || {}).value;
+            const c = sym ? coin(sym.trim()) : null;
+            const s = SIG();
+            const r = c && s && (s.coins || []).find(x => x.symbol === (c.symbol || '').toLowerCase());
+            calcExtra(c, r, r && r.vol30 ? (r.vol30 / Math.sqrt(365)) / 100 : null);
+        }
+    });
+    document.addEventListener('click', e => {
+        const b = e.target.closest('[data-calc-atr]');
+        if (!b) return;
+        calcAtrFaktor = parseFloat(b.dataset.calcAtr);
+        document.querySelectorAll('[data-calc-atr]').forEach(x => x.classList.toggle('active', x === b));
+        const sym = ($('c2CalcCoin') || {}).value;
+        if (sym) calcCoinSetzen(sym.trim());
+    });
+
+    /* ══════════ Ranking: gemessene Bestenlisten ══════════
+       Die Arena-Wertung lebt von Klicks und ist am Anfang leer. Diese Listen
+       stehen sofort und zeigen dieselbe Frage aus vier Blickwinkeln. */
+    function renderRankAuto() {
+        const el = $('c2RankAuto');
+        if (!el) return;
+        const s = SIG();
+        const rows = (s && s.coins) || [];
+        if (!rows.length) {
+            el.innerHTML = '<div style="color:rgba(249,237,224,0.45);font-size:0.8rem">' +
+                'Die Signal-Engine ist noch nicht gelaufen.</div>';
+            return;
+        }
+        const listen = [
+            { titel: 'Höchster Gesamt-Score', sort: (a, b) => (b.score || 0) - (a.score || 0),
+              wert: r => scoreBadge(r.score) },
+            { titel: 'Stärkster Trend', sort: (a, b) => ((b.parts || {}).trend || 0) - ((a.parts || {}).trend || 0),
+              wert: r => '<span class="' + cls(r.chg30) + '">' + fPct(r.chg30) + '</span>' },
+            { titel: 'Ruhigster Verlauf', sort: (a, b) => (a.vol30 == null ? 1e9 : a.vol30) - (b.vol30 == null ? 1e9 : b.vol30),
+              wert: r => r.vol30 != null ? r.vol30.toFixed(0) + '%' : '—' },
+            { titel: 'Am weitesten vom Hoch', sort: (a, b) => (a.dd90 == null ? 1 : a.dd90) - (b.dd90 == null ? 1 : b.dd90),
+              wert: r => '<span class="c2-down">' + (r.dd90 != null ? fPct(r.dd90, 0) : '—') + '</span>' }
+        ];
+        el.innerHTML = listen.map(l => {
+            const top = rows.filter(r => r.score != null).slice().sort(l.sort).slice(0, 6);
+            return '<div class="c2-rank-card"><div class="kopf">' + l.titel + '</div>' +
+                top.map((r, i) => '<div class="c2-rank-zeile" data-open="' +
+                    esc(r.symbol.toUpperCase()) + '">' +
+                    '<span class="n">' + (i + 1) + '</span>' +
+                    '<span class="s">' + esc(r.symbol.toUpperCase()) + '</span>' +
+                    '<span class="w">' + l.wert(r) + '</span></div>').join('') +
+                '</div>';
+        }).join('');
     }
 
     /* ══════════ VIP-Bereich ══════════
@@ -12842,6 +13447,8 @@ window.c2xProxy = function (u) { return u; };
                 '<button class="c2-watch-rm" data-unwatch="' + esc(sym) + '" title="Entfernen">✕</button></div>' +
                 '<div class="c2-watch-price">' + preis + ' <span style="font-size:0.8rem" class="' +
                     cls(chg) + '">' + fPct(chg) + '</span></div>' +
+                (r.spark && r.spark.length >= 3
+                    ? '<div class="c2-watch-spark">' + sparkline(r.spark, 250, 44) + '</div>' : '') +
                 '<div class="c2-watch-metrics">' +
                 '<div class="c2-watch-metric"><div class="k">Score</div><div class="v" style="color:' +
                     scoreColor(r.score) + '">' + (r.score != null ? r.score.toFixed(0) : '—') + '</div></div>' +
@@ -12875,8 +13482,19 @@ window.c2xProxy = function (u) { return u; };
         }
         if (n.fees) karte('Gebühr, schnell', n.fees.fast + ' sat/vB',
             'Halbe Stunde: ' + n.fees.halfhour + ' · Stunde: ' + n.fees.hour);
-        if (n.hashrate) karte('Rechenleistung', (n.hashrate / 1e18).toFixed(0) + ' EH/s',
-            n.hashrate_chg_30d != null ? fPct(n.hashrate_chg_30d, 1) + ' in 30 Tagen' : '');
+        if (n.hashrate) {
+            // Die Reihe kommt ohnehin mit, sie gehoert also auch gezeigt.
+            const reihe = (n.hashrate_series || []).map(h => h.v / 1e18);
+            const kurve = reihe.length >= 5
+                ? '<div class="c2-onchain-spark">' +
+                  sparkline(reihe, 200, 40, n.hashrate_chg_30d >= 0 ? '#3FB950' : '#F85149') +
+                  '</div>' : '';
+            k.push('<div class="c2-onchain-card"><div class="k">Rechenleistung</div>' +
+                '<div class="v">' + (n.hashrate / 1e18).toFixed(0) + ' EH/s</div>' +
+                (n.hashrate_chg_30d != null
+                    ? '<div class="s">' + fPct(n.hashrate_chg_30d, 1) + ' in 30 Tagen</div>' : '') +
+                kurve + '</div>');
+        }
         if (n.difficulty_adjustment) {
             const d = n.difficulty_adjustment;
             karte('Nächste Anpassung', fPct(d.change, 1),
@@ -13055,6 +13673,8 @@ window.c2xProxy = function (u) { return u; };
         else if (page === 'radar') { renderRadar(); renderVip(); }
         else if (page === 'watchlist') renderWatchlist();
         else if (page === 'onchain') renderOnchain();
+        else if (page === 'killzones') renderKillzoneVerlauf();
+        else if (page === 'ranking') renderRankAuto();
     }
     modal.addEventListener('click', e => {
         const nav = e.target.closest('.c2-nav[data-page]');
