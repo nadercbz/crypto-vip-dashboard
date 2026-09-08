@@ -5317,6 +5317,132 @@ body { overflow: hidden; }
         @keyframes kRowOut {
             to { opacity: 0; transform: translateX(-30px); padding: 0 4px; max-height: 0; border-bottom-color: transparent; }
         }
+
+
+        /* Memecoin Hype */
+        .c2-mc-tabs { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.9rem; }
+
+        .c2-mc-tab { padding:.4rem .85rem; border-radius:999px; cursor:pointer;
+            border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.04);
+            font-size:.82rem; color:#cfd6dd; transition:.15s; user-select:none; }
+
+        .c2-mc-tab:hover { border-color:rgba(240,192,64,.5); color:#fff; }
+
+        .c2-mc-tab.active { background:#f0c040; border-color:#f0c040; color:#151515; font-weight:600; }
+
+        .c2-mc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:.9rem; }
+@media (max-width: 900px) {
+ .c2-mc-grid { grid-template-columns: 1fr; }
+
+            .c2-mc-tabs { gap:.35rem; }
+ .c2-mc-tab { padding:.35rem .7rem; font-size:.78rem; }
+}
+
+        .c2-mc-card { border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:.95rem 1rem;
+            background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015)); }
+
+        .c2-mc-card.gut { border-color:rgba(0,229,138,.45); }
+
+        .c2-mc-card.schwach { border-color:rgba(255,90,80,.35); }
+
+        .c2-mc-top { display:flex; align-items:baseline; justify-content:space-between; gap:.6rem; }
+
+        .c2-mc-sym { font-weight:700; font-size:1.05rem; color:#fff; letter-spacing:.2px;
+            overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+        .c2-mc-score { font-weight:700; font-size:1.35rem; font-variant-numeric:tabular-nums; }
+
+        .c2-mc-chain { display:inline-block; font-size:.66rem; text-transform:uppercase;
+            letter-spacing:.08em; padding:.12rem .45rem; border-radius:5px;
+            background:rgba(255,255,255,.09); color:#aeb7c0; margin-left:.4rem; }
+
+        .c2-mc-zahlen { display:flex; flex-wrap:wrap; gap:.75rem; margin:.55rem 0 .5rem;
+            font-size:.76rem; color:#9aa4ae; font-variant-numeric:tabular-nums; }
+
+        .c2-mc-zahlen b { color:#e6ebf0; font-weight:600; }
+
+        .c2-mc-flags { display:flex; flex-wrap:wrap; gap:.3rem; margin-bottom:.5rem; }
+
+        .c2-mc-flag { font-size:.66rem; padding:.14rem .45rem; border-radius:5px;
+            background:rgba(255,255,255,.07); color:#b8c1ca; }
+
+        .c2-mc-flag.ja { background:rgba(0,229,138,.16); color:#5ff0b0; }
+
+        .c2-mc-flag.nein { background:rgba(255,90,80,.16); color:#ff9a92; }
+
+        .c2-mc-flag.roh { background:rgba(240,192,64,.16); color:#f0c040; }
+
+        .c2-mc-gruende { list-style:none; margin:0; padding:0; font-size:.76rem; line-height:1.45; }
+
+        .c2-mc-gruende li { display:flex; gap:.4rem; color:#b3bcc5; margin-bottom:.18rem; }
+
+        .c2-mc-gruende li span:first-child { flex:0 0 2.1rem; font-variant-numeric:tabular-nums;
+            font-weight:600; text-align:right; }
+
+        .c2-mc-gruende li.pos span:first-child { color:#5ff0b0; }
+
+        .c2-mc-gruende li.neg span:first-child { color:#ff9a92; }
+
+        .c2-mc-gruende li.cap span:first-child { color:#f0c040; }
+
+        .c2-mc-card.weckruf { border-color:#f0c040; box-shadow:0 0 0 1px rgba(240,192,64,.3); }
+
+        .c2-mc-inf { margin-top:.5rem; padding:.35rem .55rem; border-radius:8px;
+            font-size:.73rem; background:rgba(120,140,255,.12);
+            border:1px solid rgba(120,140,255,.28); color:#aab6ff; }
+
+        .c2-mc-inf.frisch { background:rgba(120,140,255,.22); border-color:rgba(120,140,255,.55);
+            color:#c8d0ff; font-weight:600; }
+
+        .c2-mc-bilanz { display:flex; flex-wrap:wrap; gap:1.4rem; padding:.8rem 1rem;
+            margin-bottom:.9rem; border-radius:12px; background:rgba(255,255,255,.05);
+            border:1px solid rgba(255,255,255,.1); }
+
+        .c2-mc-bilanz div { display:flex; flex-direction:column; }
+
+        .c2-mc-bilanz span { font-size:.68rem; text-transform:uppercase; letter-spacing:.07em; color:#8b949e; }
+
+        .c2-mc-bilanz b { font-size:1.15rem; color:#e6ebf0; font-variant-numeric:tabular-nums; }
+
+        .c2-mc-abschnitt { font-size:.8rem; text-transform:uppercase; letter-spacing:.09em;
+            color:#8b949e; margin:1.1rem 0 .5rem; font-weight:600; }
+
+        .c2-mc-narrativ { margin-top:.5rem; padding:.45rem .55rem; border-radius:8px;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+            font-size:.72rem; color:#a8b2bb; line-height:1.45; }
+
+        .c2-mc-narrativ.stark { background:rgba(240,192,64,.09); border-color:rgba(240,192,64,.3); }
+
+        .c2-mc-nv-kopf { color:#f0c040; font-weight:600; margin-bottom:.2rem; }
+
+        .c2-mc-nv-warn { margin-top:.3rem; color:#ff9a92; }
+
+        .c2-mc-zweitwert { display:block; font-size:.66rem; color:#8b949e;
+            margin-top:-.15rem; white-space:nowrap; }
+
+        .c2-mc-einstieg { margin-top:.5rem; padding:.45rem .55rem; border-radius:8px;
+            background:rgba(0,229,138,.08); border:1px solid rgba(0,229,138,.22);
+            font-size:.73rem; color:#a9d9c2; line-height:1.4; }
+
+        .c2-mc-einstieg.stark { background:rgba(0,229,138,.16); border-color:rgba(0,229,138,.5); }
+
+        .c2-mc-ei-kopf { display:flex; justify-content:space-between; align-items:baseline;
+            margin-bottom:.25rem; }
+
+        .c2-mc-ei-kopf span { color:#5ff0b0; font-weight:600; letter-spacing:.02em; }
+
+        .c2-mc-ei-kopf b { color:#5ff0b0; font-size:.95rem; font-variant-numeric:tabular-nums; }
+
+        .c2-mc-watch { font-size:.74rem; color:#9aa4ae; margin-top:.45rem;
+            padding-top:.45rem; border-top:1px solid rgba(255,255,255,.07); }
+
+        .c2-mc-watch b { color:#e6ebf0; }
+
+        .c2-mc-weck { font-size:.75rem; color:#151515; background:#f0c040; font-weight:600;
+            border-radius:6px; padding:.3rem .5rem; margin-top:.4rem; }
+
+        .c2-mc-link { display:inline-block; margin-top:.6rem; font-size:.74rem;
+            color:#f0c040; text-decoration:none; border-bottom:1px solid rgba(240,192,64,.35); }
 </style>
 </head>
 <body>
@@ -5374,6 +5500,7 @@ body { overflow: hidden; }
                 <a class="c2-nav" data-page="heatmap">Heat Map</a>
                 <a class="c2-nav" data-page="social">Social Buzz</a>
                 <a class="c2-nav" data-page="gems">Hidden Gems</a>
+                <a class="c2-nav" data-page="memecoins">Memecoin Hype</a>
                 <a class="c2-nav" data-page="feargreed">Sentiment</a>
                 <a class="c2-nav" data-page="ranking">Ranking</a>
 
@@ -5580,6 +5707,21 @@ body { overflow: hidden; }
                         <div id="c2GemGrid" class="c2-gem-grid"></div>
                         <div id="c2GemList" class="c2-gem-list"></div>
                         <div id="c2GemNote" class="c2-social-note"></div>
+                    </div>
+                </section>
+
+                <!-- MEMECOIN HYPE PAGE -->
+                <section class="c2-page" data-page="memecoins">
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Hype Radar</div>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Memecoin Hype</h2>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Pools von Solana, Base, Ethereum und Robinhood, bewertet nach 11 Chartregeln. Entscheidend sind Extension statt Chop, flache Rücksetzer, steigendes Volumen und ein Einstieg im Dip statt im Ausbruch. Kleine Marktkapitalisierung zählt positiv, weil der Weg zum Vielfachen kürzer ist. <strong>Shorten geht nur dort, wo es einen echten Perp-Markt gibt.</strong> Alles andere läuft über AMM-Pools und ist nicht shortbar, deshalb steht dort Ausstieg statt Short.</p>
+                        <div id="c2McMeta" class="c2-social-meta"></div>
+                        <div id="c2McSides" class="c2-mc-tabs"></div>
+                        <div id="c2McChains" class="c2-mc-tabs"></div>
+                        <div id="c2McSort" class="c2-mc-tabs"></div>
+                        <div id="c2McGrid" class="c2-mc-grid"></div>
+                        <div id="c2McNote" class="c2-social-note"></div>
                     </div>
                 </section>
 
@@ -6697,14 +6839,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202609070807"></script>
-<script src="data/extras_data.js?v=202609070807"></script>
-<script src="data/series_data.js?v=202609070807"></script>
-<script src="data/social_data.js?v=202609070807"></script>
-<script src="data/gems_data.js?v=202609070807"></script>
-<script src="data/signals_data.js?v=202609070807"></script>
-<script src="data/onchain_data.js?v=202609070807"></script>
-<script src="data/briefing_data.js?v=202609070807"></script>
+<script src="data/crypto_data.js?v=202609080950"></script>
+<script src="data/extras_data.js?v=202609080950"></script>
+<script src="data/series_data.js?v=202609080950"></script>
+<script src="data/social_data.js?v=202609080950"></script>
+<script src="data/gems_data.js?v=202609080950"></script>
+<script src="data/signals_data.js?v=202609080950"></script>
+<script src="data/onchain_data.js?v=202609080950"></script>
+<script src="data/briefing_data.js?v=202609080950"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -11942,7 +12084,7 @@ window.c2xProxy = function (u) { return u; };
     const NAV_ICONS = {
         script: '📜', portfolio: '💼', perfect: '🏆', milestones: '🚩',
         markets: '📊', movers: '⚡', finder: '🔎', narratives: '🌀', heatmap: '🟧',
-        social: '📣', gems: '💎', feargreed: '🌡️', ranking: '🥇',
+        social: '📣', gems: '💎', memecoins: '🐸', feargreed: '🌡️', ranking: '🥇',
         killzones: '⏱️', calculator: '🧮', checklist: '✅', breakouts: '🚀', arena: '🏟️',
         playbook: '📖', strategy2026: '🗺️', commands: '⌨️', notes: '📝', links: '🔗'
     };
