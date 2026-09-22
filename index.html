@@ -5319,6 +5319,128 @@ body { overflow: hidden; }
         }
 
 
+        /* Tagebuch */
+        .c2-tb-zwei { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:1rem; margin-top:.4rem; }
+@media (max-width: 1000px) {
+ .c2-tb-zwei { grid-template-columns:1fr; }
+}
+
+        .c2-tb-block { min-width:0; }
+
+        .c2-tb-kopf { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:.8rem;
+            padding:.9rem 1rem; border-radius:12px; margin-bottom:.9rem;
+            background:linear-gradient(135deg,rgba(240,192,64,.10),rgba(255,255,255,.03));
+            border:1px solid rgba(240,192,64,.28); }
+
+        .c2-tb-kopf h3 { margin:0 0 .25rem; font-size:1.1rem; color:#fff; }
+
+        .c2-tb-kopf .c2-tb-datum { font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:#f0c040; font-weight:600; }
+
+        .c2-tb-kopf p { margin:.2rem 0 0; font-size:.78rem; line-height:1.5; color:#b3bcc5; }
+
+        .c2-tb-kopf b { color:#e6ebf0; font-weight:600; }
+
+        .c2-tb-lbl { font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:#8b949e; margin-bottom:.15rem; }
+
+        .c2-tb-rang { display:flex; flex-direction:column; gap:.3rem; }
+
+        .c2-tb-rz { display:grid; grid-template-columns:1.6rem 6.2rem minmax(0,1fr) 4.6rem; gap:.5rem; align-items:center;
+            font-size:.75rem; font-variant-numeric:tabular-nums; }
+
+        .c2-tb-rz .r { color:#8b949e; text-align:right; }
+
+        .c2-tb-rz .s { color:#e6ebf0; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+        .c2-tb-rz .s small { color:#8b949e; font-weight:400; margin-left:.25rem; }
+
+        .c2-tb-rz .v { text-align:right; font-weight:600; }
+
+        .c2-tb-bar { position:relative; height:14px; border-radius:4px; background:rgba(255,255,255,.05); overflow:hidden; }
+
+        .c2-tb-bar i { position:absolute; top:0; bottom:0; display:block; border-radius:3px; }
+
+        .c2-tb-bar i.pos { background:linear-gradient(90deg,rgba(0,229,138,.55),#00e58a); }
+
+        .c2-tb-bar i.neg { background:linear-gradient(270deg,rgba(255,107,97,.55),#ff6b61); }
+
+        .c2-tb-bar em { position:absolute; top:-2px; bottom:-2px; width:2px; background:#f0c040; opacity:.9; }
+
+        .c2-tb-bar u { position:absolute; top:0; bottom:0; width:1px; background:rgba(255,255,255,.35); }
+
+        .c2-tb-legende { font-size:.68rem; color:#8b949e; margin-top:.5rem; }
+
+        .c2-tb-legende em { color:#f0c040; font-style:normal; }
+
+        .c2-tb-timeline { position:relative; padding-left:1.35rem; }
+
+        .c2-tb-timeline::before { content:""; position:absolute; left:.42rem; top:.3rem; bottom:.3rem; width:2px;
+            background:linear-gradient(180deg,rgba(240,192,64,.7),rgba(255,255,255,.08)); }
+
+        .c2-tb-ev { position:relative; padding:.15rem 0 .7rem; font-size:.76rem; line-height:1.45; color:#b3bcc5; }
+
+        .c2-tb-ev::before { content:""; position:absolute; left:-1.35rem; top:.42rem; width:.7rem; height:.7rem; border-radius:50%;
+            background:#8b949e; border:2px solid #12141a; box-shadow:0 0 0 1px rgba(255,255,255,.15); }
+
+        .c2-tb-ev.analyse::before { background:#f0c040; }
+
+        .c2-tb-ev.kauf::before, .c2-tb-ev.nachkauf::before, .c2-tb-ev.hoch::before { background:#00e58a; }
+
+        .c2-tb-ev.tief::before, .c2-tb-ev.stop::before, .c2-tb-ev.verkauf::before { background:#ff6b61; }
+
+        .c2-tb-ev.post::before { background:#7c8cff; }
+
+        .c2-tb-ev .d { display:block; font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:#8b949e; }
+
+        .c2-tb-ev b { color:#e6ebf0; font-weight:600; }
+
+        .c2-tb-card .c2-mc-top { align-items:flex-start; }
+
+        .c2-tb-rangbadge { display:inline-flex; align-items:center; justify-content:center; min-width:1.7rem; height:1.7rem;
+            padding:0 .4rem; border-radius:8px; background:rgba(240,192,64,.16); color:#f0c040; font-weight:700;
+            font-size:.8rem; margin-right:.5rem; font-variant-numeric:tabular-nums; }
+
+        .c2-tb-sig { display:inline-block; font-size:.64rem; text-transform:uppercase; letter-spacing:.08em;
+            padding:.14rem .45rem; border-radius:5px; margin-left:.4rem; font-weight:600; }
+
+        .c2-tb-sig.kauf { background:rgba(0,229,138,.18); color:#5ff0b0; }
+
+        .c2-tb-sig.watch { background:rgba(240,192,64,.18); color:#f0c040; }
+
+        .c2-tb-sig.meiden { background:rgba(255,90,80,.18); color:#ff9a92; }
+
+        .c2-tb-perf { font-weight:700; font-size:1.35rem; font-variant-numeric:tabular-nums; line-height:1.1; }
+
+        .c2-tb-alpha { font-size:.68rem; color:#8b949e; white-space:nowrap; font-variant-numeric:tabular-nums; }
+
+        .c2-tb-spark { width:100%; height:44px; display:block; margin:.45rem 0 .2rem; }
+
+        .c2-tb-tier { font-size:.7rem; color:#8b949e; margin-top:.1rem; }
+
+        .c2-tb-treffer { display:inline-block; font-size:.66rem; padding:.14rem .45rem; border-radius:5px;
+            background:rgba(255,255,255,.07); color:#b8c1ca; }
+
+        .c2-tb-treffer.ja { background:rgba(0,229,138,.16); color:#5ff0b0; }
+
+        .c2-tb-treffer.markt { background:rgba(240,192,64,.16); color:#f0c040; }
+
+        .c2-tb-treffer.nein { background:rgba(255,90,80,.16); color:#ff9a92; }
+
+        .c2-tb-card details { margin-top:.5rem; border-top:1px solid rgba(255,255,255,.07); padding-top:.4rem; }
+
+        .c2-tb-card summary { cursor:pointer; font-size:.72rem; color:#8b949e; list-style:none; }
+
+        .c2-tb-card summary::-webkit-details-marker { display:none; }
+
+        .c2-tb-card summary::before { content:"▸ "; color:#f0c040; }
+
+        .c2-tb-card details[open] summary::before { content:"▾ "; }
+
+        .c2-tb-card .c2-tb-txt { font-size:.74rem; line-height:1.45; color:#b3bcc5; margin-top:.35rem; }
+
+        .c2-tb-card .c2-tb-txt b { color:#f0c040; font-weight:600; }
+
+        .c2-tb-leer { padding:1.2rem; border-radius:12px; border:1px dashed rgba(255,255,255,.18); color:#8b949e; font-size:.85rem; }
+
         /* Memecoin Hype */
         .c2-mc-tabs { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.9rem; }
 
@@ -5489,6 +5611,7 @@ body { overflow: hidden; }
                 <a class="c2-nav active" data-page="overview">Überblick</a>
                 <a class="c2-nav" data-page="radar">Radar</a>
                 <a class="c2-nav" data-page="perfect">Perfect Portfolio</a>
+                <a class="c2-nav" data-page="tagebuch">Tagebuch</a>
 
                 <div class="c2-navgroup">Markt</div>
                 <a class="c2-nav" data-page="markets">Markets</a>
@@ -5722,6 +5845,34 @@ body { overflow: hidden; }
                         <div id="c2McSort" class="c2-mc-tabs"></div>
                         <div id="c2McGrid" class="c2-mc-grid"></div>
                         <div id="c2McNote" class="c2-social-note"></div>
+                    </div>
+                </section>
+
+                <!-- TAGEBUCH PAGE -->
+                <section class="c2-page" data-page="tagebuch">
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Analysen-Tagebuch</div>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Tagebuch</h2>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Jede Coin-Analyse aus einem CoinGecko-Screenshot landet hier mit Ranking, Signal und dem Kurs zum Zeitpunkt der Einschätzung. Danach läuft die Nachverfolgung automatisch: Kurs seit der Analyse, Vergleich zu Bitcoin im selben Zeitraum, Hoch und Tief seitdem, und ob die Rangfolge gestimmt hat. <strong>Ein Urteil gibt es erst ab dem dritten Tag</strong>, vorher ist jede Bewegung Rauschen. Kauf-Treffer heißt: im Plus und besser als Bitcoin. Meiden-Treffer heißt: schlechter als Bitcoin.</p>
+                        <div id="c2TbMeta" class="c2-social-meta"></div>
+                        <div id="c2TbGesamt" class="c2-mc-bilanz"></div>
+                        <div id="c2TbEintraege" class="c2-mc-tabs"></div>
+                        <div id="c2TbKopf"></div>
+                        <div id="c2TbBilanz" class="c2-mc-bilanz"></div>
+                        <div class="c2-tb-zwei">
+                            <div class="c2-tb-block">
+                                <div class="c2-mc-abschnitt">Rang gegen Realität</div>
+                                <div id="c2TbRang"></div>
+                            </div>
+                            <div class="c2-tb-block">
+                                <div class="c2-mc-abschnitt">Timeline</div>
+                                <div id="c2TbTimeline" class="c2-tb-timeline"></div>
+                            </div>
+                        </div>
+                        <div class="c2-mc-abschnitt">Die Coins</div>
+                        <div id="c2TbFilter" class="c2-mc-tabs"></div>
+                        <div id="c2TbGrid" class="c2-mc-grid"></div>
+                        <div id="c2TbNote" class="c2-social-note"></div>
                     </div>
                 </section>
 
@@ -6839,14 +6990,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202609180932"></script>
-<script src="data/extras_data.js?v=202609180932"></script>
-<script src="data/series_data.js?v=202609180932"></script>
-<script src="data/social_data.js?v=202609180932"></script>
-<script src="data/gems_data.js?v=202609180932"></script>
-<script src="data/signals_data.js?v=202609180932"></script>
-<script src="data/onchain_data.js?v=202609180932"></script>
-<script src="data/briefing_data.js?v=202609180932"></script>
+<script src="data/crypto_data.js?v=202609221007"></script>
+<script src="data/extras_data.js?v=202609221007"></script>
+<script src="data/series_data.js?v=202609221007"></script>
+<script src="data/social_data.js?v=202609221007"></script>
+<script src="data/gems_data.js?v=202609221007"></script>
+<script src="data/signals_data.js?v=202609221007"></script>
+<script src="data/onchain_data.js?v=202609221007"></script>
+<script src="data/briefing_data.js?v=202609221007"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -12082,7 +12233,7 @@ window.c2xProxy = function (u) { return u; };
 
     /* ── Sidebar-Icons ── */
     const NAV_ICONS = {
-        script: '📜', portfolio: '💼', perfect: '🏆', milestones: '🚩',
+        script: '📜', portfolio: '💼', perfect: '🏆', milestones: '🚩', tagebuch: '📓',
         markets: '📊', movers: '⚡', finder: '🔎', narratives: '🌀', heatmap: '🟧',
         social: '📣', gems: '💎', memecoins: '🐸', feargreed: '🌡️', ranking: '🥇',
         killzones: '⏱️', calculator: '🧮', checklist: '✅', breakouts: '🚀', arena: '🏟️',
