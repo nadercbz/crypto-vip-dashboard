@@ -4883,7 +4883,7 @@ body { overflow: hidden; }
         opacity: 0; transition: opacity .25s; }
     .c2x-overlay.open { display: block; opacity: 1; }
     .c2x-panel { position: absolute; top: 0; right: 0; bottom: 0; z-index: 90;
-        width: min(480px, 96vw); display: flex; flex-direction: column; gap: 0.9rem;
+        width: min(640px, 96vw); display: flex; flex-direction: column; gap: 0.9rem;
         background: var(--c2x-panel-bg); color: var(--c2x-panel-ink);
         border-left: 1px solid var(--c2x-panel-line);
         box-shadow: -30px 0 80px rgba(0,0,0,0.55);
@@ -4942,7 +4942,27 @@ body { overflow: hidden; }
     .c2x-tf:hover { color: #fff; }
     .c2x-tf.active { color: #ffb56b; background: rgba(255,154,60,0.12); border-color: rgba(255,154,60,0.3); }
     .c2x-p-chartnote { margin-left: auto; font-size: 0.56rem; color: var(--c2x-panel-dim); letter-spacing: 0.06em; }
-    .c2x-p-chart { height: 240px; position: relative; }
+    .c2x-p-chart { height: clamp(300px, 40vh, 460px); position: relative; cursor: zoom-in; }
+
+    /* Chart vergroessern: der Wrapper wandert dafuer aus dem Panel heraus direkt
+       ins Modal. Das Panel hat ein transform, und ein transformierter Vorfahre
+       macht position:fixed beim Kind wirkungslos. Die ResizeObserver im Chart
+       passt Breite und Hoehe danach von selbst an. */
+    .c2x-chart-backdrop { position: fixed; inset: 0; z-index: 199; background: rgba(0,0,0,0.72);
+        backdrop-filter: blur(3px); animation: c2xFadeIn .18s ease both; }
+    @keyframes c2xFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .c2x-p-chartwrap.zoom { position: fixed; inset: 3vh 3vw; z-index: 200; margin: 0;
+        background: var(--c2x-panel-bg); border-color: rgba(255,255,255,0.16);
+        box-shadow: 0 30px 90px rgba(0,0,0,0.6); display: flex; flex-direction: column;
+        animation: c2xZoomIn .2s cubic-bezier(0.32,0.72,0,1) both; }
+    @keyframes c2xZoomIn { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
+    .c2x-p-chartwrap.zoom .c2x-p-charttabs { padding: 11px 14px; }
+    .c2x-p-chartwrap.zoom .c2x-tf { font-size: 0.72rem; padding: 4px 11px; }
+    .c2x-p-chartwrap.zoom .c2x-p-chartnote { font-size: 0.68rem; }
+    .c2x-p-chartwrap.zoom .c2x-p-chart { flex: 1; height: auto; cursor: default; }
+    .c2x-zoombtn { margin-left: 6px; }
+    .c2x-p-chartwrap.zoom .c2x-zoombtn { color: #ffb56b; background: rgba(255,154,60,0.12);
+        border-color: rgba(255,154,60,0.3); }
 
     .c2x-p-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .c2x-stat { background: var(--c2x-panel-card); border: 1px solid var(--c2x-panel-line);
@@ -5319,6 +5339,110 @@ body { overflow: hidden; }
         }
 
 
+        /* Cryptofluencer */
+        .c2-fl-q { border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:1rem 1.1rem;
+            margin-bottom:1rem; background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015)); }
+
+        .c2-fl-kopf { display:flex; align-items:flex-start; gap:.8rem; flex-wrap:wrap; margin-bottom:.7rem; }
+
+        .c2-fl-name { font-size:1.05rem; font-weight:700; color:#fff; }
+
+        .c2-fl-sub { font-size:.72rem; color:#8b949e; margin-top:.15rem; line-height:1.5; }
+
+        .c2-fl-links { display:flex; gap:.4rem; margin-left:auto; flex-wrap:wrap; }
+
+        .c2-fl-link { font-size:.68rem; padding:.24rem .6rem; border-radius:999px; text-decoration:none;
+            border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05); color:#cfd6dd; }
+
+        .c2-fl-link:hover { border-color:rgba(240,192,64,.5); color:#fff; }
+
+        .c2-fl-kampagne { display:flex; gap:.6rem; align-items:flex-start; padding:.7rem .85rem; border-radius:10px;
+            margin-bottom:.8rem; background:rgba(255,90,80,.1); border:1px solid rgba(255,90,80,.38);
+            font-size:.78rem; line-height:1.5; color:#ffc9c4; }
+
+        .c2-fl-kampagne b { color:#ff9a92; }
+
+        .c2-fl-kampagne code { font-size:.68rem; color:#e6ebf0; background:rgba(0,0,0,.3);
+            padding:.08rem .3rem; border-radius:4px; word-break:break-all; }
+
+        .c2-fl-abschnitt { font-size:.72rem; text-transform:uppercase; letter-spacing:.09em;
+            color:#8b949e; margin:.9rem 0 .45rem; font-weight:600; }
+
+        .c2-fl-coins { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:.5rem; }
+
+        .c2-fl-c { display:flex; align-items:center; gap:.55rem; padding:.5rem .7rem; border-radius:10px;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); }
+
+        .c2-fl-c.titel { border-color:rgba(240,192,64,.34); }
+
+        .c2-fl-c .bal { width:.28rem; align-self:stretch; border-radius:2px; background:#f0c040; flex:none; }
+
+        .c2-fl-c .txt { min-width:0; flex:1; }
+
+        .c2-fl-c b { display:block; font-size:.82rem; color:#e6ebf0; }
+
+        .c2-fl-c b small { color:#8b949e; font-weight:400; margin-left:.25rem; font-size:.66rem; }
+
+        .c2-fl-c span { font-size:.68rem; color:#8b949e; font-variant-numeric:tabular-nums; }
+
+        .c2-fl-c em { font-style:normal; font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums; flex:none; }
+
+        .c2-fl-chips { display:flex; flex-wrap:wrap; gap:.35rem; }
+
+        .c2-fl-chip { font-size:.7rem; padding:.22rem .55rem; border-radius:999px;
+            background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:#b8c1ca; }
+
+        .c2-fl-chip b { color:#e6ebf0; }
+
+        .c2-fl-chip.unbekannt { background:rgba(255,154,60,.13); border-color:rgba(255,154,60,.34); color:#ffb56b; }
+
+        .c2-fl-vids { list-style:none; margin:0; padding:0; font-size:.75rem; }
+
+        .c2-fl-vids li { display:flex; gap:.55rem; padding:.3rem 0; border-top:1px solid rgba(255,255,255,.06);
+            align-items:baseline; }
+
+        .c2-fl-vids li:first-child { border-top:0; }
+
+        .c2-fl-vids .d { color:#8b949e; font-variant-numeric:tabular-nums; flex:none; font-size:.7rem; }
+
+        .c2-fl-vids a { color:#cfd6dd; text-decoration:none; overflow:hidden; text-overflow:ellipsis;
+            white-space:nowrap; flex:1; min-width:0; }
+
+        .c2-fl-vids a:hover { color:#f0c040; }
+
+        .c2-fl-vids .v { color:#8b949e; font-size:.68rem; flex:none; font-variant-numeric:tabular-nums; }
+
+        .c2-fl-leer { padding:1.1rem; border-radius:12px; border:1px dashed rgba(255,255,255,.18);
+            color:#8b949e; font-size:.85rem; }
+
+
+        /* Datenfrische */
+        .c2-fr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.5rem; }
+
+        .c2-fr { display:flex; align-items:center; gap:.55rem; padding:.5rem .7rem; border-radius:10px;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); }
+
+        .c2-fr i { width:.55rem; height:.55rem; border-radius:50%; flex:none; }
+
+        .c2-fr i.ok { background:#00e58a; }
+ .c2-fr i.warn { background:#f0c040; }
+ .c2-fr i.alt { background:#ff6b61; }
+
+        .c2-fr i.unbekannt { background:#8b949e; }
+
+        .c2-fr div { min-width:0; }
+
+        .c2-fr b { display:block; font-size:.78rem; color:#e6ebf0; font-weight:600;
+            overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+        .c2-fr span { font-size:.7rem; color:#8b949e; font-variant-numeric:tabular-nums; }
+
+        .c2-fr.voll { border-color:rgba(240,192,64,.3); }
+
+        .c2-fr em { display:block; font-style:normal; font-size:.64rem; color:#f0c040;
+            text-transform:uppercase; letter-spacing:.06em; margin-top:.1rem; }
+
+
         /* Tagebuch */
         .c2-tb-zwei { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:1rem; margin-top:.4rem; }
 @media (max-width: 1000px) {
@@ -5624,6 +5748,7 @@ body { overflow: hidden; }
                 <a class="c2-nav" data-page="social">Social Buzz</a>
                 <a class="c2-nav" data-page="gems">Hidden Gems</a>
                 <a class="c2-nav" data-page="memecoins">Memecoin Hype</a>
+                <a class="c2-nav" data-page="fluencer">Cryptofluencer</a>
                 <a class="c2-nav" data-page="feargreed">Sentiment</a>
                 <a class="c2-nav" data-page="ranking">Ranking</a>
 
@@ -5671,6 +5796,11 @@ body { overflow: hidden; }
                     <div class="c2-card">
                         <div class="c2-eyebrow">Schlagzeilen</div>
                         <div id="ovNews" class="c2-ov-news"></div>
+                    </div>
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Datenfrische</div>
+                        <p class="c2-sub" style="margin:.2rem 0 .8rem; font-size:.78rem;">Welcher Bereich wann zuletzt gezogen wurde. <b>Klick auf Refresh</b> aktualisiert nur die schnellen Bereiche (rund 3 Sekunden). <b>Shift und Klick auf Refresh</b> zieht alles, auch Hidden Gems, Social Buzz, Onchain und den Memecoin-Sammler (rund 8 Minuten). Der Lauf um 07:30 macht jeden Morgen automatisch alles.</p>
+                        <div id="ovFrische" class="c2-fr-grid"></div>
                     </div>
                 </section>
 
@@ -5873,6 +6003,19 @@ body { overflow: hidden; }
                         <div id="c2TbFilter" class="c2-mc-tabs"></div>
                         <div id="c2TbGrid" class="c2-mc-grid"></div>
                         <div id="c2TbNote" class="c2-social-note"></div>
+                    </div>
+                </section>
+
+                <!-- CRYPTOFLUENCER PAGE -->
+                <section class="c2-page" data-page="fluencer">
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Wer redet worüber</div>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Cryptofluencer</h2>
+                        <p class="c2-sub" style="margin-bottom:1.2rem;">Naders Influencer-Liste, dauerhaft verfolgt. Gelesen wird der öffentliche YouTube-Feed: Titel, Beschreibung und, wo YouTube es zulässt, das Transkript. Daraus wird gezählt, über welche Coins gerade gesprochen wird. <strong>X lässt sich seit 2023 nicht mehr automatisiert lesen</strong>, die API kostet Geld, deshalb steht dort nur der direkte Link. Ein Coin im Titel wiegt dreifach, ein Coin im Transkript einfach. <strong>Kampagnen werden getrennt ausgewiesen:</strong> wenn ein Thema die Titel beherrscht und in der Beschreibung eine Contract-Adresse steht, ist das bezahlte Werbung und kein Call.</p>
+                        <div id="c2FlMeta" class="c2-social-meta"></div>
+                        <div id="c2FlKonsens"></div>
+                        <div id="c2FlQuellen"></div>
+                        <div id="c2FlNote" class="c2-social-note"></div>
                     </div>
                 </section>
 
@@ -6964,8 +7107,10 @@ body { overflow: hidden; }
                     <button data-tf="4h" class="c2x-tf">4H</button>
                     <button data-tf="1d" class="c2x-tf active">1D</button>
                     <button data-tf="1w" class="c2x-tf">1W</button>
+                    <button data-tf="all" class="c2x-tf" title="Komplette Historie, so weit die Daten reichen">ALL</button>
                     <button class="c2x-tf c2x-tog" id="c2xToggleEma" title="Gleitende Durchschnitte 50 und 200">EMA</button>
                     <button class="c2x-tf c2x-tog active" id="c2xToggleVol" title="Volumen einblenden">VOL</button>
+                    <button class="c2x-tf c2x-zoombtn" id="c2xChartZoom" title="Chart vergrößern (Klick in den Chart geht auch, Esc schließt)">⤢</button>
                     <span class="c2x-p-chartnote" id="c2xPChartNote"></span>
                 </div>
                 <div class="c2x-p-chart" id="c2xPChart"><div class="c2x-skel c2x-skel-chart"></div></div>
@@ -6990,14 +7135,14 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202609221007"></script>
-<script src="data/extras_data.js?v=202609221007"></script>
-<script src="data/series_data.js?v=202609221007"></script>
-<script src="data/social_data.js?v=202609221007"></script>
-<script src="data/gems_data.js?v=202609221007"></script>
-<script src="data/signals_data.js?v=202609221007"></script>
-<script src="data/onchain_data.js?v=202609221007"></script>
-<script src="data/briefing_data.js?v=202609221007"></script>
+<script src="data/crypto_data.js?v=202609240844"></script>
+<script src="data/extras_data.js?v=202609240844"></script>
+<script src="data/series_data.js?v=202609240844"></script>
+<script src="data/social_data.js?v=202609240844"></script>
+<script src="data/gems_data.js?v=202609240844"></script>
+<script src="data/signals_data.js?v=202609240844"></script>
+<script src="data/onchain_data.js?v=202609240844"></script>
+<script src="data/briefing_data.js?v=202609240844"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -12235,7 +12380,7 @@ window.c2xProxy = function (u) { return u; };
     const NAV_ICONS = {
         script: '📜', portfolio: '💼', perfect: '🏆', milestones: '🚩', tagebuch: '📓',
         markets: '📊', movers: '⚡', finder: '🔎', narratives: '🌀', heatmap: '🟧',
-        social: '📣', gems: '💎', memecoins: '🐸', feargreed: '🌡️', ranking: '🥇',
+        social: '📣', gems: '💎', memecoins: '🐸', fluencer: '🎙️', feargreed: '🌡️', ranking: '🥇',
         killzones: '⏱️', calculator: '🧮', checklist: '✅', breakouts: '🚀', arena: '🏟️',
         playbook: '📖', strategy2026: '🗺️', commands: '⌨️', notes: '📝', links: '🔗'
     };
@@ -12415,6 +12560,51 @@ window.c2xProxy = function (u) { return u; };
         return out;
     }
 
+    /* ── Chart vergroessern ──
+       Der Wrapper wird ins Modal gehaengt und per Platzhalter wieder an seinen
+       alten Platz zurueckgesetzt. Grund: das Panel traegt ein transform, und
+       darin waere position:fixed am Kind wirkungslos. */
+    let zoomPlatzhalter = null, zoomBackdrop = null;
+    function chartZoomAus() {
+        const wrap = modal.querySelector('.c2x-p-chartwrap');
+        if (!wrap || !wrap.classList.contains('zoom')) return;
+        wrap.classList.remove('zoom');
+        if (zoomPlatzhalter) { zoomPlatzhalter.replaceWith(wrap); zoomPlatzhalter = null; }
+        if (zoomBackdrop) { zoomBackdrop.remove(); zoomBackdrop = null; }
+    }
+    function chartZoomAn() {
+        const wrap = modal.querySelector('.c2x-p-chartwrap');
+        if (!wrap || wrap.classList.contains('zoom')) return;
+        zoomPlatzhalter = document.createElement('div');
+        wrap.replaceWith(zoomPlatzhalter);
+        zoomBackdrop = document.createElement('div');
+        zoomBackdrop.className = 'c2x-chart-backdrop';
+        zoomBackdrop.addEventListener('click', chartZoomAus);
+        modal.appendChild(zoomBackdrop);
+        modal.appendChild(wrap);
+        wrap.classList.add('zoom');
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        if (!document.querySelector('.c2x-p-chartwrap.zoom')) return;
+        // Vor allen anderen Escape-Handlern: sonst schliesst das Modal komplett
+        // und der vergroesserte Chart bliebe unsichtbar aktiv zurueck.
+        e.stopPropagation();
+        e.preventDefault();
+        chartZoomAus();
+    }, true);
+    function chartZoomUm() {
+        const wrap = modal.querySelector('.c2x-p-chartwrap');
+        if (wrap && wrap.classList.contains('zoom')) chartZoomAus(); else chartZoomAn();
+    }
+    $('c2xPChart').addEventListener('click', e => {
+        // Im vergroesserten Zustand soll der Klick im Chart nicht wieder schliessen,
+        // sonst kann man dort nicht mit dem Fadenkreuz arbeiten.
+        const wrap = modal.querySelector('.c2x-p-chartwrap');
+        if (wrap && wrap.classList.contains('zoom')) return;
+        chartZoomAn();
+    });
+
     function openPanel(sym) {
         const c = coinBySym(sym);
         if (!c) return;
@@ -12488,6 +12678,7 @@ window.c2xProxy = function (u) { return u; };
         } catch (e) {}
     }
     function closePanel() {
+        chartZoomAus();
         panelSym = null;
         $('c2xOverlay').classList.remove('open');
         $('c2xPanel').classList.remove('open');
@@ -12551,7 +12742,13 @@ window.c2xProxy = function (u) { return u; };
         '1h': { interval: '1h', limit: 336 },
         '4h': { interval: '4h', limit: 360 },
         '1d': { interval: '1d', limit: 365 },
-        '1w': { interval: '1w', limit: 200 }
+        '1w': { interval: '1w', limit: 260 },
+        // ALL: Binance deckelt bei 1000 Kerzen, 1000 Wochen sind rund 19 Jahre.
+        // Damit reicht die Ansicht ueber die komplette Handelshistorie des Paares.
+        // CoinGecko waere die einzige Quelle, die noch weiter zurueckgeht, aber
+        // days=max beantwortet die kostenlose Stufe seit 2026 mit 401. Ohne
+        // Bezahl-Key ist Binance also das Maximum an echter Historie.
+        'all': { interval: '1w', limit: 1000 }
     };
     function destroyChart() {
         if (chartRO) { chartRO.disconnect(); chartRO = null; }
@@ -12636,12 +12833,21 @@ window.c2xProxy = function (u) { return u; };
                     });
                 }
                 ch.timeScale().fitContent();
-                note.textContent = 'Binance · ' + c.binance +
-                    (showEma ? ' · EMA 50/200' : '');
+                if (tf === 'all' && klineCache[key].length) {
+                    // Bei der Gesamtansicht ist wichtiger, wie weit sie zurueckreicht,
+                    // als welches Paar geladen wurde.
+                    const ab = new Date(klineCache[key][0].time * 1000);
+                    const jahre = ((Date.now() / 1000 - klineCache[key][0].time) / 31557600).toFixed(1);
+                    note.textContent = 'Binance · alles seit ' +
+                        ('0' + (ab.getUTCMonth() + 1)).slice(-2) + '/' + ab.getUTCFullYear() +
+                        ' · ' + jahre + ' Jahre' + (showEma ? ' · EMA 50/200' : '');
+                } else {
+                    note.textContent = 'Binance · ' + c.binance + (showEma ? ' · EMA 50/200' : '');
+                }
                 return;
             }
             // Fallback 1: CoinGecko Tages-Chart (ueber den lokalen Proxy, s.o.)
-            const days = tf === '1w' ? 365 : 90;
+            const days = (tf === '1w' || tf === 'all') ? 365 : 90;
             const res = await fetch(viaProxy('https://api.coingecko.com/api/v3/coins/' +
                                     encodeURIComponent(c.id) +
                                     '/market_chart?vs_currency=usd&days=' + days + '&interval=daily'));
@@ -12654,7 +12860,8 @@ window.c2xProxy = function (u) { return u; };
                 });
                 chartSeries.setData(data.prices.map(p => ({ time: Math.floor(p[0] / 1000), value: p[1] })));
                 ch.timeScale().fitContent();
-                note.textContent = 'CoinGecko · ' + days + 'd';
+                note.textContent = 'CoinGecko · ' + days + 'd' +
+                    (tf === 'all' ? ' (mehr gibt die kostenlose Stufe nicht her)' : '');
                 return;
             }
             throw new Error('gecko leer');
@@ -12902,9 +13109,11 @@ window.c2xProxy = function (u) { return u; };
         renderCompare();
     });
     $('c2xCompClear').addEventListener('click', () => { compareSyms = []; renderCompare(); });
+
     $('c2xPTabs').addEventListener('click', e => {
         const b = e.target.closest('.c2x-tf');
         if (!b || !panelSym) return;
+        if (b.id === 'c2xChartZoom') { chartZoomUm(); return; }
         const c = coinBySym(panelSym);
         if (!c) return;
         if (b.id === 'c2xToggleEma') { showEma = !showEma; b.classList.toggle('active', showEma); }
