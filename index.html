@@ -5299,6 +5299,84 @@ body { overflow: hidden; }
             font-size: 0.54rem; gap: 10px; }
         #crypto2Modal .c2-bottom span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     }
+
+    /* Handy: Inhalte, die rechts aus dem Bild liefen (gemessen am 30.09.2026
+       auf 375 px). Grundregel: Grid-Spalten mit minmax(0, 1fr), sonst erzwingt
+       der breiteste Inhalt die Spaltenbreite und schiebt alles ueber den Rand. */
+    @media (max-width: 900px) {
+        #crypto2Modal .c2-two-col,
+        #crypto2Modal .c2-form,
+        #crypto2Modal .c2-mc-grid { grid-template-columns: minmax(0, 1fr); }
+        /* Keine Scroll-Kaesten in der Seite: auf dem Handy faengt so ein Kasten
+           den Finger ab, und die Seite selbst scrollt nicht weiter. Tabellen
+           und Listen klappen deshalb ganz auf. */
+        #crypto2Modal .c2-table-wrap,
+        #crypto2Modal .c2-ov-list { max-height: none !important; }
+        /* Spaltenkoepfe wie "30 Tage" duerfen umbrechen statt abgeschnitten zu werden */
+        #crypto2Modal .c2-tbl th { white-space: normal; line-height: 1.25; vertical-align: bottom; }
+        /* 30-Tage-Kurve: im Radar ist sie eine der vier Handy-Spalten. Pauschal
+           ausgeblendet stand dort eine leere Spalte unter der Ueberschrift. */
+        #crypto2Modal .c2-tbl td.c2-sparkcell:nth-child(-n+4) { display: table-cell; }
+        #crypto2Modal .c2-tbl td.c2-sparkcell:nth-child(-n+4) svg { width: 100%; max-width: 58px; height: 20px; }
+        #crypto2Modal .c2-mc-grid > *,
+        #crypto2Modal .c2-two-col > * { min-width: 0; }
+        /* Movers: Verlierer unter die Gewinner statt daneben. Die Mini-Kurve ist
+           auf dem Handy aus, sie hat Preis und Prozent nach rechts geschoben,
+           das uebernimmt jetzt der Preis selbst. */
+        #crypto2Modal .c2-two-col { gap: 1.4rem; }
+        #crypto2Modal .c2-list-row { padding: 9px 8px; gap: 10px; }
+        #crypto2Modal .c2-list-row > div:nth-child(2) { min-width: 0; }
+        #crypto2Modal .c2-list-row .c2-list-price { margin-left: auto; text-align: right; }
+        /* Social Buzz: Name und Signale bekommen die volle Breite, Kurve,
+           Balken und Score rutschen in eine zweite Zeile darunter */
+        #crypto2Modal .c2-social-row { grid-template-columns: 22px 24px minmax(0, 1fr);
+            column-gap: 8px; row-gap: 6px; padding: 10px; }
+        #crypto2Modal .c2-social-right { grid-column: 3 / -1; gap: 10px; min-width: 0; }
+        #crypto2Modal .c2-social-bar-wrap { flex: 1 1 auto; width: auto; min-width: 40px; }
+        #crypto2Modal .c2-social-score-num { width: auto; }
+        #crypto2Modal .c2-social-delta { width: auto; min-width: 30px; }
+        /* Hidden Gems: gleiche Zweizeilen-Logik wie Social Buzz */
+        #crypto2Modal .c2-gem-row { grid-template-columns: 22px 24px minmax(0, 1fr);
+            column-gap: 8px; row-gap: 6px; }
+        #crypto2Modal .c2-gem-right { grid-column: 3 / -1; min-width: 0; gap: 10px; }
+        #crypto2Modal .c2-gem-bar-wrap { flex: 1 1 auto; width: auto; min-width: 40px; }
+        /* Perfect Portfolio und Narratives: Karten ohne feste Mindestbreite */
+        #crypto2Modal .c2-pp-grid,
+        #crypto2Modal .c2-narr-lanes { grid-template-columns: minmax(0, 1fr); }
+        #crypto2Modal .c2-pp-grid > *,
+        #crypto2Modal .c2-narr-lanes > * { min-width: 0; }
+        /* Arena: zwei Kaempfer plus VS passen auch auf 320 px */
+        #crypto2Modal .c2-arena-wrap { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; }
+        #crypto2Modal .c2-fighter { min-width: 0; }
+        #crypto2Modal .c2-fighter img { max-width: 52px; height: auto; }
+        #crypto2Modal .c2-fighter > * { max-width: 100%; overflow-wrap: anywhere; }
+        /* Killzones: die Liste traegt selbst die Klasse c2-killzone und stand
+           dadurch als eine lange Zeile nebeneinander */
+        #crypto2Modal #c2KillzoneList { display: block; padding: 0; margin: 0;
+            background: none; border: 0; box-shadow: none; }
+        #crypto2Modal #c2KillzoneList .c2-killzone { padding: 12px 14px; }
+        /* Tabellen im Playbook und Co: seitlich wischen statt abschneiden */
+        #crypto2Modal .c2-pb-table { display: block; overflow-x: auto; max-width: 100%;
+            -webkit-overflow-scrolling: touch; }
+        /* Playbook: Markt-Lage-Karten und RugCheck-Boxen untereinander,
+           lange URLs duerfen umbrechen */
+        #crypto2Modal .c2-pb-verdict-grid,
+        #crypto2Modal section[data-page="playbook"] [style*="grid-template-columns:1fr 1fr"] {
+            grid-template-columns: minmax(0, 1fr) !important; }
+        #crypto2Modal section[data-page="playbook"] [style*="JetBrains Mono"] { overflow-wrap: anywhere; }
+        #crypto2Modal section.c2-page img,
+        #crypto2Modal section.c2-page video,
+        #crypto2Modal section.c2-page canvas { max-width: 100%; }
+        /* Filterleisten umbrechen statt aus dem Bild zu laufen */
+        #crypto2Modal .c2-filter-row { flex-wrap: wrap; row-gap: 6px; }
+        /* Coin-Detail: alle Zeitraum-Knoepfe samt Vergroessern sichtbar */
+        #crypto2Modal .c2x-p-charttabs { flex-wrap: wrap; row-gap: 6px; gap: 3px; }
+        #crypto2Modal .c2x-p-charttabs .c2x-tf { padding-left: 7px; padding-right: 7px; }
+        #crypto2Modal .c2x-p-chartnote:empty { display: none; }
+        /* Tagebuch-Karten: Kopfzeile darf umbrechen */
+        #crypto2Modal .c2-tb-card .c2-mc-top { flex-wrap: wrap; row-gap: 4px; }
+        #crypto2Modal .c2-tb-perf { min-width: 0; }
+    }
     
 
                     #crypto2Modal.c2-dark .cycle-bar  { background:rgba(249,115,22,0.25); }
@@ -5689,6 +5767,86 @@ body { overflow: hidden; }
 
         .c2-mc-link { display:inline-block; margin-top:.6rem; font-size:.74rem;
             color:#f0c040; text-decoration:none; border-bottom:1px solid rgba(240,192,64,.35); }
+</style>
+<style id="c2mStyles">
+#c2mBar, #c2mSheet { display: none; }
+@media (max-width: 900px) {
+    html, body { height: auto; overflow: visible; }
+    html { background: #1a0600; -webkit-text-size-adjust: 100%; }
+    html:has(#crypto2Modal.c2-dark) { background: #050608; }
+    #crypto2Modal { position: relative !important; inset: auto !important; display: block !important;
+        overflow: visible !important; min-height: 100vh; min-height: 100dvh;
+        background-size: 100% 100vh !important; background-repeat: no-repeat !important;
+        background-color: #1a0600 !important; }
+    #crypto2Modal.c2-dark { background-color: #050608 !important; }
+    #crypto2Modal .c2-layout { display: block !important; overflow: visible !important;
+        padding: 0.8rem 0.9rem 0 !important; min-height: 0 !important; height: auto !important; }
+    #crypto2Modal .c2-sidebar { display: none !important; }
+    #crypto2Modal .c2-main { overflow: visible !important; height: auto !important; min-height: 0;
+        padding: 0 0 1rem !important; }
+    #crypto2Modal .c2-topbar { padding: max(0.8rem, env(safe-area-inset-top)) 0.9rem 0 !important;
+        align-items: center; }
+    /* Mond- und Hilfe-Knopf neben die Uhr statt in eine eigene Zeile */
+    #crypto2Modal .c2-meta { flex-direction: row-reverse; align-items: center; gap: 10px; }
+    #crypto2Modal .c2-meta-controls { margin: 0; }
+    #crypto2Modal .c2x-marketstrip { margin: 0.6rem 0.9rem 0 !important; }
+    #crypto2Modal .c2-bottom { flex-wrap: wrap; row-gap: 4px;
+        padding: 0.6rem 0.9rem calc(84px + env(safe-area-inset-bottom)) !important; }
+    #crypto2Modal .c2-bottom span { white-space: normal !important; }
+
+    /* Coin-Detail: vollflaechig und am Bildschirm fest, nicht am Dokument */
+    #crypto2Modal .c2x-overlay { position: fixed !important; }
+    #crypto2Modal .c2x-panel { position: fixed !important; top: 0; bottom: 0; right: 0;
+        width: 100vw !important; max-width: 100vw; border-left: 0; z-index: 96;
+        padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(1.4rem + env(safe-area-inset-bottom));
+        overscroll-behavior: contain; }
+    html.c2m-lock, html.c2m-lock body { overflow: hidden !important; }
+
+    /* Feste Leiste unten */
+    #c2mBar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; gap: 2px;
+        padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+        background: rgba(26, 8, 2, 0.86); border-top: 1px solid var(--c2x-line);
+        -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%); }
+    #crypto2Modal.c2-dark #c2mBar { background: rgba(10, 11, 14, 0.9); }
+    #c2mBar button { flex: 1 1 0; min-width: 0; min-height: 52px; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 3px; padding: 6px 2px; border: 0;
+        border-radius: 12px; background: none; color: var(--c2x-ink-dim); cursor: pointer;
+        font: 600 0.64rem/1.1 'Inter', 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0.02em;
+        -webkit-tap-highlight-color: transparent; }
+    #c2mBar button .i { font-size: 1.28rem; line-height: 1; }
+    #c2mBar button .l { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #c2mBar button.on { color: var(--c2x-ink); background: var(--c2x-glass); }
+
+    /* Uebersicht aller Seiten */
+    #c2mSheet { display: block; position: fixed; inset: 0; z-index: 98; overflow-y: auto;
+        overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+        padding: calc(10px + env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom));
+        background: rgba(20, 7, 1, 0.97); color: var(--c2x-ink);
+        -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+        transform: translateY(100%); visibility: hidden;
+        transition: transform .28s cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear .28s; }
+    #c2mSheet.open { transform: none; visibility: visible;
+        transition: transform .28s cubic-bezier(0.32, 0.72, 0, 1); }
+    #crypto2Modal.c2-dark #c2mSheet { background: rgba(8, 9, 12, 0.97); }
+    .c2m-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 2px 4px; }
+    .c2m-head b { font-size: 1.2rem; font-weight: 800; letter-spacing: 0.01em; }
+    .c2m-x { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--c2x-line);
+        background: var(--c2x-glass); color: var(--c2x-ink); font-size: 1rem; cursor: pointer; }
+    .c2m-grp { margin: 18px 2px 8px; font: 700 0.62rem/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.16em; text-transform: uppercase; color: var(--c2x-ink-faint); }
+    .c2m-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .c2m-grid button { display: flex; align-items: center; gap: 10px; min-height: 54px; min-width: 0;
+        padding: 10px 12px; border-radius: 14px; border: 1px solid var(--c2x-line);
+        background: var(--c2x-glass-soft); color: var(--c2x-ink); text-align: left; cursor: pointer;
+        font: 600 0.86rem/1.2 'Inter', 'Helvetica Neue', Arial, sans-serif;
+        -webkit-tap-highlight-color: transparent; }
+    .c2m-grid button .i { font-size: 1.25rem; flex-shrink: 0; }
+    .c2m-grid button .l { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .c2m-grid button.on { border-color: var(--c2x-accent); background: var(--c2x-glass); }
+}
+@media (max-width: 900px) and (min-width: 460px) {
+    .c2m-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 </style>
 </head>
 <body>
@@ -7135,14 +7293,18 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202609292311"></script>
-<script src="data/extras_data.js?v=202609292311"></script>
-<script src="data/series_data.js?v=202609292311"></script>
-<script src="data/social_data.js?v=202609292311"></script>
-<script src="data/gems_data.js?v=202609292311"></script>
-<script src="data/signals_data.js?v=202609292311"></script>
-<script src="data/onchain_data.js?v=202609292311"></script>
-<script src="data/briefing_data.js?v=202609292311"></script>
+<script src="data/crypto_data.js?v=202609292340"></script>
+<script src="data/extras_data.js?v=202609292340"></script>
+<script src="data/series_data.js?v=202609292340"></script>
+<script src="data/social_data.js?v=202609292340"></script>
+<script src="data/gems_data.js?v=202609292340"></script>
+<script src="data/signals_data.js?v=202609292340"></script>
+<script src="data/onchain_data.js?v=202609292340"></script>
+<script src="data/briefing_data.js?v=202609292340"></script>
+<script src="data/memecoin_data.js?v=202609292340"></script>
+<script src="data/paper_data.js?v=202609292340"></script>
+<script src="data/cryptofluencer_data.js?v=202609292340"></script>
+<script src="data/tagebuch_data.js?v=202609292340"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -7161,6 +7323,30 @@ window.C2X_STANDALONE = true;
 /* Online gibt es keinen lokalen Proxy: direkt versuchen, sonst greifen die
    Fallbacks im Code (Binance-Kurse, eigene Historie). */
 window.c2xProxy = function (u) { return u; };
+/* BTC-Jahreskurs fuer die Sentiment-Seite: CoinGecko blockt ohne Proxy oft
+   (Drosselung ohne CORS-Kopf). Dann kommt dieselbe Reihe von Binance, im
+   Format, das der Code erwartet ({prices: [[ms, kurs], ...]}). */
+(function () {
+    var orig = window.fetch.bind(window);
+    function vonBinance() {
+        return orig('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=365')
+            .then(function (r) { return r.json(); })
+            .then(function (k) {
+                var prices = k.map(function (x) { return [x[0], +x[4]]; });
+                return new Response(JSON.stringify({ prices: prices }),
+                                    { headers: { 'Content-Type': 'application/json' } });
+            });
+    }
+    window.fetch = function (input, init) {
+        var url = typeof input === 'string' ? input : (input && input.url) || '';
+        if (url.indexOf('api.coingecko.com/api/v3/coins/bitcoin/market_chart') !== -1) {
+            return orig(input, init)
+                .then(function (r) { return r.ok ? r : vonBinance(); })
+                .catch(vonBinance);
+        }
+        return orig(input, init);
+    };
+})();
 </script>
 <script>
 (function initCrypto2() {
@@ -12051,7 +12237,7 @@ window.c2xProxy = function (u) { return u; };
                     const refreshed = await refreshLiveData();
                     if (refreshed) render();
                 });
-                closeBtn.addEventListener('click', () => {
+                if (closeBtn) closeBtn.addEventListener('click', () => {
                     modal.style.display = 'none';
                     if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
                 });
@@ -14220,6 +14406,679 @@ window.c2xProxy = function (u) { return u; };
 })();
 </script>
 <script>
+/* Memecoin Hype: rendert window.MEMECOIN_DATA aus compute_memecoin_signals.py */
+(function () {
+    var state = { seite: 'long', chain: 'alle', sort: 'score' };
+
+    function euro(n) {
+        if (n === null || n === undefined) return '?';
+        if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+        if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+        if (n >= 1e3) return (n / 1e3).toFixed(0) + 'k';
+        return Number(n).toFixed(0);
+    }
+    function alter(h) {
+        if (h === null || h === undefined) return '?';
+        return h < 48 ? Math.round(h) + ' h' : Math.round(h / 24) + ' d';
+    }
+    function farbe(sc) { return sc >= 70 ? '#00e58a' : sc >= 50 ? '#f0c040' : '#ff6b61'; }
+
+    function dexUrl(e) {
+        var c = { solana: 'solana', base: 'base', eth: 'ethereum', robinhood: 'robinhood' }[e.chain] || e.chain;
+        return 'https://dexscreener.com/' + c + '/' + e.pool;
+    }
+
+    function karte(e) {
+        var st = e.struktur || {};
+        var flags = [];
+        if (e.datenlage === 'momentaufnahme') flags.push(['roh', 'nur Momentaufnahme']);
+        else {
+            flags.push(st.extension ? ['ja', 'Extension'] : (st.chop_zum_ath ? ['nein', 'Chop zum ATH'] : ['', 'kein Ausbruch']));
+            if (st.hh && st.hl) flags.push(['ja', 'HH und HL']);
+            if (st.dip) flags.push(['ja', 'rote Kerze']);
+            if (st.divergenz) flags.push(['nein', 'Divergenz']);
+            if (st.pullback_pct !== null && st.pullback_pct !== undefined)
+                flags.push([st.pullback_pct <= 35 ? 'ja' : (st.pullback_pct > 60 ? 'nein' : ''), 'Rücksetzer ' + Math.round(st.pullback_pct) + '%']);
+        }
+        flags.push(e.shortbar
+            ? ['ja', 'shortbar: ' + e.short_venue + ' bis ' + (e.short_hebel || '?') + 'x']
+            : ['', 'nicht shortbar']);
+        if (e.social) {
+            if (e.social.x_handle) flags.push(['ja', 'X vorhanden']);
+            if (e.social.cto) flags.push(['ja', 'Community Takeover']);
+            if (e.social.boost_aktiv > 0) flags.push(['nein', 'bezahlte Promotion']);
+        }
+
+        var klasse = e.weckruf ? ' weckruf' : (e.score >= 60 ? ' gut' : (e.score < 25 ? ' schwach' : ''));
+        var h = '<div class="c2-mc-card' + klasse + '">';
+        // Beim Einstiegs-Filter gehoert die Einstiegszahl nach oben, sonst steht
+        // beim bestbewerteten Einstieg gross eine rote Qualitaetszahl daneben.
+        var zeigeEinstieg = state.sort === 'einstieg' && state.seite === 'long' && e.einstieg;
+        var kopfWert = zeigeEinstieg ? e.einstieg.score : e.score;
+        var kopfNeben = zeigeEinstieg
+            ? '<span class="c2-mc-zweitwert">Qualität ' + e.score + '</span>'
+            : '';
+        h += '<div class="c2-mc-top"><div class="c2-mc-sym">' + (e.symbol || '?') +
+             '<span class="c2-mc-chain">' + e.chain + '</span></div>' +
+             '<div style="text-align:right">' +
+             '<div class="c2-mc-score" style="color:' + farbe(kopfWert) + '">' + kopfWert + '</div>' +
+             kopfNeben + '</div></div>';
+        h += '<div class="c2-mc-zahlen">' +
+             '<div>MCap <b>' + euro(e.mcap) + '</b></div>' +
+             '<div>Liq <b>' + euro(e.liq) + '</b></div>' +
+             '<div>Vol24h <b>' + euro(e.vol24) + '</b></div>' +
+             '<div>Alter <b>' + alter(e.alter_h) + '</b></div></div>';
+        h += '<div class="c2-mc-flags">' + flags.map(function (f) {
+            return '<span class="c2-mc-flag ' + f[0] + '">' + f[1] + '</span>';
+        }).join('') + '</div>';
+        h += '<ul class="c2-mc-gruende">' + (e.gruende || []).slice(0, 4).map(function (g) {
+            var kl = g.deckel ? 'cap' : (g.p > 0 ? 'pos' : (g.p < 0 ? 'neg' : ''));
+            var wert = g.deckel ? 'max' : (g.p > 0 ? '+' + g.p : String(g.p));
+            return '<li class="' + kl + '"><span>' + wert + '</span><span>' + g.text + '</span></li>';
+        }).join('') + '</ul>';
+        if (e.einstieg && state.sort === 'einstieg' && state.seite === 'long') {
+            var ei = e.einstieg;
+            var label = ei.typ === 'ruecksetzer' ? 'Gesunder Rücksetzer' : 'Momentum nimmt Fahrt auf';
+            h += '<div class="c2-mc-einstieg' + (ei.score >= 60 ? ' stark' : '') + '">' +
+                 '<div class="c2-mc-ei-kopf"><span>' + label + '</span><b>' + ei.score + '</b></div>' +
+                 (ei.gruende || []).map(function (g) { return '<div>' + g + '</div>'; }).join('') +
+                 '</div>';
+        }
+        if (e.influencer && e.influencer.tage_her !== null && e.influencer.tage_her <= 30) {
+            var inf = e.influencer;
+            h += '<div class="c2-mc-inf' + (inf.tage_her <= 7 ? ' frisch' : '') + '">' +
+                 inf.namen + ' hat darüber gesprochen, vor ' + inf.tage_her + ' Tagen' +
+                 (inf.videos > 1 ? ' in ' + inf.videos + ' Videos' : '') + '</div>';
+        }
+        if (e.narrativ) {
+            var nv = e.narrativ;
+            h += '<div class="c2-mc-narrativ' + (nv.bewertung === 'stark' ? ' stark' : '') + '">' +
+                 '<div class="c2-mc-nv-kopf">Narrativ geprüft: ' + nv.kurz + '</div>' +
+                 (nv.belege || []).slice(0, 2).map(function (b) { return '<div>· ' + b + '</div>'; }).join('') +
+                 (nv.warnung ? '<div class="c2-mc-nv-warn">Aber: ' + nv.warnung + '</div>' : '') +
+                 '</div>';
+        }
+        if (e.peak_mcap) {
+            var runter = Math.round((1 - (e.mcap || 0) / e.peak_mcap) * 100);
+            h += '<div class="c2-mc-watch">Lief auf <b>' + (e.peak_geschaetzt ? 'ca. ' : '') + euro(e.peak_mcap) +
+                 '</b>, steht <b>' + runter + '%</b> darunter</div>';
+        }
+        if (e.weckruf) {
+            h += '<div class="c2-mc-weck">Weckruf: ' + e.weckruf.text + '</div>';
+        }
+        h += '<a class="c2-mc-link" href="' + dexUrl(e) + '" target="_blank" rel="noopener">Chart auf Dexscreener</a>';
+        return h + '</div>';
+    }
+
+    function renderPaper(grid) {
+        var p = window.PAPER_DATA;
+        var note = document.getElementById('c2McNote');
+        if (!p) {
+            grid.innerHTML = '<p class="c2-sub">Noch keine Daten. Bitte <code>python3 paper_trades.py</code> laufen lassen.</p>';
+            return;
+        }
+        var b = p.bilanz, r = p.regeln;
+        var kopf = '<div class="c2-mc-bilanz">' +
+            '<div><span>Abgeschlossen</span><b>' + b.abgeschlossen + '</b></div>' +
+            '<div><span>Trefferquote</span><b>' + (b.trefferquote !== null ? b.trefferquote + '%' : 'noch offen') + '</b></div>' +
+            '<div><span>Schnitt je Trade</span><b>' + (b.schnitt_pct !== null ? b.schnitt_pct + '%' : 'noch offen') + '</b></div>' +
+            '<div><span>Offene Positionen</span><b>' + p.offen.length + '</b></div></div>';
+
+        var typen = Object.keys(b.nach_typ || {});
+        if (typen.length) {
+            kopf += '<div class="c2-mc-bilanz">' + typen.map(function (t) {
+                var d2 = b.nach_typ[t];
+                return '<div><span>' + (t === 'ruecksetzer' ? 'Rücksetzer' : 'Anlauf') +
+                       ' (' + d2.n + ')</span><b>' + d2.quote + '% · ' + d2.schnitt + '%</b></div>';
+            }).join('') + '</div>';
+        }
+
+        function zeile(x, offen) {
+            var wert = offen ? x.lauf_pct : x.ergebnis_pct;
+            var fw = (wert === null || wert === undefined) ? '#9aa4ae' : (wert >= 0 ? '#00e58a' : '#ff6b61');
+            return '<div class="c2-mc-card">' +
+                '<div class="c2-mc-top"><div class="c2-mc-sym">' + (x.symbol || '?') +
+                '<span class="c2-mc-chain">' + x.chain + '</span></div>' +
+                '<div class="c2-mc-score" style="color:' + fw + '">' +
+                ((wert === null || wert === undefined) ? '?' : (wert > 0 ? '+' : '') + wert + '%') + '</div></div>' +
+                '<div class="c2-mc-zahlen">' +
+                '<div>Einstieg <b>' + Number(x.einstieg).toPrecision(4) + '</b></div>' +
+                '<div>Score <b>' + x.einstiegs_score + '</b></div>' +
+                '<div>Typ <b>' + (x.typ === 'ruecksetzer' ? 'Rücksetzer' : 'Anlauf') + '</b></div>' +
+                (x.teil_raus ? '<div><b style="color:#f0c040">Initialeinsatz raus</b></div>' : '') +
+                '</div><div class="c2-mc-watch">' +
+                (offen ? 'Seit ' + (x.eroeffnet || '').replace('T', ' ').slice(0, 16)
+                       : 'Geschlossen: ' + (x.grund_aus || '')) + '</div>' +
+                (x.begruendung ? '<div class="c2-mc-narrativ">' + x.begruendung + '</div>' : '') +
+                '</div>';
+        }
+
+        var html = kopf + '<h3 class="c2-mc-abschnitt">Offen (' + p.offen.length + ')</h3>';
+        html += '<div class="c2-mc-grid">' + (p.offen.length
+            ? p.offen.map(function (x) { return zeile(x, true); }).join('')
+            : '<p class="c2-sub">Keine offene Position.</p>') + '</div>';
+        if (p.geschlossen.length) {
+            html += '<h3 class="c2-mc-abschnitt">Abgeschlossen (' + b.abgeschlossen + ')</h3>' +
+                    '<div class="c2-mc-grid">' +
+                    p.geschlossen.map(function (x) { return zeile(x, false); }).join('') + '</div>';
+        }
+        grid.innerHTML = html;
+        grid.style.display = 'block';
+        if (note) {
+            note.innerHTML = 'Fiktives Depot mit ' + r.einsatz + ' USD je Position, maximal ' +
+                r.max_offen + ' gleichzeitig. Eröffnet ab Einstiegs-Score ' + r.einstieg_min +
+                '. Initialeinsatz raus bei ' + r.teil_bei + 'x, Stop bei ' + r.stop_pct +
+                ' Prozent, Trailing ' + r.trail_pct + ' Prozent unter dem Hoch, Zeitstopp nach ' +
+                (r.max_stunden / 24) + ' Tagen. Kein echtes Geld. Der Zweck ist zu messen, ob die ' +
+                'Bewertung trägt, bevor du selbst welches einsetzt.';
+        }
+    }
+
+    function render() {
+        var d = window.MEMECOIN_DATA;
+        var grid = document.getElementById('c2McGrid');
+        if (!grid) return;
+        if (!d) {
+            grid.innerHTML = '<p class="c2-sub">Noch keine Daten. Bitte <code>python3 fetch_memecoins.py</code> und <code>python3 compute_memecoin_signals.py</code> laufen lassen.</p>';
+            return;
+        }
+        var chainZeileEl = document.getElementById('c2McChains');
+        if (state.seite === 'paper') {
+            var sz = document.getElementById('c2McSort');
+            if (sz) sz.style.display = 'none';
+            if (chainZeileEl) chainZeileEl.style.display = 'none';
+            renderPaper(grid);
+            return;
+        }
+        if (chainZeileEl) chainZeileEl.style.display = '';
+
+        var liste = (d[state.seite] || []).filter(function (e) {
+            return state.chain === 'alle' || e.chain === state.chain;
+        });
+        // Einstiegs-Sortierung nur dort, wo sie Sinn ergibt: bei den Long Calls.
+        if (state.sort === 'einstieg' && state.seite === 'long') {
+            liste = liste.slice().sort(function (a, b) {
+                return ((b.einstieg && b.einstieg.score) || 0) -
+                       ((a.einstieg && a.einstieg.score) || 0);
+            });
+        }
+        var sortZeile = document.getElementById('c2McSort');
+        if (sortZeile) sortZeile.style.display = state.seite === 'long' ? '' : 'none';
+        grid.style.display = '';
+        grid.innerHTML = liste.length
+            ? liste.map(karte).join('')
+            : '<p class="c2-sub">Für diese Auswahl gibt es gerade kein Signal.</p>';
+
+        var note = document.getElementById('c2McNote');
+        if (note) {
+            note.innerHTML = state.seite === 'short'
+                ? 'Short-Kandidaten sind ausschließlich Coins mit echtem Perp-Markt. Aktuell ' + d.anzahl.shortbar + ' von ' + d.anzahl.gesamt + ' Pools.'
+                : (state.seite === 'watchlist'
+                    ? 'Coins, die einmal gelaufen und dann mindestens 60 Prozent gefallen sind. Wer sie auf der Liste hat, sieht einen erneuten Ausbruch Tage vor den Tradern, die nur neue Coins ansehen. Ein Weckruf braucht zwei Belege: Volumen deutlich über Tagestempo und steigender Kurs.'
+                    : state.seite === 'exit'
+                    ? 'Diese Coins sind schwach, aber nicht shortbar. Die einzige Konsequenz ist reduzieren oder rausgehen.'
+                    : (function () {
+                        var mom = (d.long || []).filter(function (x) { return x.datenlage === 'momentaufnahme'; });
+                        var max = mom.length ? Math.max.apply(null, mom.map(function (x) { return x.score; })) : 0;
+                        return 'Coins mit dem Hinweis "nur Momentaufnahme" sind gedeckelt, aktuell bei ' + max +
+                               ', ihre Chartstruktur wurde noch nicht geprüft. ' + d.anzahl.mit_struktur +
+                               ' von ' + d.anzahl.gesamt + ' Pools sind vollständig geprüft.';
+                    })());
+        }
+    }
+
+    function tabs(el, eintraege, feld) {
+        if (!el) return;
+        el.innerHTML = eintraege.map(function (t) {
+            return '<span class="c2-mc-tab' + (state[feld] === t[0] ? ' active' : '') +
+                   '" data-wert="' + t[0] + '">' + t[1] + '</span>';
+        }).join('');
+        el.querySelectorAll('.c2-mc-tab').forEach(function (b) {
+            b.addEventListener('click', function () {
+                state[feld] = b.dataset.wert;
+                el.querySelectorAll('.c2-mc-tab').forEach(function (x) { x.classList.remove('active'); });
+                b.classList.add('active');
+                render();
+            });
+        });
+    }
+
+    function init() {
+        var d = window.MEMECOIN_DATA;
+        var meta = document.getElementById('c2McMeta');
+        if (meta && d) {
+            meta.textContent = 'Stand ' + (d.stand || '').replace('T', ' ').slice(0, 16) +
+                ' · ' + d.anzahl.gesamt + ' Pools · ' + d.anzahl.mit_struktur +
+                ' mit geprüfter Chartstruktur · ' + d.anzahl.shortbar + ' shortbar';
+        }
+        tabs(document.getElementById('c2McSides'),
+             [['long', 'Long Calls'], ['short', 'Short Calls'], ['exit', 'Ausstieg'],
+              ['watchlist', 'Watchlist'], ['paper', 'Papier-Depot']], 'seite');
+        tabs(document.getElementById('c2McSort'),
+             [['score', 'Nach Qualität'], ['einstieg', 'Bester Einstieg jetzt']], 'sort');
+        tabs(document.getElementById('c2McChains'),
+             [['alle', 'Alle Chains'], ['solana', 'Solana'], ['base', 'Base'],
+              ['eth', 'Ethereum'], ['robinhood', 'Robinhood']], 'chain');
+        render();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>
+<script>
+/* Tagebuch: rendert window.TAGEBUCH_DATA aus update_tagebuch.py */
+(function () {
+    var state = { eintrag: 0, filter: 'alle', sort: 'rang' };
+
+    function fmtPreis(p) {
+        if (p === null || p === undefined) return '?';
+        if (p >= 1000) return p.toLocaleString('de-DE', { maximumFractionDigits: 0 }) + ' $';
+        if (p >= 1) return p.toLocaleString('de-DE', { maximumFractionDigits: 2 }) + ' $';
+        if (p >= 0.01) return p.toLocaleString('de-DE', { maximumFractionDigits: 4 }) + ' $';
+        return p.toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' $';
+    }
+    function fmtPct(v, plus) {
+        if (v === null || v === undefined) return '?';
+        var s = (v > 0 && plus !== false ? '+' : '') + v.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %';
+        return s;
+    }
+    function farbe(v) { return v === null || v === undefined ? '#8b949e' : v > 0 ? '#00e58a' : v < 0 ? '#ff6b61' : '#cfd6dd'; }
+    function geld(n) {
+        if (n === null || n === undefined) return '?';
+        if (n >= 1e9) return (n / 1e9).toFixed(2) + ' Mrd';
+        if (n >= 1e6) return (n / 1e6).toFixed(1) + ' Mio';
+        if (n >= 1e3) return (n / 1e3).toFixed(0) + 'k';
+        return Number(n).toFixed(0);
+    }
+    function datumDE(d) {
+        if (!d) return '';
+        var t = d.split('-');
+        return t.length === 3 ? t[2] + '.' + t[1] + '.' + t[0] : d;
+    }
+    function esc(t) { return String(t === null || t === undefined ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+    function sparkline(serie, perf) {
+        var pts = (serie || []).slice();
+        if (pts.length < 2) {
+            return '<svg class="c2-tb-spark" viewBox="0 0 200 44" preserveAspectRatio="none">' +
+                   '<line x1="0" y1="22" x2="200" y2="22" stroke="rgba(255,255,255,.18)" stroke-dasharray="3 3"/>' +
+                   '<text x="100" y="26" fill="#8b949e" font-size="8" text-anchor="middle">Historie ab morgen</text></svg>';
+        }
+        var vals = pts.map(function (p) { return p[1]; });
+        var lo = Math.min.apply(null, vals.concat([0])), hi = Math.max.apply(null, vals.concat([0]));
+        if (hi - lo < 1e-9) { hi = lo + 1; }
+        var W = 200, H = 44, pad = 3;
+        var x = function (i) { return pad + i * (W - 2 * pad) / (pts.length - 1); };
+        var y = function (v) { return pad + (hi - v) * (H - 2 * pad) / (hi - lo); };
+        var d = vals.map(function (v, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); }).join(' ');
+        var y0 = y(0).toFixed(1);
+        var col = farbe(perf);
+        var fill = d + ' L' + x(pts.length - 1).toFixed(1) + ',' + y0 + ' L' + x(0).toFixed(1) + ',' + y0 + ' Z';
+        return '<svg class="c2-tb-spark" viewBox="0 0 200 44" preserveAspectRatio="none">' +
+               '<path d="' + fill + '" fill="' + col + '" opacity=".14"/>' +
+               '<line x1="0" y1="' + y0 + '" x2="200" y2="' + y0 + '" stroke="rgba(255,255,255,.22)" stroke-dasharray="3 3"/>' +
+               '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>' +
+               '<circle cx="' + x(pts.length - 1).toFixed(1) + '" cy="' + y(vals[vals.length - 1]).toFixed(1) + '" r="2.4" fill="' + col + '"/></svg>';
+    }
+
+    function bilanzZelle(label, wert, col) {
+        return '<div><span>' + label + '</span><b' + (col ? ' style="color:' + col + '"' : '') + '>' + wert + '</b></div>';
+    }
+
+    function renderGesamt(d) {
+        var g = d.gesamt || {};
+        var el = document.getElementById('c2TbGesamt');
+        if (!el) return;
+        var kaufQuote = (g.n_kauf ? Math.round(100 * (g.kauf_treffer || 0) / g.n_kauf) : null);
+        el.innerHTML =
+            bilanzZelle('Analysen', g.n_analysen || 0) +
+            bilanzZelle('Coins bewertet', g.n_coins || 0) +
+            bilanzZelle('Kauf-Signale Ø', fmtPct(g.kauf_perf), farbe(g.kauf_perf)) +
+            bilanzZelle('Alpha zu BTC Ø', fmtPct(g.kauf_alpha), farbe(g.kauf_alpha)) +
+            bilanzZelle('Meiden-Signale Ø', fmtPct(g.meiden_perf), farbe(g.meiden_perf === null ? null : -g.meiden_perf)) +
+            bilanzZelle('Kauf-Treffer', (g.kauf_treffer || 0) + ' von ' + (g.n_kauf || 0) + (kaufQuote !== null && g.kauf_treffer + g.kauf_nein + g.kauf_markt > 0 ? ' (' + kaufQuote + ' %)' : '')) +
+            bilanzZelle('Meiden-Treffer', (g.meiden_treffer || 0) + ' von ' + ((g.meiden_treffer || 0) + (g.meiden_nein || 0))) +
+            bilanzZelle('Rang-Treffer', g.rang_treffer === null || g.rang_treffer === undefined ? '?' : g.rang_treffer.toFixed(2), farbe(g.rang_treffer));
+    }
+
+    function renderKopf(e) {
+        var m = e.markt || {}, b = e.bilanz || {};
+        var el = document.getElementById('c2TbKopf');
+        el.innerHTML = '<div class="c2-tb-kopf">' +
+            '<div><div class="c2-tb-datum">' + datumDE(e.datum) + ' · Tag ' + (b.tage || 0) + '</div>' +
+            '<h3>' + esc(e.titel) + '</h3><p>' + esc(e.quelle) + '</p><p style="margin-top:.4rem">' + esc(e.methode) + '</p></div>' +
+            '<div><div class="c2-tb-lbl">Markt damals</div><p><b>BTC ' + fmtPreis(m.btc) + '</b> · Fear &amp; Greed <b>' + (m.fng !== undefined ? m.fng + ' (' + esc(m.fng_label || '') + ')' : '?') + '</b> · Dominanz <b>' + (m.dominanz !== undefined ? m.dominanz + ' %' : '?') + '</b></p>' +
+            (m.kommentar ? '<p>' + esc(m.kommentar) + '</p>' : '') +
+            '<div class="c2-tb-lbl" style="margin-top:.5rem">Himmel</div><p>' + esc(e.astro || '') + '</p></div>' +
+            '<div><div class="c2-tb-lbl">These</div><p>' + esc(e.these || '') + '</p>' +
+            (e.muster ? '<div class="c2-tb-lbl" style="margin-top:.5rem">Muster</div><p>' + esc(e.muster) + '</p>' : '') + '</div>' +
+            '</div>';
+    }
+
+    function renderBilanz(e) {
+        var b = e.bilanz || {};
+        var el = document.getElementById('c2TbBilanz');
+        el.innerHTML =
+            bilanzZelle('BTC seit Analyse', fmtPct(b.btc_perf), farbe(b.btc_perf)) +
+            bilanzZelle('Kauf (' + b.n_kauf + ') Ø', fmtPct(b.kauf_perf), farbe(b.kauf_perf)) +
+            bilanzZelle('Alpha Kauf', fmtPct(b.kauf_alpha), farbe(b.kauf_alpha)) +
+            bilanzZelle('Watch (' + b.n_watch + ') Ø', fmtPct(b.watch_perf), farbe(b.watch_perf)) +
+            bilanzZelle('Meiden (' + b.n_meiden + ') Ø', fmtPct(b.meiden_perf), farbe(b.meiden_perf === null ? null : -b.meiden_perf)) +
+            bilanzZelle('Top 5 gegen Rest', fmtPct(b.top5_perf) + ' / ' + fmtPct(b.rest_perf), farbe(b.top5_perf !== null && b.rest_perf !== null ? b.top5_perf - b.rest_perf : null)) +
+            bilanzZelle('Rang-Treffer', b.rang_treffer === null || b.rang_treffer === undefined ? '?' : b.rang_treffer.toFixed(2), farbe(b.rang_treffer)) +
+            bilanzZelle('Treffer', (b.treffer_ja || 0) + ' ja · ' + (b.treffer_markt || 0) + ' Markt · ' + (b.treffer_nein || 0) + ' nein · ' + (b.treffer_offen || 0) + ' offen') +
+            (b.bester ? bilanzZelle('Bester', b.bester.symbol + ' ' + fmtPct(b.bester.perf) + ' (Rang ' + b.bester.rang + ')', '#00e58a') : '') +
+            (b.schlechtester ? bilanzZelle('Schlechtester', b.schlechtester.symbol + ' ' + fmtPct(b.schlechtester.perf) + ' (Rang ' + b.schlechtester.rang + ')', '#ff6b61') : '');
+    }
+
+    function renderRang(e) {
+        var el = document.getElementById('c2TbRang');
+        var coins = (e.coins || []).slice().sort(function (a, b) { return (a.rang || 99) - (b.rang || 99); });
+        var vals = coins.map(function (c) { return c.perf; }).filter(function (v) { return v !== null && v !== undefined; });
+        var btc = e.bilanz ? e.bilanz.btc_perf : null;
+        if (btc !== null && btc !== undefined) vals.push(btc);
+        var maxAbs = Math.max(5, Math.max.apply(null, vals.map(Math.abs).concat([0])));
+        var h = '<div class="c2-tb-rang">';
+        coins.forEach(function (c) {
+            var v = c.perf;
+            var w = v === null || v === undefined ? 0 : Math.min(50, Math.abs(v) / maxAbs * 50);
+            var bar = v === null || v === undefined ? '' :
+                (v >= 0 ? '<i class="pos" style="left:50%;width:' + w + '%"></i>' : '<i class="neg" style="right:50%;width:' + w + '%"></i>');
+            var btcMark = btc === null || btc === undefined ? '' : '<em style="left:calc(50% + ' + (Math.max(-50, Math.min(50, btc / maxAbs * 50))) + '%)" title="BTC ' + fmtPct(btc) + '"></em>';
+            h += '<div class="c2-tb-rz"><span class="r">' + c.rang + '</span>' +
+                 '<span class="s">' + esc(c.symbol) + '<small>' + esc(c.signal) + '</small></span>' +
+                 '<span class="c2-tb-bar"><u style="left:50%"></u>' + bar + btcMark + '</span>' +
+                 '<span class="v" style="color:' + farbe(v) + '">' + fmtPct(v) + '</span></div>';
+        });
+        h += '</div><div class="c2-tb-legende">Balken: Kurs seit der Analyse. <em>Gelbe Marke</em>: Bitcoin im selben Zeitraum. Stimmt die Rangfolge, stehen die grünen Balken oben und die roten unten.</div>';
+        el.innerHTML = h;
+    }
+
+    function renderTimeline(e) {
+        var el = document.getElementById('c2TbTimeline');
+        var evs = (e.ereignisse || []).slice().reverse();
+        if (!evs.length) { el.innerHTML = '<div class="c2-tb-leer">Noch keine Ereignisse.</div>'; return; }
+        el.innerHTML = evs.map(function (ev) {
+            var txt = esc(ev.text);
+            var i = txt.indexOf(':');
+            if (i > 0 && i < 40) txt = '<b>' + txt.slice(0, i) + '</b>' + txt.slice(i);
+            return '<div class="c2-tb-ev ' + esc(ev.typ || '') + '"><span class="d">' + datumDE(ev.datum) + '</span>' + txt + '</div>';
+        }).join('');
+    }
+
+    function karte(c) {
+        var klasse = c.signal === 'kauf' ? ' gut' : c.signal === 'meiden' ? ' schwach' : '';
+        var trefferTxt = { ja: 'Treffer', markt: 'nur mit dem Markt', nein: 'daneben', offen: 'offen' }[c.treffer] || 'offen';
+        var h = '<div class="c2-mc-card c2-tb-card' + klasse + '">';
+        h += '<div class="c2-mc-top"><div class="c2-mc-sym"><span class="c2-tb-rangbadge">' + c.rang + '</span>' + esc(c.symbol) +
+             '<span class="c2-tb-sig ' + esc(c.signal) + '">' + esc(c.signal) + '</span>' +
+             '<div class="c2-tb-tier">' + esc(c.name) + ' · ' + esc(c.tier || '') + '</div></div>' +
+             '<div style="text-align:right"><div class="c2-tb-perf" style="color:' + farbe(c.perf) + '">' + fmtPct(c.perf) + '</div>' +
+             '<div class="c2-tb-alpha">Alpha zu BTC ' + fmtPct(c.alpha) + '</div></div></div>';
+        h += sparkline(c.serie, c.perf);
+        h += '<div class="c2-mc-zahlen">' +
+             '<div>Einstieg <b>' + fmtPreis(c.einstieg) + '</b></div>' +
+             '<div>Jetzt <b>' + fmtPreis(c.aktuell) + '</b></div>' +
+             '<div>Hoch <b style="color:#5ff0b0">' + fmtPct(c.hoch) + '</b></div>' +
+             '<div>Tief <b style="color:#ff9a92">' + fmtPct(c.tief) + '</b></div></div>';
+        h += '<div class="c2-mc-zahlen">' +
+             '<div>MC <b>' + geld(c.mc_jetzt || c.mc) + '</b></div>' +
+             '<div>MC/FDV <b>' + (c.mc_fdv !== null && c.mc_fdv !== undefined ? c.mc_fdv.toFixed(2) : '?') + '</b></div>' +
+             '<div>vom ATH <b>' + fmtPct(c.ath_pct_jetzt !== undefined && c.ath_pct_jetzt !== null ? c.ath_pct_jetzt : c.ath_pct) + '</b></div>' +
+             '<div>7d <b style="color:' + farbe(c.ch7d) + '">' + fmtPct(c.ch7d) + '</b></div></div>';
+        h += '<span class="c2-tb-treffer ' + esc(c.treffer) + '">' + trefferTxt + '</span>';
+        h += '<details><summary>Warum so bewertet</summary>' +
+             '<div class="c2-tb-txt"><b>Mystik</b> ' + esc(c.mystik) + '</div>' +
+             '<div class="c2-tb-txt"><b>Fundament</b> ' + esc(c.fundament) + '</div>' +
+             '<div class="c2-tb-txt"><b>Urteil</b> ' + esc(c.urteil) + '</div></details>';
+        h += '</div>';
+        return h;
+    }
+
+    function renderGrid(e) {
+        var grid = document.getElementById('c2TbGrid');
+        var coins = (e.coins || []).filter(function (c) { return state.filter === 'alle' || c.signal === state.filter; });
+        coins.sort(function (a, b) {
+            if (state.sort === 'perf') return (b.perf === null ? -1e9 : b.perf) - (a.perf === null ? -1e9 : a.perf);
+            if (state.sort === 'alpha') return (b.alpha === null ? -1e9 : b.alpha) - (a.alpha === null ? -1e9 : a.alpha);
+            return (a.rang || 99) - (b.rang || 99);
+        });
+        grid.innerHTML = coins.length ? coins.map(karte).join('') : '<div class="c2-tb-leer">Keine Coins in dieser Auswahl.</div>';
+    }
+
+    function tabs(el, liste, key, cb) {
+        el.innerHTML = liste.map(function (t) {
+            return '<span class="c2-mc-tab' + (state[key] === t[0] ? ' active' : '') + '" data-v="' + t[0] + '">' + t[1] + '</span>';
+        }).join('');
+        el.querySelectorAll('.c2-mc-tab').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var v = b.dataset.v;
+                state[key] = key === 'eintrag' ? parseInt(v, 10) : v;
+                tabs(el, liste, key, cb);
+                cb();
+            });
+        });
+    }
+
+    function renderEintrag() {
+        var d = window.TAGEBUCH_DATA;
+        var e = d.eintraege[state.eintrag];
+        if (!e) return;
+        renderKopf(e); renderBilanz(e); renderRang(e); renderTimeline(e); renderGrid(e);
+        var note = document.getElementById('c2TbNote');
+        note.innerHTML = window.C2X_STANDALONE ? 'Die Nachverfolgung läuft automatisch mit jedem Update. Hypothetisch, keine Finanzberatung.' : 'Neue Analyse eintragen: Eintrag in <code>tagebuch.json</code> anlegen, danach <code>python3 update_tagebuch.py</code>. Käufe, Nachkäufe, Stops und Verkäufe unter <code>aktionen</code> desselben Eintrags. Die Nachverfolgung läuft mit jedem Refresh-Lauf automatisch mit.';
+    }
+
+    function init() {
+        var d = window.TAGEBUCH_DATA;
+        var meta = document.getElementById('c2TbMeta');
+        if (!meta) return;
+        if (!d || !d.eintraege || !d.eintraege.length) {
+            meta.innerHTML = '<div class="c2-tb-leer">Noch keine Analyse im Tagebuch. Erste Analyse in <code>tagebuch.json</code> anlegen und <code>python3 update_tagebuch.py</code> laufen lassen.</div>';
+            return;
+        }
+        meta.innerHTML = '<span>Stand ' + esc(d.updated) + (d.kurse_live ? ' · Kurse live' : ' · Kurse aus der Historie') + '</span>';
+        renderGesamt(d);
+        var liste = d.eintraege.map(function (e, i) { return [String(i), datumDE(e.datum) + ' · ' + e.titel]; });
+        state.eintrag = 0;
+        tabs(document.getElementById('c2TbEintraege'), liste, 'eintrag', renderEintrag);
+        var filterEl = document.getElementById('c2TbFilter');
+        var sortEl = document.createElement('div');
+        sortEl.className = 'c2-mc-tabs';
+        filterEl.parentNode.insertBefore(sortEl, filterEl.nextSibling);
+        tabs(filterEl, [['alle', 'Alle'], ['kauf', 'Kauf'], ['watch', 'Watch'], ['meiden', 'Meiden']], 'filter', renderEintrag);
+        tabs(sortEl, [['rang', 'Nach Rang'], ['perf', 'Nach Performance'], ['alpha', 'Nach Alpha zu BTC']], 'sort', renderEintrag);
+        renderEintrag();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>
+<script>
+/* Cryptofluencer: rendert window.FLUENCER_DATA aus fetch_cryptofluencer.py */
+(function () {
+    function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function datumDE(d) { var t = String(d || '').split('-'); return t.length === 3 ? t[2] + '.' + t[1] + '.' : (d || ''); }
+    function zahl(n) {
+        if (n == null) return '?';
+        if (n >= 1e6) return (n / 1e6).toFixed(1) + ' Mio';
+        if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+        return String(n);
+    }
+    function farbe(v) { return v == null ? '#8b949e' : v > 0 ? '#00e58a' : v < 0 ? '#ff6b61' : '#cfd6dd'; }
+    function pct(v) { return v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(1) + ' %'; }
+
+    function quelleHtml(q) {
+        var h = '<div class="c2-fl-q">';
+        h += '<div class="c2-fl-kopf"><div><div class="c2-fl-name">' + esc(q.name) + '</div>' +
+             '<div class="c2-fl-sub">' + (q.abos ? esc(q.abos) + ' Abonnenten · ' : '') +
+             q.n_videos + ' Videos in 30 Tagen · ' + q.n_transkripte + ' mit Transkript' +
+             (q.letztes_video ? ' · zuletzt ' + datumDE(q.letztes_video) : '') + '</div></div>' +
+             '<div class="c2-fl-links">' +
+             (q.youtube_url ? '<a class="c2-fl-link" href="' + esc(q.youtube_url) + '" target="_blank" rel="noopener">YouTube</a>' : '') +
+             (q.x_url ? '<a class="c2-fl-link" href="' + esc(q.x_url) + '" target="_blank" rel="noopener">X @' + esc(q.x) + '</a>' : '') +
+             (q.tiktok ? '<a class="c2-fl-link" href="https://www.tiktok.com/@' + esc(q.tiktok) + '" target="_blank" rel="noopener">TikTok</a>' : '') +
+             '</div></div>';
+        if (q.notiz) h += '<div class="c2-fl-sub" style="margin:-.3rem 0 .6rem">' + esc(q.notiz) + '</div>';
+
+        if (q.kampagne) {
+            var k = q.kampagne;
+            h += '<div class="c2-fl-kampagne"><span>⚠</span><div><b>Kampagne, kein Call.</b> ' +
+                 '„' + esc(k.thema) + '“ steht in <b>' + k.n + ' von ' + k.von + '</b> Video-Titeln (' +
+                 Math.round(k.anteil * 100) + ' Prozent)' +
+                 (k.ticker ? ', der Ticker lautet <b>$' + esc(k.ticker) + '</b>' : '') +
+                 (k.contract ? ' und in der Beschreibung steht die Kaufadresse: <code>' + esc(k.contract) + '</code>' : '') +
+                 '. ' + (k.contract
+                     ? 'Wer ein einzelnes Projekt so dicht bewirbt und den Contract gleich mitliefert, berichtet nicht, sondern wird bezahlt.'
+                     : 'Ein einzelnes Projekt trägt hier den halben Kanal. Eine Kaufadresse steht nicht dabei, der Schwerpunkt ist trotzdem zu eng für Berichterstattung.') +
+                 ' Als Werbung lesen, nicht als Einschätzung.</div></div>';
+        }
+
+        if ((q.coins || []).length) {
+            var max = Math.max.apply(null, q.coins.map(function (c) { return c.treffer; }));
+            h += '<div class="c2-fl-abschnitt">Coins, über die gesprochen wird</div><div class="c2-fl-coins">';
+            h += q.coins.slice(0, 12).map(function (c) {
+                var anteil = Math.max(8, Math.round(100 * c.treffer / max));
+                return '<div class="c2-fl-c' + (c.im_titel ? ' titel' : '') + '">' +
+                       '<i class="bal" style="opacity:' + (0.25 + 0.75 * anteil / 100).toFixed(2) + '"></i>' +
+                       '<div class="txt"><b>' + esc(c.sym) + (c.rank ? '<small>#' + c.rank + '</small>' : '') + '</b>' +
+                       '<span>' + c.n_videos + ' Videos' + (c.im_titel ? ', ' + c.im_titel + 'x im Titel' : '') +
+                       ' · zuletzt ' + datumDE(c.letzt) + '</span></div>' +
+                       '<em style="color:' + farbe(c.ch7d) + '">' + pct(c.ch7d) + '</em></div>';
+            }).join('');
+            h += '</div>';
+        }
+
+        if ((q.unbekannt || []).length) {
+            h += '<div class="c2-fl-abschnitt">Genannt, aber nicht in der Top 1000</div><div class="c2-fl-chips">';
+            h += q.unbekannt.map(function (u) {
+                return '<span class="c2-fl-chip unbekannt">$<b>' + esc(u.sym) + '</b> · ' +
+                       u.n_videos + ' Videos · zuletzt ' + datumDE(u.letzt) + '</span>';
+            }).join('');
+            h += '</div>';
+        }
+
+        if ((q.themen || []).length) {
+            h += '<div class="c2-fl-abschnitt">Begriffe in den Titeln</div><div class="c2-fl-chips">';
+            h += q.themen.map(function (t) {
+                return '<span class="c2-fl-chip"><b>' + esc(t.begriff) + '</b> ' + t.n + 'x</span>';
+            }).join('');
+            h += '</div>';
+        }
+
+        if ((q.videos || []).length) {
+            h += '<div class="c2-fl-abschnitt">Letzte Videos</div><ul class="c2-fl-vids">';
+            h += q.videos.map(function (v) {
+                return '<li><span class="d">' + datumDE(v.datum) + '</span>' +
+                       '<a href="https://www.youtube.com/watch?v=' + esc(v.id) + '" target="_blank" rel="noopener">' +
+                       esc(v.titel) + '</a>' +
+                       '<span class="v">' + (v.views != null ? zahl(v.views) + ' Aufrufe' : '') +
+                       (v.transkript ? ' · gelesen' : '') + '</span></li>';
+            }).join('');
+            h += '</ul>';
+        }
+        return h + '</div>';
+    }
+
+    function render() {
+        var d = window.FLUENCER_DATA;
+        var meta = document.getElementById('c2FlMeta');
+        if (!meta) return;
+        if (!d || !(d.quellen || []).length) {
+            meta.innerHTML = '<div class="c2-fl-leer">Noch keine Quelle eingetragen. Influencer in <code>cryptofluencer.json</code> anlegen und <code>python3 fetch_cryptofluencer.py</code> laufen lassen.</div>';
+            return;
+        }
+        meta.innerHTML = '<span>Stand ' + esc(d.updated) + ' · ' + d.quellen.length +
+                         ' Quelle' + (d.quellen.length === 1 ? '' : 'n') +
+                         ' · Fenster ' + d.fenster_tage + ' Tage</span>';
+
+        var kons = document.getElementById('c2FlKonsens');
+        if ((d.konsens || []).length) {
+            kons.innerHTML = '<div class="c2-fl-abschnitt">Konsens: mehr als eine Quelle nennt denselben Coin</div>' +
+                '<div class="c2-fl-chips" style="margin-bottom:1rem">' + d.konsens.map(function (k) {
+                    return '<span class="c2-fl-chip"><b>' + esc(k.sym) + '</b> · ' + k.n_quellen + ' Quellen</span>';
+                }).join('') + '</div>';
+        } else {
+            kons.innerHTML = d.quellen.length > 1 ? '' :
+                '<div class="c2-fl-sub" style="margin-bottom:1rem">Konsens zeigt sich ab der zweiten Quelle. Weitere Influencer in <code>cryptofluencer.json</code> ergänzen, dann steht hier, worauf sich mehrere unabhängig einigen.</div>';
+        }
+
+        document.getElementById('c2FlQuellen').innerHTML = d.quellen.map(quelleHtml).join('');
+        document.getElementById('c2FlNote').innerHTML = window.C2X_STANDALONE ? esc(d.hinweis_x || '') :
+            'Neue Quelle: Eintrag in <code>cryptofluencer.json</code>, danach <code>python3 fetch_cryptofluencer.py</code>. ' +
+            'Läuft bei jedem vollen Refresh automatisch mit. ' + esc(d.hinweis_x || '');
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
+    else render();
+})();
+</script>
+<script>
+/* Datenfrische: zeigt je Bereich, wann er zuletzt gezogen wurde.
+   Die Information lag bisher nur im title-Tooltip eines kleinen Punktes.
+   Wichtig ist die Unterscheidung schnell gegen voll: der normale Refresh
+   fasst Hidden Gems, Social Buzz, Onchain und den Memecoin-Sammler nicht an. */
+(function () {
+    // Die Datendateien deklarieren teils `const` auf oberster Ebene. Das landet
+    // NICHT auf window, deshalb geht der Zugriff ueber typeof statt window.X.
+    function wert(name, feld) {
+        try {
+            var o = eval('typeof ' + name + ' !== "undefined" ? ' + name + ' : null');
+            if (o == null) return null;
+            return feld ? o[feld] : o;
+        } catch (e) { return null; }
+    }
+    // [Anzeige, Objektname, Feld, nur im vollen Lauf, Grenze in Stunden bis "warn"]
+    var BEREICHE = [
+        ['Kurse',            'CRYPTO_DB_UPDATED', null,      false, 8],
+        ['Signale',          'SIGNALS_DATA',      'updated', false, 8],
+        ['Markt, TVL, F&G',  'EXTRAS_DATA',       'updated', false, 8],
+        ['Briefing',         'BRIEFING_DATA',     'updated', false, 26],
+        ['Tagebuch',         'TAGEBUCH_DATA',     'updated', false, 26],
+        ['Memecoin-Signale', 'MEMECOIN_DATA',     'stand',   false, 12],
+        ['Hidden Gems',      'GEMS_DATA',         'updated', true,  26],
+        ['Social Buzz',      'SOCIAL_DATA',       'updated', true,  26],
+        ['Onchain und News', 'ONCHAIN_DATA',      'updated', true,  26]
+    ];
+
+    function parseUtc(v) {
+        if (!v) return null;
+        var s = String(v).trim().replace(' UTC', '').replace(' ', 'T');
+        if (!/[zZ]|[+-]\d{2}:?\d{2}$/.test(s)) s += 'Z';
+        var t = Date.parse(s);
+        return isNaN(t) ? null : t;
+    }
+    function alter(h) {
+        if (h == null) return 'unbekannt';
+        if (h < 1) return 'gerade eben';
+        if (h < 48) return 'vor ' + Math.round(h) + ' Stunden';
+        return 'vor ' + (h / 24).toFixed(1) + ' Tagen';
+    }
+
+    function render() {
+        var box = document.getElementById('ovFrische');
+        if (!box) return;
+        box.innerHTML = BEREICHE.map(function (b) {
+            var t = parseUtc(wert(b[1], b[2]));
+            var h = t == null ? null : (Date.now() - t) / 36e5;
+            var stufe = h == null ? 'unbekannt' : h >= b[4] * 2 ? 'alt' : h >= b[4] ? 'warn' : 'ok';
+            return '<div class="c2-fr' + (b[3] ? ' voll' : '') + '">' +
+                   '<i class="' + stufe + '"></i><div><b>' + b[0] + '</b><span>' + alter(h) + '</span>' +
+                   (b[3] ? '<em>nur im vollen Lauf</em>' : '') + '</div></div>';
+        }).join('');
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
+    else render();
+    // Nach einem Refresh-Lauf werden die Dateien neu geladen, dann neu zeichnen.
+    window.addEventListener('focus', render);
+    setInterval(render, 60000);
+})();
+</script>
+<script>
 /* Das Dashboard oeffnet sich im Original per Knopf und startet auf einer
    Seite, die es hier nicht mehr gibt. Also: Knopf ausloesen, damit alles
    rendert, und danach die erste verbliebene Seite aktivieren. Der Klick auf
@@ -14236,7 +15095,11 @@ window.c2xProxy = function (u) { return u; };
             if (!nav) nav = document.querySelector('.c2-nav[data-page="overview"]')
                         || document.querySelector('.c2-nav[data-page="markets"]')
                         || document.querySelector('.c2-nav[data-page]');
+            // Der Startaufruf ersetzt den Verlaufseintrag statt einen neuen
+            // anzulegen, sonst braucht es zweimal Zurueck, um die Seite zu verlassen.
+            window.__c2Start = true;
             if (nav) nav.click();
+            window.__c2Start = false;
         }, 60);
     }
     function rewireRefresh() {
@@ -14280,11 +15143,162 @@ window.c2xProxy = function (u) { return u; };
             }).catch(function () {});
         });
     }
-    /* Seite in der Adresse merken, damit Teilen und Zurueck funktionieren */
+    /* Seite in der Adresse merken, damit Teilen und Zurueck funktionieren.
+       Jeder Seitenwechsel ist ein eigener Verlaufseintrag, die Zurueck-Taste
+       springt also zur vorherigen Seite statt aus dem Dashboard heraus. */
     document.addEventListener('click', function (e) {
         var n = e.target.closest('.c2-nav[data-page]');
-        if (n) { try { history.replaceState(null, '', '#' + n.dataset.page); } catch (err) {} }
+        if (!n || window.__c2Pop) return;
+        var ziel = '#' + n.dataset.page;
+        try {
+            if (window.__c2Start || !location.hash) history.replaceState({ p: n.dataset.page }, '', ziel);
+            else if (location.hash !== ziel) history.pushState({ p: n.dataset.page }, '', ziel);
+        } catch (err) {}
     });
+})();
+</script>
+<script>
+/* Handy-Navigation: feste Leiste unten mit den meistgenutzten Seiten plus
+   "Alle" fuer die Uebersicht aller Seiten, nach den Gruppen der Seitenleiste.
+   Die Original-Navigation bleibt im Markup und wird per Klick angesteuert,
+   damit jede Seite genau so rendert wie am Desktop. */
+(function () {
+    var mq = window.matchMedia('(max-width: 900px)');
+    var ICONS = { overview: '🏠', radar: '📡', perfect: '🏆', tagebuch: '📓', markets: '📊',
+        watchlist: '⭐', movers: '⚡', finder: '🔎', narratives: '🌀', onchain: '⛓️',
+        heatmap: '🟧', social: '📣', gems: '💎', memecoins: '🐸', fluencer: '🎙️',
+        feargreed: '🌡️', ranking: '🥇', killzones: '⏱️', calculator: '🧮', checklist: '✅',
+        breakouts: '🚀', arena: '🏟️', playbook: '📖', links: '🔗' };
+    var TABS = [['overview', 'Überblick'], ['markets', 'Markets'], ['radar', 'Radar'], ['gems', 'Gems']];
+    var bar, sheet, panel, sheetPushed = false, panelPushed = false, panelViaPop = false, zuletzt = null;
+
+    function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function navEl(p) { return document.querySelector('#crypto2Modal .c2-nav[data-page="' + p + '"]'); }
+    function aktiv() { var a = document.querySelector('#crypto2Modal .c2-nav.active');
+        return a ? a.dataset.page : 'overview'; }
+    function name(a) { var k = a.cloneNode(true); var i = k.querySelector('.c2x-navico');
+        if (i) i.remove(); return k.textContent.replace(/\s+/g, ' ').trim(); }
+    function gruppen() {
+        var out = [], cur = null;
+        document.querySelectorAll('#crypto2Modal .c2-sidebar > *').forEach(function (el) {
+            if (el.classList.contains('c2-navgroup')) {
+                cur = { titel: el.textContent.trim(), seiten: [] }; out.push(cur);
+            } else if (el.matches('a.c2-nav[data-page]')) {
+                if (!cur) { cur = { titel: '', seiten: [] }; out.push(cur); }
+                cur.seiten.push(el.dataset.page);
+            }
+        });
+        return out.filter(function (g) { return g.seiten.length; });
+    }
+    function knopf(p, text) {
+        return '<button type="button" data-p="' + p + '"><span class="i">' + (ICONS[p] || '•') +
+               '</span><span class="l">' + esc(text) + '</span></button>';
+    }
+
+    function gehe(p) { var a = navEl(p); if (a) a.click(); }
+    function lock(an) { document.documentElement.classList.toggle('c2m-lock', an); }
+    function markieren() {
+        var p = aktiv();
+        var inTabs = TABS.some(function (t) { return t[0] === p; });
+        bar.querySelectorAll('button').forEach(function (b) {
+            b.classList.toggle('on', b.dataset.p ? b.dataset.p === p : !inTabs);
+        });
+        sheet.querySelectorAll('.c2m-grid button').forEach(function (b) {
+            b.classList.toggle('on', b.dataset.p === p);
+        });
+        if (p !== zuletzt) {
+            if (zuletzt !== null && mq.matches) window.scrollTo(0, 0);
+            zuletzt = p;
+        }
+    }
+
+    function sheetAuf() {
+        markieren();
+        sheet.classList.add('open'); lock(true);
+        try { history.pushState({ sheet: 1 }, '', location.href); sheetPushed = true; } catch (e) {}
+        var on = sheet.querySelector('button.on'); if (on) on.focus({ preventScroll: true });
+    }
+    function sheetZu() { sheet.classList.remove('open'); if (!panelPushed) lock(false); }
+    function sheetZuPerBack() { if (sheetPushed) history.back(); else sheetZu(); }
+
+    function bauen() {
+        var modal = document.getElementById('crypto2Modal');
+        if (!modal || document.getElementById('c2mBar')) return;
+        bar = document.createElement('nav');
+        bar.id = 'c2mBar'; bar.setAttribute('aria-label', 'Navigation');
+        bar.innerHTML = TABS.map(function (t) { return knopf(t[0], t[1]); }).join('') +
+            '<button type="button" data-alle="1" aria-haspopup="dialog"><span class="i">☰</span><span class="l">Alle</span></button>';
+        sheet = document.createElement('div');
+        sheet.id = 'c2mSheet'; sheet.setAttribute('role', 'dialog');
+        sheet.setAttribute('aria-modal', 'true'); sheet.setAttribute('aria-label', 'Alle Seiten');
+        sheet.innerHTML = '<div class="c2m-head"><b>Alle Seiten</b>' +
+            '<button type="button" class="c2m-x" aria-label="Schließen">✕</button></div>' +
+            gruppen().map(function (g) {
+                return (g.titel ? '<div class="c2m-grp">' + esc(g.titel) + '</div>' : '') +
+                    '<div class="c2m-grid">' + g.seiten.map(function (p) {
+                        return knopf(p, name(navEl(p)));
+                    }).join('') + '</div>';
+            }).join('');
+        modal.appendChild(bar);
+        modal.appendChild(sheet);
+
+        bar.addEventListener('click', function (e) {
+            var b = e.target.closest('button'); if (!b) return;
+            if (b.dataset.alle) { sheet.classList.contains('open') ? sheetZuPerBack() : sheetAuf(); }
+            else { if (sheet.classList.contains('open')) sheetZuPerBack(); gehe(b.dataset.p); }
+        });
+        sheet.addEventListener('click', function (e) {
+            var b = e.target.closest('button'); if (!b) return;
+            if (b.classList.contains('c2m-x')) { sheetZuPerBack(); return; }
+            var p = b.dataset.p; if (!p) return;
+            if (p === aktiv()) { sheetZuPerBack(); return; }
+            // Den Eintrag der Uebersicht durch die neue Seite ersetzen: Zurueck
+            // fuehrt dann zur vorherigen Seite, nicht noch einmal in die Uebersicht.
+            try { history.replaceState({ p: p }, '', '#' + p); } catch (err) {}
+            sheetPushed = false;
+            window.__c2Pop = true; gehe(p); window.__c2Pop = false;
+            sheetZu();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && sheet.classList.contains('open')) { e.stopPropagation(); sheetZuPerBack(); }
+        }, true);
+
+        // Aktive Seite beobachten, egal wer sie wechselt (Leiste, Links in Seiten, Zurueck)
+        new MutationObserver(markieren).observe(document.querySelector('#crypto2Modal .c2-sidebar'),
+            { subtree: true, attributes: true, attributeFilter: ['class'] });
+
+        // Coin-Detail: auf dem Handy schliesst die Zurueck-Taste das Fenster
+        panel = document.getElementById('c2xPanel');
+        if (panel) new MutationObserver(function () {
+            var offen = panel.classList.contains('open');
+            if (offen && !panelPushed && mq.matches) {
+                try { history.pushState({ panel: 1 }, '', location.href); panelPushed = true; } catch (e) {}
+                lock(true);
+            } else if (!offen && panelPushed) {
+                panelPushed = false;
+                if (!sheet.classList.contains('open')) lock(false);
+                if (!panelViaPop) history.back();
+                panelViaPop = false;
+            }
+        }).observe(panel, { attributes: true, attributeFilter: ['class'] });
+        markieren();
+    }
+
+    window.addEventListener('popstate', function () {
+        if (panelPushed && panel && panel.classList.contains('open')) {
+            panelViaPop = true;
+            var x = document.getElementById('c2xPClose'); if (x) x.click();
+            return;
+        }
+        if (sheet && sheet.classList.contains('open')) { sheetPushed = false; sheetZu(); return; }
+        sheetPushed = false;
+        var p = (location.hash || '').replace('#', '') || 'overview';
+        if (navEl(p) && p !== aktiv()) { window.__c2Pop = true; gehe(p); window.__c2Pop = false; }
+    });
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(bauen, 120); });
+    else setTimeout(bauen, 120);
 })();
 </script>
 </body>
