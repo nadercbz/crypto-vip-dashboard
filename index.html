@@ -5417,6 +5417,294 @@ body { overflow: hidden; }
         }
 
 
+        /* Narrativ Scan: Oekosystem-Karten mit Puls, Top 30 je Chain nach Market Cap */
+        .c2-ns .c2-social-meta { font-size: .8rem; color: rgba(255,255,255,.72); line-height: 1.5; }
+
+        .c2-ns .up { color: #46d182; }
+
+        .c2-ns .down { color: #ff6b5e; }
+
+        .c2-ns .flat { color: rgba(255,255,255,.5); }
+
+        .c2-ns-ecos { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .8rem; margin-top: .3rem; }
+
+        .c2-ns-eco { --eco: #ffffff; position: relative; display: block; width: 100%; text-align: left; cursor: pointer;
+            color: #fff; font: inherit; border: 1px solid rgba(255,255,255,.14); border-radius: 16px; padding: 1rem 1rem .9rem;
+            overflow: hidden; background: rgba(0,0,0,.14);
+            background: linear-gradient(160deg, color-mix(in srgb, var(--eco) 18%, transparent), rgba(0,0,0,.2) 72%);
+            transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+            animation: c2-ns-in .45s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
+
+        .c2-ns-eco:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--eco) 55%, transparent); }
+
+        .c2-ns-eco:focus-visible { outline: 2px solid var(--eco); outline-offset: 2px; }
+
+        .c2-ns-eco.on { border-color: var(--eco);
+            box-shadow: 0 0 0 1px var(--eco), 0 12px 34px color-mix(in srgb, var(--eco) 28%, transparent); }
+
+        .c2-ns-eco-top { display: flex; align-items: center; gap: .55rem; min-height: 26px; }
+
+        .c2-ns-eco-top img { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.08); flex-shrink: 0; }
+
+        .c2-ns-eco-top b { font-size: 1.05rem; font-weight: 700; letter-spacing: .01em; }
+
+        .c2-ns-heiss { margin-left: auto; font: 700 .54rem 'JetBrains Mono', monospace; letter-spacing: .12em;
+            text-transform: uppercase; color: #160700; background: var(--eco); padding: 3px 7px; border-radius: 999px;
+            white-space: nowrap; animation: c2-ns-glow 2.4s ease-in-out infinite; }
+
+        .c2-ns-eco-kurs { display: flex; align-items: baseline; flex-wrap: wrap; gap: .2rem .45rem; margin: .6rem 0 .1rem;
+            font-family: 'JetBrains Mono', monospace; font-size: .74rem; color: rgba(255,255,255,.78); }
+
+        .c2-ns-eco-kurs em { font-style: normal; font-size: .58rem; color: rgba(255,255,255,.45); }
+
+        .c2-ns-eco .c2-ns-sp { width: 100%; height: 30px; display: block; margin: .25rem 0 .55rem; }
+
+        .c2-ns-puls-kopf { display: flex; justify-content: space-between; align-items: baseline;
+            font: 600 .58rem 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.58); }
+
+        .c2-ns-puls-kopf b { font-size: 1rem; color: #fff; letter-spacing: 0; }
+
+        .c2-ns-puls-bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,.1); overflow: hidden; margin: .35rem 0; }
+
+        .c2-ns-puls-bar i { display: block; height: 100%; width: 0; border-radius: 4px; background: var(--eco);
+            transition: width .9s cubic-bezier(.2,.8,.2,1); }
+
+        .c2-ns-puls-sub { font-size: .66rem; color: rgba(255,255,255,.55); }
+
+        .c2-ns-alt { margin-top: .4rem; font-size: .62rem; color: #ffd166; }
+
+
+        .c2-ns-hero { --eco: #ffffff; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            flex-wrap: wrap; padding-bottom: 1.1rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+
+        .c2-ns-hero-l { display: flex; align-items: center; gap: .95rem; min-width: 0; flex: 1 1 260px; }
+
+        .c2-ns-hero-l img { width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0; background: rgba(255,255,255,.08);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--eco) 45%, transparent), 0 0 34px color-mix(in srgb, var(--eco) 35%, transparent); }
+
+        .c2-ns-hero h3 { font-size: 1.55rem; font-weight: 600; margin: .1rem 0 .35rem; color: #fff; line-height: 1.15; }
+
+        .c2-ns-hero-kurs { font-family: 'JetBrains Mono', monospace; font-size: .74rem; color: rgba(255,255,255,.72);
+            display: flex; flex-wrap: wrap; gap: .25rem .85rem; }
+
+        .c2-ns-hero-kurs b { color: #fff; }
+
+        .c2-ns-ring { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+
+        .c2-ns-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+        .c2-ns-ring circle { fill: none; stroke-width: 7; }
+
+        .c2-ns-ring .bg { stroke: rgba(255,255,255,.1); }
+
+        .c2-ns-ring .fg { stroke: var(--eco); stroke-linecap: round; transition: stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1);
+            filter: drop-shadow(0 0 6px color-mix(in srgb, var(--eco) 60%, transparent)); }
+
+        .c2-ns-ring > div { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        .c2-ns-ring b { font-size: 1.65rem; font-weight: 700; color: #fff; line-height: 1; }
+
+        .c2-ns-ring span { font: 600 .54rem 'JetBrains Mono', monospace; letter-spacing: .16em; text-transform: uppercase;
+            color: rgba(255,255,255,.55); margin-top: 4px; }
+
+        .c2-ns-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; margin: 1rem 0 .8rem; }
+
+        .c2-ns-kpi { border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: .7rem .8rem; background: rgba(0,0,0,.14); min-width: 0; }
+
+        .c2-ns-kpi > span { display: block; font: 600 .55rem 'JetBrains Mono', monospace; letter-spacing: .14em;
+            text-transform: uppercase; color: rgba(255,255,255,.5); }
+
+        .c2-ns-kpi b { display: block; font-size: 1.15rem; margin: .28rem 0 .12rem; color: #fff; white-space: nowrap; }
+
+        .c2-ns-kpi small { font-size: .66rem; color: rgba(255,255,255,.52); }
+
+        .c2-ns-verlauf { margin: 0 0 .4rem; font-size: .68rem; color: rgba(255,255,255,.55); }
+
+        .c2-ns-verlauf svg { width: 100%; height: 46px; display: block; margin-top: .3rem; }
+
+
+        .c2-ns-ctrl { display: flex; flex-wrap: wrap; gap: .7rem 1rem; align-items: center; margin: 1.1rem 0 .7rem; }
+
+        .c2-ns-seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: 14px; background: rgba(0,0,0,.22);
+            border: 1px solid rgba(255,255,255,.1); }
+
+        .c2-ns-seg button { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+            min-width: 116px; padding: .5rem 2rem .5rem .8rem; border: 0; border-radius: 10px; background: transparent;
+            color: rgba(255,255,255,.72); cursor: pointer; text-align: left; font: inherit; transition: background .2s, color .2s; }
+
+        .c2-ns-seg button:hover { background: rgba(255,255,255,.07); }
+
+        .c2-ns-seg button b { font-size: .86rem; font-weight: 700; }
+
+        .c2-ns-seg button span { font: 500 .58rem 'JetBrains Mono', monospace; color: rgba(255,255,255,.5); white-space: nowrap; }
+
+        .c2-ns-seg button em { position: absolute; top: .5rem; right: .6rem; font: 700 .64rem 'JetBrains Mono', monospace;
+            font-style: normal; color: rgba(255,255,255,.6); }
+
+        .c2-ns-seg button.on { background: #fff; color: #2a1a0f; }
+
+        .c2-ns-seg button.on span, .c2-ns-seg button.on em { color: rgba(42,26,15,.6); }
+
+        .c2-ns-seg button.leer:not(.on) { opacity: .45; }
+
+        .c2-ns-sort { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .c2-ns-suche { flex: 1 1 180px; min-width: 0; max-width: 260px; padding: .55rem .8rem; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.2); color: #fff; font: inherit; font-size: .8rem; }
+
+        .c2-ns-suche::placeholder { color: rgba(255,255,255,.45); }
+
+        .c2-ns-suche:focus { outline: none; border-color: rgba(255,255,255,.5); }
+
+        .c2-ns-top { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 .9rem;
+            font: 600 .58rem 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+
+        .c2-ns-top button { border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.16); color: #fff; cursor: pointer;
+            border-radius: 999px; padding: 4px 10px; font: 600 .7rem 'Inter', sans-serif; letter-spacing: 0; text-transform: none; }
+
+        .c2-ns-top button:hover { border-color: rgba(255,255,255,.4); }
+
+
+        .c2-ns-kopfzeile, .c2-ns-row { display: grid; align-items: center; gap: 10px;
+            grid-template-columns: 26px 30px minmax(0, 1fr) 84px 108px 92px 66px 70px 70px 20px; }
+
+        .c2-ns-kopfzeile { padding: 0 .7rem .5rem; border-bottom: 1px solid rgba(255,255,255,.08);
+            font: 600 .55rem 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+
+        .c2-ns-kopfzeile > span { text-align: right; }
+
+        .c2-ns-kopfzeile > span:nth-child(3) { text-align: left; }
+
+        .c2-ns-kopfzeile [data-sort] { cursor: pointer; transition: color .2s; }
+
+        .c2-ns-kopfzeile [data-sort]:hover, .c2-ns-kopfzeile [data-sort].on { color: #fff; }
+
+        .c2-ns-liste { display: flex; flex-direction: column; gap: 2px; margin-top: .3rem; }
+
+        .c2-ns-row { padding: .6rem .7rem; border-radius: 12px; cursor: pointer; border: 1px solid transparent;
+            transition: background .2s, border-color .2s; animation: c2-ns-in .4s ease both; animation-delay: calc(var(--i, 0) * 16ms); }
+
+        .c2-ns-row:hover, .c2-ns-row:focus-visible { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); outline: none; }
+
+        .c2-ns-rang { font: 600 .72rem 'JetBrains Mono', monospace; color: rgba(255,255,255,.45); text-align: right; }
+
+        .c2-ns-logo { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.08); }
+
+        .c2-ns-name { min-width: 0; }
+
+        .c2-ns-name b { display: block; font-size: .86rem; font-weight: 650; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .c2-ns-name > span { font: .6rem 'JetBrains Mono', monospace; letter-spacing: .08em; color: rgba(255,255,255,.5); }
+
+        .c2-ns-badge { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; vertical-align: 1px;
+            font: 700 .5rem 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+
+        .c2-ns-badge.vol { background: rgba(255,209,102,.18); color: #ffd166; }
+
+        .c2-ns-badge.lauf { background: rgba(70,209,130,.18); color: #46d182; }
+
+        .c2-ns-badge.brueck { background: rgba(255,255,255,.1); color: rgba(255,255,255,.7); }
+
+        .c2-ns-spark svg { width: 84px; height: 26px; display: block; }
+
+        .c2-ns-preis, .c2-ns-mc, .c2-ns-p { text-align: right; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+
+        .c2-ns-preis { font-size: .76rem; color: #fff; }
+
+        .c2-ns-preis .mcm, .c2-ns-p i { display: none; }
+
+        .c2-ns-mc { font-size: .74rem; color: rgba(255,255,255,.75); }
+
+        .c2-ns-p { font-size: .74rem; font-weight: 700; }
+
+        .c2-ns-cg { color: rgba(255,255,255,.4); text-decoration: none; font-size: .82rem; text-align: center; }
+
+        .c2-ns-cg:hover { color: #fff; }
+
+        .c2-ns-mehr { font-size: .7rem; color: rgba(255,255,255,.5); padding: .8rem .7rem 0; }
+
+        .c2-ns-leer { padding: 1.3rem 1.1rem; border: 1px dashed rgba(255,255,255,.2); border-radius: 12px;
+            color: rgba(255,255,255,.8); font-size: .84rem; line-height: 1.6; margin-top: .4rem; }
+
+        .c2-ns-leer b { color: #fff; }
+
+        @keyframes c2-ns-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        @keyframes c2-ns-glow { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--eco) 55%, transparent); }
+            50% { box-shadow: 0 0 0 6px transparent; } }
+@media (max-width: 1100px) {
+
+            .c2-ns-kopfzeile, .c2-ns-row { grid-template-columns: 24px 28px minmax(0, 1fr) 100px 86px 62px 66px 20px; }
+
+            .c2-ns-spark, .c2-ns-p30 { display: none; }
+
+            .c2-ns-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+
+            .c2-ns-ecos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
+
+            .c2-ns-eco { padding: .8rem .75rem .7rem; border-radius: 14px; }
+
+            .c2-ns-eco-top b { font-size: .95rem; }
+
+            .c2-ns-eco-top { flex-wrap: wrap; }
+
+            .c2-ns-heiss { order: -1; flex-basis: 100%; margin: -.8rem -.75rem .5rem; padding: 4px 0;
+                border-radius: 13px 13px 0 0; text-align: center; animation: none; }
+
+            .c2-ns-hero { flex-wrap: nowrap; align-items: flex-start; gap: .7rem; }
+
+            .c2-ns-hero-l { flex: 1 1 auto; align-items: flex-start; gap: .7rem; }
+
+            .c2-ns-hero-l img { width: 40px; height: 40px; margin-top: 4px; }
+
+            .c2-ns-hero h3 { font-size: 1.25rem; }
+
+            .c2-ns-ring { width: 78px; height: 78px; }
+
+            .c2-ns-ring b { font-size: 1.3rem; }
+
+            .c2-ns-kpi b { font-size: 1rem; }
+
+            .c2-ns-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+
+            .c2-ns-seg button { min-width: 0; padding: .5rem .55rem; }
+
+            .c2-ns-seg button span { white-space: normal; line-height: 1.25; }
+
+            .c2-ns-seg button em { position: static; order: 3; font-size: .7rem; }
+
+            .c2-ns-suche { max-width: none; flex-basis: 100%; }
+
+            .c2-ns-kopfzeile { display: none; }
+
+            .c2-ns-row { grid-template-columns: 20px 28px minmax(0, 1fr) auto; column-gap: 9px; row-gap: 2px;
+                grid-template-areas: "rang logo name p7" "rang logo info p24"; padding: .6rem .45rem; }
+
+            .c2-ns-rang { grid-area: rang; }
+
+            .c2-ns-logo { grid-area: logo; }
+
+            .c2-ns-name { grid-area: name; }
+
+            .c2-ns-preis { grid-area: info; text-align: left; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+                font-size: .7rem; color: rgba(255,255,255,.75); overflow: hidden; text-overflow: ellipsis; }
+
+            .c2-ns-p i { font-size: .58rem; }
+
+            .c2-ns-preis .mcm { display: inline; }
+
+            .c2-ns-p7 { grid-area: p7; font-size: .86rem; }
+
+            .c2-ns-p24 { grid-area: p24; font-size: .64rem; font-weight: 600; }
+
+            .c2-ns-p i { display: inline; font-style: normal; color: rgba(255,255,255,.45); font-weight: 500; }
+
+            .c2-ns-mc, .c2-ns-spark, .c2-ns-p30, .c2-ns-cg { display: none; }
+}
+
+
         /* Cryptofluencer */
         .c2-fl-q { border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:1rem 1.1rem;
             margin-bottom:1rem; background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015)); }
@@ -5901,6 +6189,7 @@ body { overflow: hidden; }
                 <a class="c2-nav" data-page="movers">Movers</a>
                 <a class="c2-nav" data-page="finder">Finder</a>
                 <a class="c2-nav" data-page="narratives">Narratives</a>
+                <a class="c2-nav" data-page="narrativ">Narrativ Scan</a>
                 <a class="c2-nav" data-page="onchain">Onchain &amp; News</a>
                 <a class="c2-nav" data-page="heatmap">Heat Map</a>
                 <a class="c2-nav" data-page="social">Social Buzz</a>
@@ -6222,6 +6511,28 @@ body { overflow: hidden; }
                             <span class="c2-narr-status" id="c2NarrStatus"></span>
                         </div>
                         <div class="c2-narr-lanes" id="c2NarrativesWrap"></div>
+                    </div>
+                </section>
+
+                <!-- NARRATIV SCAN: Oekosysteme und ihre Top-Projekte nach Market Cap -->
+                <section class="c2-page c2-ns" data-page="narrativ">
+                    <div class="c2-card">
+                        <div class="c2-eyebrow">Ökosystem-Radar</div>
+                        <h2 class="c2-h1" style="font-size:1.6rem;">Narrativ Scan</h2>
+                        <p class="c2-sub" style="margin-bottom:1rem;">Wenn eine Chain Fahrt aufnimmt, siehst du hier sofort, welche Projekte auf ihr laufen. Top 30 je Ökosystem nach Market Cap, getrennt nach groß, mittel und klein. Gezählt wird nur, was auf der Chain zu Hause ist. Der <b>Puls</b> zeigt, welches Ökosystem gerade besser läuft als der Markt.</p>
+                        <div id="c2NsMeta" class="c2-social-meta" style="margin-bottom:.9rem;"></div>
+                        <div id="c2NsEcos" class="c2-ns-ecos"></div>
+                    </div>
+                    <div class="c2-card" id="c2NsDetail">
+                        <div id="c2NsHero"></div>
+                        <div class="c2-ns-ctrl">
+                            <div id="c2NsBands" class="c2-ns-seg" role="group" aria-label="Größe"></div>
+                            <div id="c2NsSort" class="c2-ns-sort"></div>
+                            <input id="c2NsSuche" class="c2-ns-suche" type="search" placeholder="Projekt suchen" autocomplete="off" aria-label="Projekt suchen">
+                        </div>
+                        <div id="c2NsTop" class="c2-ns-top"></div>
+                        <div id="c2NsListe" class="c2-ns-liste"></div>
+                        <div id="c2NsNote" class="c2-social-note"></div>
                     </div>
                 </section>
 
@@ -7293,18 +7604,19 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202610010816"></script>
-<script src="data/extras_data.js?v=202610010816"></script>
-<script src="data/series_data.js?v=202610010816"></script>
-<script src="data/social_data.js?v=202610010816"></script>
-<script src="data/gems_data.js?v=202610010816"></script>
-<script src="data/signals_data.js?v=202610010816"></script>
-<script src="data/onchain_data.js?v=202610010816"></script>
-<script src="data/briefing_data.js?v=202610010816"></script>
-<script src="data/memecoin_data.js?v=202610010816"></script>
-<script src="data/paper_data.js?v=202610010816"></script>
-<script src="data/cryptofluencer_data.js?v=202610010816"></script>
-<script src="data/tagebuch_data.js?v=202610010816"></script>
+<script src="data/crypto_data.js?v=202610011018"></script>
+<script src="data/extras_data.js?v=202610011018"></script>
+<script src="data/series_data.js?v=202610011018"></script>
+<script src="data/social_data.js?v=202610011018"></script>
+<script src="data/gems_data.js?v=202610011018"></script>
+<script src="data/signals_data.js?v=202610011018"></script>
+<script src="data/onchain_data.js?v=202610011018"></script>
+<script src="data/briefing_data.js?v=202610011018"></script>
+<script src="data/memecoin_data.js?v=202610011018"></script>
+<script src="data/paper_data.js?v=202610011018"></script>
+<script src="data/cryptofluencer_data.js?v=202610011018"></script>
+<script src="data/tagebuch_data.js?v=202610011018"></script>
+<script src="data/narrativ_data.js?v=202610011018"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -12575,7 +12887,7 @@ window.c2xProxy = function (u) { return u; };
     const NAV_ICONS = {
         script: '📜', portfolio: '💼', perfect: '🏆', milestones: '🚩', tagebuch: '📓',
         markets: '📊', movers: '⚡', finder: '🔎', narratives: '🌀', heatmap: '🟧',
-        social: '📣', gems: '💎', memecoins: '🐸', fluencer: '🎙️', feargreed: '🌡️', ranking: '🥇',
+        social: '📣', gems: '💎', memecoins: '🐸', fluencer: '🎙️', narrativ: '🧭', feargreed: '🌡️', ranking: '🥇',
         killzones: '⏱️', calculator: '🧮', checklist: '✅', breakouts: '🚀', arena: '🏟️',
         playbook: '📖', strategy2026: '🗺️', commands: '⌨️', notes: '📝', links: '🔗'
     };
@@ -15017,6 +15329,349 @@ window.c2xProxy = function (u) { return u; };
 })();
 </script>
 <script>
+/* Narrativ Scan: rendert window.NARRATIV_DATA aus fetch_narrativ_scan.py.
+   Oben die Oekosystem-Karten mit Puls, darunter die Top 30 der gewaehlten
+   Chain nach Market Cap, getrennt nach Gross, Mittel, Klein. Ein Klick auf ein
+   Projekt oeffnet das Coin-Detail, wenn das Dashboard den Coin kennt, sonst
+   seine CoinGecko-Seite. */
+(function () {
+    var MERK = 'c2_ns_state_v1';
+    var SORTEN = [['mc', 'Market Cap'], ['c24', '24 Std'], ['c7', '7 Tage'], ['c30', '30 Tage'], ['v', 'Volumen']];
+    var state = { eco: null, band: null, sort: 'mc', multi: false, q: '' };
+    try {
+        var s = JSON.parse(localStorage.getItem(MERK) || 'null');
+        if (s) { state.eco = s.eco || null; state.band = s.band || null; state.sort = s.sort || 'mc'; state.multi = !!s.multi; }
+    } catch (e) {}
+    function merken() {
+        try { localStorage.setItem(MERK, JSON.stringify({ eco: state.eco, band: state.band, sort: state.sort, multi: state.multi })); } catch (e) {}
+    }
+
+    function $(id) { return document.getElementById(id); }
+    function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function zahlDE(x, stellen) { return x.toLocaleString('de-DE', { maximumFractionDigits: stellen }); }
+    function geld(n) {
+        if (n == null) return '?';
+        if (n >= 1e9) return zahlDE(n / 1e9, 2) + ' Mrd';
+        if (n >= 1e6) return zahlDE(n / 1e6, n >= 1e8 ? 0 : 1) + ' Mio';
+        if (n >= 1e3) return zahlDE(n / 1e3, 0) + ' Tsd';
+        return zahlDE(n, 0);
+    }
+    function preis(p) {
+        if (p == null) return '?';
+        if (p >= 1000) return zahlDE(p, 0) + ' $';
+        if (p >= 1) return p.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+        if (p >= 0.0001) return zahlDE(p, 5) + ' $';
+        return p.toLocaleString('de-DE', { maximumSignificantDigits: 3 }) + ' $';
+    }
+    function pctHtml(x) {
+        if (x == null) return '<span class="flat">?</span>';
+        var k = x > 0.05 ? 'up' : x < -0.05 ? 'down' : 'flat';
+        return '<span class="' + k + '">' + (x > 0 ? '+' : '') + zahlDE(x, Math.abs(x) >= 100 ? 0 : 1) + ' %</span>';
+    }
+    function ppHtml(x) {
+        if (x == null) return '<span class="flat">?</span>';
+        var k = x > 0.05 ? 'up' : x < -0.05 ? 'down' : 'flat';
+        return '<span class="' + k + '">' + (x > 0 ? '+' : '') + zahlDE(x, 1) + ' Pp</span>';
+    }
+    function spark(werte, farbe, w, h) {
+        if (!werte || werte.length < 2) return '<svg class="c2-ns-sp" viewBox="0 0 ' + w + ' ' + h + '"></svg>';
+        var dx = w / (werte.length - 1);
+        var pts = werte.map(function (v, i) { return (i * dx).toFixed(1) + ',' + (h - 2 - v / 100 * (h - 4)).toFixed(1); });
+        var col = farbe || (werte[werte.length - 1] >= werte[0] ? '#46d182' : '#ff6b5e');
+        var id = 'nsg' + Math.random().toString(36).slice(2, 8);
+        return '<svg class="c2-ns-sp" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+            '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + col + '" stop-opacity=".35"/>' +
+            '<stop offset="100%" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs>' +
+            '<path d="M0,' + h + ' L' + pts.join(' L') + ' L' + w + ',' + h + ' Z" fill="url(#' + id + ')"/>' +
+            '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
+    }
+
+    // Coin-Detail nur, wenn das Dashboard denselben Coin unter dem Kuerzel findet.
+    // Bei Kuerzel-Kollisionen (W, US, ARC ...) wuerde sonst ein fremder Coin aufgehen.
+    var panelKarte = null;
+    function panelSym(c) {
+        if (!panelKarte) {
+            panelKarte = {};
+            if (typeof CRYPTO_DB !== 'undefined') CRYPTO_DB.forEach(function (x) {
+                var k = (x.symbol || '').toLowerCase(), alt = panelKarte[k];
+                if (!alt || (x.market_cap_rank || 1e9) < (alt.market_cap_rank || 1e9)) panelKarte[k] = x;
+            });
+        }
+        var best = panelKarte[(c.s || '').toLowerCase()];
+        return best && best.id === c.id ? c.s : null;
+    }
+
+    function daten() { return window.NARRATIV_DATA || null; }
+    function ecoVon(d, key) { return d.oekosysteme.filter(function (e) { return e.key === key; })[0] || null; }
+    function heissKey(d) {
+        var best = null;
+        d.oekosysteme.forEach(function (e) {
+            var p = e.puls || {};
+            if (p.wert != null && (p.n || 0) >= 5 && (!best || p.wert > best.puls.wert)) best = e;
+        });
+        return best ? best.key : null;
+    }
+    function bandAnzahl(e, key) {
+        var a = (e.anzahl || {})[key] || { nativ: 0, multi: 0 };
+        return a.nativ + (state.multi ? a.multi : 0);
+    }
+    function bandLabel(d, key) { var b = d.baender.filter(function (x) { return x.key === key; })[0]; return b ? b.label : key; }
+    function bandText(b) { return b.max ? geld(b.min) + ' bis ' + geld(b.max) : 'ab ' + geld(b.min); }
+
+    function renderEcos(d) {
+        var heiss = heissKey(d);
+        $('c2NsEcos').innerHTML = d.oekosysteme.map(function (e, i) {
+            var n = e.nativ || {}, p = e.puls || {};
+            return '<button type="button" class="c2-ns-eco' + (e.key === state.eco ? ' on' : '') + '" data-eco="' + esc(e.key) +
+                '" style="--eco:' + esc(e.farbe) + ';--i:' + i + '" aria-pressed="' + (e.key === state.eco) + '">' +
+                '<div class="c2-ns-eco-top"><img src="' + esc(n.img) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'"><b>' +
+                esc(e.name) + '</b>' + (e.key === heiss ? '<span class="c2-ns-heiss">Läuft gerade</span>' : '') + '</div>' +
+                '<div class="c2-ns-eco-kurs"><span>' + esc(n.s || '') + ' ' + preis(n.p) + '</span>' + pctHtml(n.c7) + '<em>7 Tage</em></div>' +
+                spark(n.sp, e.farbe, 160, 30) +
+                '<div class="c2-ns-puls-kopf"><span>Puls</span><b>' + (p.wert == null ? '?' : p.wert) + '</b></div>' +
+                '<div class="c2-ns-puls-bar"><i data-w="' + (p.wert || 0) + '"></i></div>' +
+                '<div class="c2-ns-puls-sub">' + (p.breite_7d == null ? '' : p.breite_7d + ' % im Plus · ') + 'Basis ' + (p.n || 0) + '</div>' +
+                (e.veraltet ? '<div class="c2-ns-alt">Alter Stand vom ' + esc(e.stand) + '</div>' : '') +
+                '</button>';
+        }).join('');
+        requestAnimationFrame(function () {
+            document.querySelectorAll('#c2NsEcos .c2-ns-puls-bar i').forEach(function (i) { i.style.width = i.dataset.w + '%'; });
+        });
+    }
+
+    function kpi(titel, wert, unter) {
+        return '<div class="c2-ns-kpi"><span>' + titel + '</span><b>' + wert + '</b><small>' + unter + '</small></div>';
+    }
+    function verlaufHtml(e) {
+        var v = (e.verlauf || []).filter(function (x) { return x.puls != null; });
+        if (v.length < 2) return '<div class="c2-ns-verlauf">Puls-Verlauf: baut sich ab heute mit jedem Update auf. Ab dem zweiten Tag steht hier die Kurve.</div>';
+        var w = 600, h = 46, dx = w / (v.length - 1);
+        var pts = v.map(function (x, i) { return (i * dx).toFixed(1) + ',' + (h - 3 - x.puls / 100 * (h - 6)).toFixed(1); });
+        var tag = function (t) { var s = String(t).split('-'); return s[2] + '.' + s[1] + '.'; };
+        return '<div class="c2-ns-verlauf">Puls-Verlauf ' + tag(v[0].t) + ' bis ' + tag(v[v.length - 1].t) +
+            '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none"><line x1="0" x2="' + w + '" y1="' + (h / 2) +
+            '" y2="' + (h / 2) + '" stroke="rgba(255,255,255,.15)" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>' +
+            '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + esc(e.farbe) + '" stroke-width="2" vector-effect="non-scaling-stroke"/></svg></div>';
+    }
+
+    function renderHero(d, e) {
+        var n = e.nativ || {}, p = e.puls || {};
+        var C = 2 * Math.PI * 38;
+        var proj = 0, multi = 0;
+        Object.keys(e.anzahl || {}).forEach(function (k) { proj += e.anzahl[k].nativ; multi += e.anzahl[k].multi; });
+        $('c2NsHero').innerHTML =
+            '<div class="c2-ns-hero" style="--eco:' + esc(e.farbe) + '">' +
+              '<div class="c2-ns-hero-l"><img src="' + esc(n.img) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+                '<div style="min-width:0"><div class="c2-eyebrow">Ökosystem</div><h3>' + esc(e.name) + '</h3>' +
+                '<div class="c2-ns-hero-kurs"><span>' + esc(n.s || '') + ' <b>' + preis(n.p) + '</b></span>' +
+                '<span>24h ' + pctHtml(n.c24) + '</span><span>7T ' + pctHtml(n.c7) + '</span><span>30T ' + pctHtml(n.c30) + '</span>' +
+                '<span>Rang #' + (n.r || '?') + ' · MC ' + geld(n.mc) + '</span></div></div></div>' +
+              '<div class="c2-ns-ring" title="Puls: 55 % Anteil der Werte im Plus über 7 Tage, 45 % Vorsprung des Medians zum Gesamtmarkt">' +
+                '<svg viewBox="0 0 90 90"><circle class="bg" cx="45" cy="45" r="38"/><circle class="fg" cx="45" cy="45" r="38" stroke-dasharray="' +
+                C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '" data-ziel="' + (C * (1 - (p.wert || 0) / 100)).toFixed(1) + '"/></svg>' +
+                '<div><b>' + (p.wert == null ? '?' : p.wert) + '</b><span>Puls</span></div></div>' +
+            '</div>' +
+            '<div class="c2-ns-kpis">' +
+              kpi('Breite 7 Tage', p.breite_7d == null ? '?' : p.breite_7d + ' %', 'der Werte im Plus') +
+              kpi('Median 7 Tage', pctHtml(p.median_7d), 'typisches Projekt') +
+              kpi('Vorsprung', ppHtml(p.vorsprung_7d), 'zum Markt-Median ' + (d.markt_median_7d == null ? '?' : (d.markt_median_7d > 0 ? '+' : '') + zahlDE(d.markt_median_7d, 1) + ' %')) +
+              kpi('Projekte', String(proj), multi ? '+ ' + multi + ' gebrückte Tokens' : 'auf ' + esc(e.name) + ' zu Hause') +
+            '</div>' + verlaufHtml(e);
+        ringAnimieren();
+    }
+    function ringAnimieren() {
+        var fg = document.querySelector('#c2NsHero .c2-ns-ring .fg');
+        if (!fg) return;
+        fg.style.strokeDashoffset = fg.getAttribute('stroke-dasharray');
+        requestAnimationFrame(function () { requestAnimationFrame(function () { fg.style.strokeDashoffset = fg.dataset.ziel; }); });
+    }
+
+    function renderCtrl(d, e) {
+        $('c2NsBands').innerHTML = d.baender.map(function (b) {
+            var n = bandAnzahl(e, b.key);
+            return '<button type="button" class="' + (b.key === state.band ? 'on' : '') + (n ? '' : ' leer') + '" data-band="' + b.key + '">' +
+                '<b>' + esc(b.label) + '</b><span>' + bandText(b) + '</span><em>' + n + '</em></button>';
+        }).join('');
+        $('c2NsSort').innerHTML = SORTEN.map(function (s) {
+            return '<button type="button" class="c2-chip' + (s[0] === state.sort ? ' active' : '') + '" data-sort="' + s[0] + '">' + s[1] + '</button>';
+        }).join('') + '<button type="button" class="c2-chip' + (state.multi ? ' active' : '') + '" data-multi="1" title="Tokens, die woanders zu Hause sind und nur per Bridge auf der Chain liegen">Gebrückte Tokens</button>';
+        var st = (e.puls || {}).staerkste || [];
+        $('c2NsTop').innerHTML = st.length ? '<span>Stärkste der Woche</span>' + st.map(function (x) {
+            return '<button type="button" data-suche="' + esc(x.s) + '">' + esc(x.s) + ' ' + pctHtml(x.c7) + '</button>';
+        }).join('') : '';
+    }
+
+    function auswahl(d, e) {
+        var q = state.q.trim().toLowerCase();
+        var pool = (e.coins || []).filter(function (c) { return c.nat || state.multi; });
+        if (q) pool = pool.filter(function (c) { return (c.s || '').toLowerCase().indexOf(q) >= 0 || (c.n || '').toLowerCase().indexOf(q) >= 0; });
+        else pool = pool.filter(function (c) { return c.b === state.band; });
+        var k = state.sort;
+        pool.sort(function (a, b) {
+            var x = a[k], y = b[k];
+            if (x == null) x = -1e18; if (y == null) y = -1e18;
+            return y - x;
+        });
+        return pool;
+    }
+
+    function renderListe(d, e) {
+        var q = state.q.trim();
+        var pool = auswahl(d, e), zeilen = pool.slice(0, 30);
+        // Rang auf der Chain: Position unter allen Chain-Projekten nach Market Cap
+        var rang = {};
+        (e.coins || []).filter(function (c) { return c.nat; }).slice().sort(function (a, b) { return (b.mc || 0) - (a.mc || 0); })
+            .forEach(function (c, i) { rang[c.id] = i + 1; });
+        var kopf = '<div class="c2-ns-kopfzeile"><span>#</span><span></span><span>Projekt</span><span class="c2-ns-spark">7 Tage</span>' +
+            '<span>Preis</span><span data-sort="mc">Market Cap</span><span data-sort="c24">24 Std</span><span data-sort="c7">7 Tage</span>' +
+            '<span class="c2-ns-p30" data-sort="c30">30 Tage</span><span></span></div>';
+        if (!zeilen.length) {
+            $('c2NsListe').innerHTML = '<div class="c2-ns-leer">' + leerText(d, e, q) + '</div>';
+            return;
+        }
+        $('c2NsListe').innerHTML = kopf + zeilen.map(function (c, i) {
+            var sym = panelSym(c);
+            var badges = '';
+            if (!c.nat) badges += '<span class="c2-ns-badge brueck">gebrückt · ' + esc(c.heim || 'extern') + '</span>';
+            if (c.c7 != null && c.c7 >= 30) badges += '<span class="c2-ns-badge lauf">läuft</span>';
+            if (c.v && c.mc && c.v / c.mc >= 0.25) badges += '<span class="c2-ns-badge vol">Volumen-Schub</span>';
+            var unter = esc(c.s) + (q ? ' · ' + esc(bandLabel(d, c.b)) : '') + (c.ath != null && c.ath <= -90 ? ' · ' + zahlDE(c.ath, 0) + ' % vom ATH' : '');
+            return '<div class="c2-ns-row' + (sym ? ' c2x-rowlink' : '') + '" ' + (sym ? 'data-sym="' + esc(sym) + '"' : 'data-cg="' + esc(c.id) + '"') +
+                ' style="--i:' + i + '" role="button" tabindex="0" title="' + (sym ? 'Coin-Detail öffnen' : 'Auf CoinGecko öffnen') + '">' +
+                '<span class="c2-ns-rang">' + (c.nat ? rang[c.id] || '' : '') + '</span>' +
+                '<img class="c2-ns-logo" src="' + esc(c.img) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
+                '<div class="c2-ns-name"><b>' + esc(c.n) + '</b><span>' + unter + '</span>' + badges + '</div>' +
+                '<div class="c2-ns-spark">' + spark(c.sp, null, 84, 26) + '</div>' +
+                '<div class="c2-ns-preis">' + preis(c.p) + '<span class="mcm"> · MC ' + geld(c.mc) + '</span></div>' +
+                '<div class="c2-ns-mc">' + geld(c.mc) + '</div>' +
+                '<div class="c2-ns-p c2-ns-p24"><i>24h </i>' + pctHtml(c.c24) + '</div>' +
+                '<div class="c2-ns-p c2-ns-p7"><i>7T </i>' + pctHtml(c.c7) + '</div>' +
+                '<div class="c2-ns-p c2-ns-p30">' + pctHtml(c.c30) + '</div>' +
+                '<a class="c2-ns-cg" href="https://www.coingecko.com/en/coins/' + encodeURIComponent(c.id) + '" target="_blank" rel="noopener" title="Auf CoinGecko">↗</a>' +
+                '</div>';
+        }).join('') + mehrText(e, pool, q);
+        document.querySelectorAll('#c2NsListe .c2-ns-kopfzeile [data-sort]').forEach(function (s) {
+            s.classList.toggle('on', s.dataset.sort === state.sort);
+        });
+    }
+
+    function mehrText(e, pool, q) {
+        if (q) return pool.length > 30 ? '<div class="c2-ns-mehr">Top 30 von ' + pool.length + ' Treffern.</div>' : '';
+        var gesamt = bandAnzahl(e, state.band);
+        if (gesamt <= 30) return '';
+        return '<div class="c2-ns-mehr">Top 30 von ' + gesamt + ' Projekten in diesem Band' +
+            (state.sort !== 'mc' && gesamt > pool.length ? '. Sortiert wird unter den ' + pool.length + ' größten nach Market Cap.' : '.') + '</div>';
+    }
+
+    function leerText(d, e, q) {
+        if (q) return 'Kein Projekt auf ' + esc(e.name) + ' passt zu <b>' + esc(q) + '</b>.';
+        var groesstes = (e.coins || []).filter(function (c) { return c.nat; }).sort(function (a, b) { return (b.mc || 0) - (a.mc || 0); })[0];
+        var b = d.baender.filter(function (x) { return x.key === state.band; })[0];
+        var t = 'Auf ' + esc(e.name) + ' liegt aktuell kein Projekt im Band <b>' + esc(b ? b.label : '') + '</b> (' + (b ? bandText(b) : '') + ').';
+        if (groesstes && b && groesstes.mc < b.min) t += ' Das größte Projekt der Chain ist <b>' + esc(groesstes.n) + '</b> mit ' + geld(groesstes.mc) +
+            '. Genau da liegt der Hebel, wenn das Ökosystem Fahrt aufnimmt.';
+        return t;
+    }
+
+    function renderNote(d, e) {
+        var r = e.ausgefiltert || {};
+        $('c2NsNote').innerHTML = 'Quelle: CoinGecko, Kategorie <b>' + esc(e.kategorie) + '</b>, Stand ' + esc(e.stand) + '. ' +
+            'Gezählt werden nur Projekte, die auf der Chain zu Hause sind. Ausgeblendet: ' + (r.stabil || 0) + ' Stablecoins, ' +
+            (r.abgeleitet || 0) + ' Bridge-, Wrapped- und Staking-Varianten, ' + (r.klein_tot || 0) + ' Tokens unter 1 Mio oder fast ohne Handel. ' +
+            '<b>Puls</b>: 55 % Anteil der Werte im Plus über 7 Tage, 45 % Vorsprung des Medians zum Gesamtmarkt (Top 300). Ab 60 läuft eine Chain besser als der Markt. ' +
+            'Hypothetisch. Keine Finanzberatung.';
+    }
+
+    function waehleBand(e) {
+        if (state.band && bandAnzahl(e, state.band)) return;
+        var d = daten(), erstes = d.baender.filter(function (b) { return bandAnzahl(e, b.key); })[0];
+        state.band = erstes ? erstes.key : (state.band || 'gross');
+    }
+
+    // autoBand: beim Chain-Wechsel und beim Start in das erste gefuellte Band
+    // springen. Waehlt Nader ein Band selbst, bleibt es stehen, auch wenn es leer ist.
+    function renderDetail(autoBand) {
+        var d = daten(); if (!d) return;
+        var e = ecoVon(d, state.eco); if (!e) return;
+        if (autoBand) waehleBand(e);
+        renderHero(d, e); renderCtrl(d, e); renderListe(d, e); renderNote(d, e);
+    }
+
+    function render() {
+        var d = daten();
+        var meta = $('c2NsMeta');
+        if (!d || !d.oekosysteme || !d.oekosysteme.length) {
+            if (meta) meta.innerHTML = 'Noch keine Daten.';
+            return;
+        }
+        if (!ecoVon(d, state.eco)) state.eco = heissKey(d) || d.oekosysteme[0].key;
+        meta.innerHTML = 'Stand ' + esc(d.updated) + ' · ' + d.oekosysteme.length + ' Ökosysteme · Markt-Median 7 Tage ' +
+            (d.markt_median_7d == null ? '?' : (d.markt_median_7d > 0 ? '+' : '') + zahlDE(d.markt_median_7d, 1) + ' %');
+        renderEcos(d);
+        renderDetail(true);
+    }
+
+    // Auf dem Handy nach der Chain-Wahl zur Liste gleiten. Eigene Animation statt
+    // scrollIntoView smooth: die bricht der Browser hier ab, weil die Live-Kurse
+    // im Kopf das Dokument laufend veraendern. Bild fuer Bild springen haelt.
+    function gleite(el) {
+        var start = window.scrollY, ziel = start + el.getBoundingClientRect().top - 8, dauer = 420;
+        if (Math.abs(ziel - start) < 4) return;
+        var t0 = Date.now();
+        (function schritt() {
+            var k = Math.min(1, (Date.now() - t0) / dauer), e = 1 - Math.pow(1 - k, 3);
+            window.scrollTo(0, start + (ziel - start) * e);
+            if (k < 1) setTimeout(schritt, 16);
+        })();
+    }
+
+    function binden() {
+        var sek = document.querySelector('section.c2-page[data-page="narrativ"]');
+        if (!sek || sek.dataset.gebunden) return;
+        sek.dataset.gebunden = '1';
+        sek.addEventListener('click', function (ev) {
+            var eco = ev.target.closest('[data-eco]');
+            if (eco) {
+                if (state.eco !== eco.dataset.eco) { state.eco = eco.dataset.eco; state.q = ''; $('c2NsSuche').value = ''; }
+                merken();
+                document.querySelectorAll('#c2NsEcos .c2-ns-eco').forEach(function (b) {
+                    var an = b.dataset.eco === state.eco; b.classList.toggle('on', an); b.setAttribute('aria-pressed', an);
+                });
+                renderDetail(true);
+                if (window.matchMedia('(max-width: 900px)').matches) gleite($('c2NsDetail'));
+                return;
+            }
+            var band = ev.target.closest('[data-band]');
+            if (band) { state.band = band.dataset.band; state.q = ''; $('c2NsSuche').value = ''; merken(); renderDetail(); return; }
+            var sort = ev.target.closest('[data-sort]');
+            if (sort) { state.sort = sort.dataset.sort; merken(); renderDetail(); return; }
+            if (ev.target.closest('[data-multi]')) { state.multi = !state.multi; merken(); renderDetail(); return; }
+            var such = ev.target.closest('[data-suche]');
+            if (such) { state.q = such.dataset.suche; $('c2NsSuche').value = state.q; renderDetail(); return; }
+            // Projekte, die das Dashboard nicht kennt: CoinGecko in neuem Tab.
+            // Bekannte Coins (c2x-rowlink) oeffnet das Coin-Detail selbst.
+            var row = ev.target.closest('.c2-ns-row[data-cg]');
+            if (row && !ev.target.closest('a')) window.open('https://www.coingecko.com/en/coins/' + encodeURIComponent(row.dataset.cg), '_blank', 'noopener');
+        });
+        sek.addEventListener('keydown', function (ev) {
+            if (ev.key !== 'Enter' && ev.key !== ' ') return;
+            var row = ev.target.closest && ev.target.closest('.c2-ns-row');
+            if (row) { ev.preventDefault(); row.click(); }
+        });
+        $('c2NsSuche').addEventListener('input', function () { state.q = this.value; renderDetail(); });
+        // Beim Oeffnen des Reiters die Animationen neu abspielen
+        document.querySelectorAll('.c2-nav[data-page="narrativ"]').forEach(function (n) {
+            n.addEventListener('click', function () { setTimeout(function () { render(); }, 30); });
+        });
+    }
+
+    function start() { binden(); render(); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
+})();
+</script>
+<script>
 /* Datenfrische: zeigt je Bereich, wann er zuletzt gezogen wurde.
    Die Information lag bisher nur im title-Tooltip eines kleinen Punktes.
    Wichtig ist die Unterscheidung schnell gegen voll: der normale Refresh
@@ -15039,6 +15694,7 @@ window.c2xProxy = function (u) { return u; };
         ['Briefing',         'BRIEFING_DATA',     'updated', false, 26],
         ['Tagebuch',         'TAGEBUCH_DATA',     'updated', false, 26],
         ['Memecoin-Signale', 'MEMECOIN_DATA',     'stand',   false, 12],
+        ['Narrativ Scan',    'NARRATIV_DATA',     'updated', false, 12],
         ['Hidden Gems',      'GEMS_DATA',         'updated', true,  26],
         ['Social Buzz',      'SOCIAL_DATA',       'updated', true,  26],
         ['Onchain und News', 'ONCHAIN_DATA',      'updated', true,  26]
@@ -15166,7 +15822,7 @@ window.c2xProxy = function (u) { return u; };
     var mq = window.matchMedia('(max-width: 900px)');
     var ICONS = { overview: '🏠', radar: '📡', perfect: '🏆', tagebuch: '📓', markets: '📊',
         watchlist: '⭐', movers: '⚡', finder: '🔎', narratives: '🌀', onchain: '⛓️',
-        heatmap: '🟧', social: '📣', gems: '💎', memecoins: '🐸', fluencer: '🎙️',
+        heatmap: '🟧', social: '📣', gems: '💎', memecoins: '🐸', fluencer: '🎙️', narrativ: '🧭',
         feargreed: '🌡️', ranking: '🥇', killzones: '⏱️', calculator: '🧮', checklist: '✅',
         breakouts: '🚀', arena: '🏟️', playbook: '📖', links: '🔗' };
     var TABS = [['overview', 'Überblick'], ['markets', 'Markets'], ['radar', 'Radar'], ['gems', 'Gems']];
