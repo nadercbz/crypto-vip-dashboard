@@ -6055,6 +6055,235 @@ body { overflow: hidden; }
 
         .c2-mc-link { display:inline-block; margin-top:.6rem; font-size:.74rem;
             color:#f0c040; text-decoration:none; border-bottom:1px solid rgba(240,192,64,.35); }
+
+    /* ═══ Design V2 (01.10.2026): der Look des Narrativ Scan fuer alle Seiten ═══
+       Jede Seite traegt eine Akzentfarbe (--pg), so wie im Narrativ Scan jede
+       Chain ihre Farbe hat. Im Dunkelmodus bekommen Karten und Kacheln einen
+       leichten Verlauf in dieser Farbe, die Kopfkarte einer Seite zusaetzlich
+       Leuchtkante und Schein. Im hellen Modus (oranger Glas-Look) nur Akzente,
+       sonst wird es auf dem Orange matschig. Dieser Block steht bewusst als
+       letzter Stilblock, damit er gewinnt. */
+    #crypto2Modal { --pg: #f5b942; }
+
+    #crypto2Modal [data-page="overview"]     { --pg: #f5b942; }
+
+    #crypto2Modal [data-page="radar"]        { --pg: #4da2ff; }
+
+    #crypto2Modal [data-page="script"]       { --pg: #ff8a3d; }
+
+    #crypto2Modal [data-page="perfect"]      { --pg: #f5b942; }
+
+    #crypto2Modal [data-page="milestones"]   { --pg: #ff5c8a; }
+
+    #crypto2Modal [data-page="tagebuch"]     { --pg: #a78bfa; }
+
+    #crypto2Modal [data-page="markets"]      { --pg: #4da2ff; }
+
+    #crypto2Modal [data-page="watchlist"]    { --pg: #ffd166; }
+
+    #crypto2Modal [data-page="movers"]       { --pg: #00e08a; }
+
+    #crypto2Modal [data-page="finder"]       { --pg: #22d3ee; }
+
+    #crypto2Modal [data-page="narratives"]   { --pg: #c084fc; }
+
+    #crypto2Modal [data-page="narrativ"]     { --pg: #00ec97; }
+
+    #crypto2Modal [data-page="onchain"]      { --pg: #f7931a; }
+
+    #crypto2Modal [data-page="heatmap"]      { --pg: #ff6b5e; }
+
+    #crypto2Modal [data-page="social"]       { --pg: #f472b6; }
+
+    #crypto2Modal [data-page="gems"]         { --pg: #34d399; }
+
+    #crypto2Modal [data-page="memecoins"]    { --pg: #a3e635; }
+
+    #crypto2Modal [data-page="fluencer"]     { --pg: #fb7185; }
+
+    #crypto2Modal [data-page="feargreed"]    { --pg: #fbbf24; }
+
+    #crypto2Modal [data-page="ranking"]      { --pg: #eab308; }
+
+    #crypto2Modal [data-page="killzones"]    { --pg: #38bdf8; }
+
+    #crypto2Modal [data-page="calculator"]   { --pg: #60a5fa; }
+
+    #crypto2Modal [data-page="checklist"]    { --pg: #4ade80; }
+
+    #crypto2Modal [data-page="breakouts"]    { --pg: #fb923c; }
+
+    #crypto2Modal [data-page="arena"]        { --pg: #e879f9; }
+
+    #crypto2Modal [data-page="playbook"]     { --pg: #fbbf24; }
+
+    #crypto2Modal [data-page="strategy2026"] { --pg: #818cf8; }
+
+    #crypto2Modal [data-page="commands"]     { --pg: #2dd4bf; }
+
+    #crypto2Modal [data-page="notes"]        { --pg: #facc15; }
+
+    #crypto2Modal [data-page="links"]        { --pg: #60a5fa; }
+
+
+    /* ── Navigation: aktive Seite traegt ihre Farbe ── */
+    #crypto2Modal .c2-sidebar .c2-nav { border-radius: 8px; transition: color .2s ease, background .25s ease, box-shadow .25s ease; }
+
+    #crypto2Modal .c2-sidebar .c2-nav.active {
+        background: linear-gradient(90deg, color-mix(in srgb, var(--pg) 20%, transparent), transparent 85%);
+        box-shadow: inset 2px 0 0 var(--pg); }
+@media (min-width: 901px) {
+
+        #crypto2Modal .c2-sidebar .c2-nav { padding-left: 8px; margin-left: -8px; }
+}
+
+
+    /* ── Ueberschrift-Zeile: farbiger Punkt mit Schein ── */
+    #crypto2Modal section.c2-page .c2-eyebrow { display: flex; align-items: center; gap: 8px; }
+
+    #crypto2Modal section.c2-page .c2-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%;
+        flex-shrink: 0; background: var(--pg); box-shadow: 0 0 10px var(--pg); }
+
+    #crypto2Modal.c2-dark section.c2-page .c2-eyebrow { color: color-mix(in srgb, var(--pg) 65%, #ffffff); }
+
+
+    /* ── Karten ── */
+    #crypto2Modal section.c2-page .c2-card { border-radius: 18px; }
+
+    #crypto2Modal.c2-dark section.c2-page .c2-card {
+        background:
+            radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--pg) 6%, transparent), transparent 55%),
+            linear-gradient(165deg, rgba(255,255,255,.045), rgba(255,255,255,.012) 60%, rgba(0,0,0,.2));
+        border: 1px solid rgba(255,255,255,.085);
+        box-shadow: 0 18px 50px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.05); }
+
+    /* Kopfkarte: die erste Karte jeder Seite (beim Ueberblick die Marktampel) */
+    #crypto2Modal.c2-dark section.c2-page > .c2-card:first-child:not(.script-hero),
+    #crypto2Modal.c2-dark .c2-ov-grid > .c2-card:first-child {
+        background:
+            radial-gradient(70% 120% at 100% 0%, color-mix(in srgb, var(--pg) 19%, transparent), transparent 62%),
+            radial-gradient(60% 90% at 0% 100%, color-mix(in srgb, var(--pg) 6%, transparent), transparent 70%),
+            linear-gradient(165deg, rgba(255,255,255,.05), rgba(0,0,0,.22));
+        border-color: color-mix(in srgb, var(--pg) 26%, rgba(255,255,255,.08));
+        box-shadow: 0 22px 60px rgba(0,0,0,.4), inset 0 1px 0 color-mix(in srgb, var(--pg) 50%, transparent); }
+
+    #crypto2Modal:not(.c2-dark) section.c2-page > .c2-card:first-child:not(.script-hero),
+    #crypto2Modal:not(.c2-dark) .c2-ov-grid > .c2-card:first-child {
+        box-shadow: 0 20px 60px rgba(0,0,0,.15), inset 0 2px 0 color-mix(in srgb, var(--pg) 70%, #ffffff); }
+
+
+    /* ── Kacheln: Kennzahlen, Karten in Rastern, Listenpunkte ── */
+    #crypto2Modal.c2-dark :is(.c2-radar-stat, .c2-onchain-card, .c2-regime-cell, .c2-brk-stat-box,
+        .c2-pb-info-card, .c2-arena-stat, .c2-link-card, .c2-cmd-card, .c2-div-card, .c2-rank-card,
+        .c2-fighter, .c2-check-item, .c2-pb-pm-card, .ms-stat) {
+        background: linear-gradient(160deg, color-mix(in srgb, var(--pg) 7%, rgba(255,255,255,.035)), rgba(0,0,0,.16));
+        border: 1px solid rgba(255,255,255,.09);
+        border-radius: 14px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+
+    #crypto2Modal .c2-arena-stat { padding: 10px 12px; border-radius: 12px; }
+
+    #crypto2Modal :is(.c2-radar-stat .k, .c2-onchain-card .k, .c2-regime-lbl, .c2-brk-stat-lbl,
+        .c2-arena-stat-lbl, .c2-pb-info-card .label) {
+        font-family: 'JetBrains Mono', monospace; letter-spacing: .14em; }
+
+    #crypto2Modal :is(.c2-radar-stat .v, .c2-onchain-card .v, .c2-brk-stat-val, .c2-arena-stat-val) {
+        font-variant-numeric: tabular-nums; }
+
+
+    /* Anklickbare Kacheln heben sich beim Zeigen an und leuchten in der Seitenfarbe */
+    #crypto2Modal :is(.c2-link-card, .c2-cmd-card, .c2-div-card, .c2-rank-card, .c2-fighter, .c2-check-item, .c2-pb-pm-card) {
+        transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease; }
+
+    #crypto2Modal :is(.c2-link-card, .c2-cmd-card, .c2-div-card, .c2-fighter, .c2-pb-pm-card):hover {
+        transform: translateY(-2px);
+        border-color: color-mix(in srgb, var(--pg) 55%, transparent);
+        box-shadow: 0 12px 30px color-mix(in srgb, var(--pg) 16%, transparent), inset 0 1px 0 rgba(255,255,255,.06); }
+
+    #crypto2Modal .c2-check-item:hover { border-color: color-mix(in srgb, var(--pg) 45%, transparent); }
+
+
+    /* ── Chips und Tabs: einheitlich, aktiv mit Ring in der Seitenfarbe ── */
+    #crypto2Modal .c2-chip { border-radius: 999px; transition: background .2s, color .2s, border-color .2s, box-shadow .2s; }
+
+    #crypto2Modal.c2-dark .c2-chip:not(.active) { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.14); }
+
+    #crypto2Modal .c2-chip:not(.active):hover { border-color: color-mix(in srgb, var(--pg) 60%, transparent); color: #fff; }
+
+    #crypto2Modal .c2-chip.active { box-shadow: 0 0 0 3px color-mix(in srgb, var(--pg) 24%, transparent); }
+
+    #crypto2Modal .c2-mc-tab.active { background: #ffffff; border-color: #ffffff; color: #1a1208;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--pg) 24%, transparent); }
+
+    #crypto2Modal .c2-mc-tab:not(.active):hover { border-color: color-mix(in srgb, var(--pg) 60%, transparent); color: #fff; }
+
+
+    /* ── Tabellen ── */
+    #crypto2Modal .c2-tbl thead th { font-family: 'JetBrains Mono', monospace; letter-spacing: .14em; }
+
+    #crypto2Modal.c2-dark .c2-tbl thead th { color: rgba(255,255,255,.42); border-bottom-color: rgba(255,255,255,.09); }
+
+    #crypto2Modal .c2-tbl tbody tr { border-bottom-color: rgba(255,255,255,.045); }
+
+    #crypto2Modal .c2-tbl tbody tr:hover { background: color-mix(in srgb, var(--pg) 9%, transparent); }
+
+    #crypto2Modal .c2-tbl td { font-variant-numeric: tabular-nums; }
+@media (min-width: 901px) {
+
+        #crypto2Modal .c2-tbl td:nth-child(2) { max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+}
+
+
+    /* ── Eingaben ── */
+    #crypto2Modal.c2-dark :is(.c2-input, .c2-field input, .c2-notes-area) {
+        background: rgba(0,0,0,.24); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; }
+
+    #crypto2Modal :is(.c2-input, .c2-field input, .c2-notes-area):focus {
+        outline: none; border-color: color-mix(in srgb, var(--pg) 70%, transparent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--pg) 20%, transparent); }
+
+
+    /* ── Checklist: kraeftiger Fortschritt, abgehakte Punkte in der Seitenfarbe ── */
+    #crypto2Modal .c2-progress { height: 8px; background: rgba(255,255,255,.08); }
+
+    #crypto2Modal .c2-progress-fill { background: linear-gradient(90deg, color-mix(in srgb, var(--pg) 55%, #ffffff), var(--pg));
+        box-shadow: 0 0 14px color-mix(in srgb, var(--pg) 55%, transparent); }
+
+    #crypto2Modal .c2-check-box { border-radius: 6px; width: 20px; height: 20px; transition: background .2s, border-color .2s, box-shadow .2s; }
+
+    #crypto2Modal .c2-check-item.done { background: color-mix(in srgb, var(--pg) 10%, transparent);
+        border-color: color-mix(in srgb, var(--pg) 40%, transparent); }
+
+    #crypto2Modal .c2-check-item.done .c2-check-box { background: var(--pg); border-color: var(--pg); color: #0d1a10;
+        box-shadow: 0 0 12px color-mix(in srgb, var(--pg) 60%, transparent); }
+
+
+    /* ── Rechner: Ergebnis als Kachel mit Akzentkante ── */
+    #crypto2Modal .c2-calc-result { border-radius: 14px; border: 1px solid rgba(255,255,255,.09);
+        border-left: 3px solid var(--pg);
+        background: linear-gradient(160deg, color-mix(in srgb, var(--pg) 9%, rgba(255,255,255,.04)), rgba(0,0,0,.14)); }
+
+
+    /* ── Killzones: Sessions als Kacheln, die laufende leuchtet ── */
+    #crypto2Modal.c2-dark #c2KillzoneList .c2-killzone {
+        background: linear-gradient(160deg, color-mix(in srgb, var(--pg) 6%, rgba(255,255,255,.035)), rgba(0,0,0,.16));
+        border: 1px solid rgba(255,255,255,.09); border-radius: 14px; }
+
+    #crypto2Modal #c2KillzoneList .c2-killzone.active { border-color: rgba(157,245,173,.55);
+        box-shadow: 0 0 0 1px rgba(157,245,173,.35), 0 10px 30px rgba(70,209,130,.18); }
+
+
+    /* ── Leere Watchlist: einladender Platzhalter ── */
+    #crypto2Modal .c2-watch-empty-big { border: 1px dashed rgba(255,255,255,.18); border-radius: 16px;
+        padding: 2.6rem 1rem 2.2rem; }
+
+    #crypto2Modal .c2-watch-empty-big::before { content: '☆'; display: block; font-size: 2.2rem; line-height: 1;
+        margin-bottom: .8rem; color: var(--pg); text-shadow: 0 0 18px color-mix(in srgb, var(--pg) 60%, transparent); }
+
+
+    /* ── Weiche Uebergaenge fuer Balken ── */
+    #crypto2Modal :is(.c2-pp-barfill, .c2-gem-bd-fill, .c2-narr-breadth-fill, .c2-score-fill, .c2-social-bar-fill) {
+        transition: width .7s cubic-bezier(.2,.8,.2,1); }
 </style>
 <style id="c2mStyles">
 #c2mBar, #c2mSheet { display: none; }
@@ -6913,11 +7142,11 @@ body { overflow: hidden; }
                             <button class="c2-chip" data-hm-tf="30d">30 Tage</button>
                         </div>
                         <div class="c2-heatmap-legend">
-                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:#ff6b6b"></span>&lt; -3%</span>
-                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:#ffb5a8"></span>-3% bis 0%</span>
-                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:rgba(255,255,255,0.15)"></span>~0%</span>
-                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:#9df5ad"></span>0% bis +5%</span>
-                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:#2ecc71"></span>&gt; +5%</span>
+                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:rgba(255,77,77,0.8)"></span>stark im Minus</span>
+                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:rgba(255,77,77,0.35)"></span>im Minus</span>
+                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:rgba(255,255,255,0.15)"></span>um null</span>
+                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:rgba(46,204,113,0.38)"></span>im Plus</span>
+                            <span class="c2-hm-leg-item"><span class="c2-hm-swatch" style="background:rgba(46,204,113,0.8)"></span>stark im Plus</span>
                         </div>
                         <div class="c2-heatmap-grid" id="c2HeatmapGrid"></div>
                     </div>
@@ -7604,19 +7833,19 @@ body { overflow: hidden; }
             </div>
         </aside>
     </div>
-<script src="data/crypto_data.js?v=202610011018"></script>
-<script src="data/extras_data.js?v=202610011018"></script>
-<script src="data/series_data.js?v=202610011018"></script>
-<script src="data/social_data.js?v=202610011018"></script>
-<script src="data/gems_data.js?v=202610011018"></script>
-<script src="data/signals_data.js?v=202610011018"></script>
-<script src="data/onchain_data.js?v=202610011018"></script>
-<script src="data/briefing_data.js?v=202610011018"></script>
-<script src="data/memecoin_data.js?v=202610011018"></script>
-<script src="data/paper_data.js?v=202610011018"></script>
-<script src="data/cryptofluencer_data.js?v=202610011018"></script>
-<script src="data/tagebuch_data.js?v=202610011018"></script>
-<script src="data/narrativ_data.js?v=202610011018"></script>
+<script src="data/crypto_data.js?v=202610011211"></script>
+<script src="data/extras_data.js?v=202610011211"></script>
+<script src="data/series_data.js?v=202610011211"></script>
+<script src="data/social_data.js?v=202610011211"></script>
+<script src="data/gems_data.js?v=202610011211"></script>
+<script src="data/signals_data.js?v=202610011211"></script>
+<script src="data/onchain_data.js?v=202610011211"></script>
+<script src="data/briefing_data.js?v=202610011211"></script>
+<script src="data/memecoin_data.js?v=202610011211"></script>
+<script src="data/paper_data.js?v=202610011211"></script>
+<script src="data/cryptofluencer_data.js?v=202610011211"></script>
+<script src="data/tagebuch_data.js?v=202610011211"></script>
+<script src="data/narrativ_data.js?v=202610011211"></script>
 <script>
 /* Stubs fuer Daten, die bewusst lokal bleiben. Der extrahierte Code prueft
    ueberall auf Vorhandensein, die leeren Objekte halten ihn trotzdem ruhig. */
@@ -10838,13 +11067,14 @@ window.c2xProxy = function (u) { return u; };
 
                 // ── NARRATIVE HEAT MAP ──
                 let hmActiveSector = null;
+                // Farbe waechst stufenlos mit der Bewegung. Die Spanne haengt am
+                // Zeitraum: 6 Prozent sind an einem Tag viel, ueber 30 Tage wenig.
                 function heatColor(avg) {
-                    if (avg >= 8)  return 'rgba(46,204,113,0.55)';
-                    if (avg >= 5)  return 'rgba(46,204,113,0.35)';
-                    if (avg >= 2)  return 'rgba(157,245,173,0.22)';
-                    if (avg >= 0)  return 'rgba(255,255,255,0.06)';
-                    if (avg >= -3) return 'rgba(255,181,168,0.2)';
-                    return 'rgba(255,107,107,0.35)';
+                    const spanne = hmFeld === 'price_change_percentage_30d' ? 30
+                        : hmFeld === 'price_change_percentage_7d_in_currency' ? 15 : 6;
+                    if (Math.abs(avg) < 0.15) return 'rgba(255,255,255,0.07)';
+                    const a = (0.2 + 0.6 * Math.min(1, Math.abs(avg) / spanne)).toFixed(2);
+                    return avg > 0 ? 'rgba(46,204,113,' + a + ')' : 'rgba(255,77,77,' + a + ')';
                 }
                 // Zeitraum der Heat Map. Gilt fuer Farbe und Beschriftung.
                 let hmFeld = 'price_change_percentage_24h';
@@ -10935,7 +11165,10 @@ window.c2xProxy = function (u) { return u; };
                     const gross = ranked.slice()
                         .sort((a, b) => (b.mcap || 0) - (a.mcap || 0))
                         .slice(0, 18)
-                        .map(s => ({ ...s, wert: Math.max(s.mcap || 1, 1) }));
+                        // Flaeche nach der Wurzel der Market Cap: linear erschlug
+                        // Bitcoin ueber Layer 1 die halbe Karte, alle anderen
+                        // Sektoren wurden zu Streifen. Die Reihenfolge bleibt.
+                        .map(s => ({ ...s, wert: Math.sqrt(Math.max(s.mcap || 1, 1)) }));
                     const kacheln = squarify(gross, 0, 0, B, H);
 
                     // Als SVG zeichnen statt mit absolut gesetzten Kaesten.
@@ -10947,7 +11180,7 @@ window.c2xProxy = function (u) { return u; };
                             ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[ch]);
                     }
                     const teile = kacheln.map(t => {
-                        const col = t.avg >= 0 ? '#9df5ad' : '#ffb5a8';
+                        const col = Math.abs(t.avg) < 0.15 ? 'rgba(255,255,255,0.75)' : '#ffffff';
                         const sign = t.avg >= 0 ? '+' : '';
                         // Schrift an die Kachel anpassen: eine grosse Flaeche
                         // vertraegt eine grosse Zeile, eine schmale nur eine
