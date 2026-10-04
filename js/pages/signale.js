@@ -1,0 +1,217 @@
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js';
+
+let kette = 'alle';
+const daten = () => window.TAGESSIGNALE_DATA || null;
+const de = (v, d = 1) => v == null ? '?' : Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
+const ts = s => s ? Date.parse(s) / 1000 : null;
+const alter = h => h == null ? 'unbekannt' : h < 48 ? de(h, 0) + ' Std' : de(h / 24, 0) + ' Tage';
+const STUFE = { stark: ['Starkes Signal', 'var(--up)'], solide: ['Solides Signal', 'var(--a2)'], beobachten: ['Beobachten', 'var(--warn)'] };
+const URTEIL = { 'bestanden': 'var(--up)', 'mit Vorbehalt': 'var(--warn)', 'durchgefallen': 'var(--down)', 'ungeprüft': 'var(--ink-3)' };
+
+function trichter(d) {
+    const zeile = c => {
+        const s = d.stats[c] || {};
+        const st = [['Gesammelt', s.kandidaten], ['Mit Marktdaten', s.mit_daten], ['Durch den Filter', s.durch_filter], ['Vertrag geprüft', s.sicherheit_geprueft], ['Signale', s.signale]];
+        return `<div class="ts-fz"><div class="ts-fk"><b>${esc(d.chains[c])}</b></div>${st.map(([k, v], i) =>
+            `<div class="ts-fs ${i === st.length - 1 ? 'ziel' : ''}"><div class="num">${v ?? 0}</div><div class="eyebrow">${k}</div></div>${i < st.length - 1 ? `<span class="ts-fp">${icon('chevron-right')}</span>` : ''}`).join('')}</div>`;
+    };
+    return card({ eyebrow: 'So wurde geprüft', title: 'Vom Kandidaten zum Signal', right: chip('Stand ' + ago(ts(d.stand)), 'var(--up)'),
+        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal und dem Memecoin-Sammler. Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen und zum Schluss eine Vertragsprüfung: RugCheck für Solana, GoPlus für Base. Ohne bestandene Prüfung gibt es kein Signal.</p>
+        ${Object.keys(d.chains).map(zeile).join('')}` });
+}
+
+function karte(x) {
+    const [stText, stFarbe] = STUFE[x.stufe] || STUFE.solide, s = x.sicherheit || {}, c = x.chg || {};
+    const kz = (k, v) => `<div><div class="eyebrow">${k}</div><div class="num">${v}</div></div>`;
+    const seit = x.preis_signal && x.signal_seit && Math.abs(x.preis / x.preis_signal - 1) > 0.002
+        ? `<div class="ts-seit">Signal ${ago(ts(x.signal_seit))} bei ${fUsd(x.preis_signal)}, seitdem <b class="${cls(x.preis / x.preis_signal - 1)}">${fPct((x.preis / x.preis_signal - 1) * 100)}</b></div>` : '';
+    const lk = x.links || {};
+    return `<article class="card ts-k ${x.stufe === 'beobachten' ? 'ts-warten' : ''}">
+        <div class="row between" style="align-items:flex-start">
+            <div class="row" style="min-width:0">${x.img ? `<img class="coin-img" style="width:46px;height:46px" src="${esc(x.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="ico-b" style="width:46px;height:46px">${icon('coins')}</span>`}
+                <div style="min-width:0"><div class="h2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.symbol)}</div><div class="sb dim" style="font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.name)}</div>
+                <div class="row wrap" style="gap:6px;margin-top:8px">${chip(x.chain === 'solana' ? 'Solana' : 'Base', x.chain === 'solana' ? 'var(--a2)' : 'var(--a1)')}${chip(stText, stFarbe)}</div></div></div>
+            ${ring(x.score, 'Score', 92)}
+        </div>
+        <div class="ts-kz">${kz('Kurs', fUsd(x.preis))}${kz('Marktkap.', fBig(x.mcap))}${kz('Liquidität', fBig(x.liq))}${kz('Volumen 24h', fBig(x.vol24))}${kz('Alter', alter(x.alter_h))}${kz('Käufe 6h', x.kaufanteil6 != null ? de(x.kaufanteil6, 0) + '%' : '?')}</div>
+        <div class="row wrap" style="gap:6px">${[['5 Min', c.m5], ['1 Std', c.h1], ['6 Std', c.h6], ['24 Std', c.h24]].map(([k, v]) => chip(k + ' ' + fPct(v), v >= 0 ? 'var(--up)' : 'var(--down)')).join('')}</div>
+        <div class="card sunk ts-ein"><span class="ico-b">${icon(x.stufe === 'beobachten' ? 'hourglass' : 'crosshair')}</span><div><div class="eyebrow">Einstieg</div><div>${esc(x.einstieg)}</div>${seit}</div></div>
+        ${(x.gruende || []).length ? `<ul class="ts-l up">${x.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+        ${(x.warnungen || []).length ? `<ul class="ts-l warn">${x.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+        <details class="ts-d"><summary>${icon('shield-check')}<span>Vertragsprüfung: <b style="color:${URTEIL[s.urteil] || 'var(--ink-2)'}">${esc(s.urteil || 'ungeprüft')}</b> · ${esc(s.quelle || '')}</span>${icon('chevron-down')}</summary>
+            <div class="sub" style="font-size:.82rem;margin:10px 0 0">${esc(s.text || '')}</div>
+            ${(s.punkte || []).map(p => `<div class="ts-p"><span class="chip" style="--c:${p.stufe === 'danger' ? 'var(--down)' : 'var(--warn)'}">${p.stufe === 'danger' ? 'Risiko' : 'Hinweis'}</span><span>${esc(p.name)}${p.wert ? ' · ' + esc(p.wert) : ''}</span></div>`).join('')}
+            <div class="row wrap mono dim" style="gap:14px;font-size:.72rem;margin-top:10px">${s.lp_gesperrt_pct != null ? `<span>LP gesperrt ${de(s.lp_gesperrt_pct, 0)}%</span>` : ''}${s.halter ? `<span>${de(s.halter, 0)} Halter</span>` : ''}${s.top10_pct ? `<span>Top 10 halten ${de(s.top10_pct, 0)}%</span>` : ''}</div></details>
+        <details class="ts-d"><summary>${icon('bar-chart-3')}<span>Score im Detail${x.chart ? ` · Kerzenprüfung ${de(x.chart.score, 0)} von 100` : ' · ohne Kerzenprüfung'}</span>${icon('chevron-down')}</summary>
+            <div class="stack" style="gap:10px;margin-top:12px">${Object.keys(x.teile || {}).map(k => { const max = (x.teile_max || {})[k] || 15, v = x.teile[k];
+                return `<div><div class="row between" style="font-size:.78rem;margin-bottom:5px"><span class="dim">${esc(k)}</span><span class="num">${de(v)} von ${max}</span></div>${bar(v / max * 100, scoreVar(v / max * 100))}</div>`; }).join('')}</div>
+            <div class="sub" style="font-size:.74rem;margin-top:12px">Gefunden über: ${esc((x.quellen || []).join(', '))}${x.chart && x.chart.narrativ ? '. Narrativ: ' + esc(x.chart.narrativ) : ''}</div></details>
+        <div class="row wrap" style="gap:8px;margin-top:auto">
+            <a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">${icon('external-link')}DexScreener</a>
+            ${lk.x ? `<a class="btn soft" href="${esc(lk.x)}" target="_blank" rel="noopener">X</a>` : ''}${lk.telegram ? `<a class="btn soft" href="${esc(lk.telegram)}" target="_blank" rel="noopener">Telegram</a>` : ''}${lk.web ? `<a class="btn soft" href="${esc(lk.web)}" target="_blank" rel="noopener">Website</a>` : ''}
+            <button class="btn soft" data-kopie="${esc(x.token)}" title="Vertragsadresse kopieren">${icon('copy')}CA</button>
+        </div></article>`;
+}
+
+function liste(d) {
+    const ketten = Object.keys(d.chains).filter(c => kette === 'alle' || c === kette);
+    const sig = ketten.flatMap(c => (d.ergebnis[c] || {}).signale || []).sort((a, b) => b.score - a.score);
+    const beo = ketten.flatMap(c => (d.ergebnis[c] || {}).beobachten || []).sort((a, b) => b.score - a.score);
+    const abg = ketten.flatMap(c => ((d.ergebnis[c] || {}).abgelehnt || []).map(a => ({ ...a, chain: c })));
+    const nae = ketten.flatMap(c => ((d.ergebnis[c] || {}).naechste || []).map(a => ({ ...a, chain: c }))).sort((a, b) => b.score - a.score).slice(0, 10);
+    const aus = {};
+    ketten.forEach(c => Object.entries((d.stats[c] || {}).ausschluss || {}).forEach(([k, v]) => { aus[k] = (aus[k] || 0) + v; }));
+    const ausArr = Object.entries(aus).sort((a, b) => b[1] - a[1]), ausMax = ausArr.length ? ausArr[0][1] : 1;
+    return `<div class="ts-sec"><div class="eyebrow">Signale heute</div><span class="eyebrow">${sig.length} ${sig.length === 1 ? 'Coin' : 'Coins'}</span></div>
+        ${sig.length ? `<div class="ts-grid">${sig.map(karte).join('')}</div>` : card({ cls: 'tint', body: empty('Heute hat kein Coin alle 4 Stufen bestanden. Kein Signal ist auch eine Aussage: lieber nichts kaufen als etwas Halbgares.') })}
+        ${beo.length ? `<div class="ts-sec"><div class="eyebrow" style="color:var(--warn)">Geprüft, aber noch kein Einstieg</div><span class="eyebrow">${beo.length}</span></div><div class="ts-grid">${beo.map(karte).join('')}</div>` : ''}
+        <div class="grid g2">
+            ${card({ eyebrow: 'Warum Coins rausgeflogen sind', body: ausArr.length ? `<div class="stack" style="gap:11px">${ausArr.map(([k, v]) => `<div><div class="row between" style="font-size:.82rem;margin-bottom:5px"><span>${esc(k)}</span><span class="num dim">${v}</span></div>${bar(v / ausMax * 100, 'var(--ink-3)')}</div>`).join('')}</div>` : empty('Keine Ausschlüsse.') })}
+            ${card({ eyebrow: 'Nach der Vertragsprüfung abgelehnt', body: (abg.length ? `<div class="list">${abg.map(a => `<a class="li" style="grid-template-columns:minmax(0,1fr) auto" href="${esc(a.url)}" target="_blank" rel="noopener"><div><div class="nm">${esc(a.symbol)} <span class="dim" style="font-weight:400">${esc(d.chains[a.chain])}</span></div><div class="sb" style="white-space:normal;font-family:var(--font)">${esc(a.grund)}</div></div><div class="val">${chip(a.urteil, URTEIL[a.urteil])}</div></a>`).join('')}</div>` : empty('Kein Coin ist an der Vertragsprüfung gescheitert.')) +
+                (nae.length ? `<div class="eyebrow" style="margin:18px 0 10px">Knapp dahinter, noch nicht vertragsgeprüft</div><div class="row wrap" style="gap:6px">${nae.map(a => `<a class="chip" href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.symbol)} ${de(a.score, 0)}</a>`).join('')}</div>` : '') })}
+        </div>`;
+}
+
+let tbFilter = 'alle', tbOffen = null;
+const usd = v => v == null ? '?' : (v < 0 ? '-' : '') + '$' + Number(Math.abs(v)).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const dauer = h => h == null ? '?' : h < 1 ? de(h * 60, 0) + ' Min' : h < 48 ? de(h, h < 10 ? 1 : 0) + ' Std' : de(h / 24, 1) + ' Tage';
+const datumZeit = s => { const t = new Date(s); return t.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + t.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); };
+
+function verlauf(e, w = 150, h = 44) {
+    const a = e.serie || [];
+    if (a.length < 2) return '<span class="dim mono" style="font-size:.7rem">misst noch</span>';
+    const mx = Math.max(...a, 1), mn = Math.min(...a, 1), sp = mx - mn || 1;
+    const y = v => (h - 4 - (v - mn) / sp * (h - 8)).toFixed(1), x = i => (i / (a.length - 1) * w).toFixed(1);
+    const top = a.indexOf(mx), col = (e.jetzt_pct || 0) >= 0 ? 'var(--up)' : 'var(--down)';
+    return `<svg class="tb-svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+        <line x1="0" x2="${w}" y1="${y(1)}" y2="${y(1)}" class="tb-null"/>
+        <path d="M${a.map((v, i) => x(i) + ',' + y(v)).join(' L')}" stroke="${col}"/>
+        ${mx > 1.001 ? `<circle cx="${x(top)}" cy="${y(mx)}" r="3.2" class="tb-top"/>` : ''}</svg>`;
+}
+
+function tbBilanz(b) {
+    if (!b) return `<div class="card sunk" style="padding:18px"><div class="sub" style="margin:0">Die Bilanz beginnt, sobald das erste Signal mindestens 1 Stunde alt und gemessen ist.</div></div>`;
+    const k = (l, v, sub, farbe) => `<div class="card sunk tb-kpi"><div class="eyebrow">${l}</div><div class="num tb-kv" ${farbe ? `style="color:${farbe}"` : ''}>${v}</div>${sub ? `<div class="tb-ks">${sub}</div>` : ''}</div>`;
+    const g = (w, e) => w - e;
+    return `<div class="tb-drei">
+        ${[['Perfekter Ausstieg', 'Verkauf genau am Hoch nach dem Signal', b.wert_perfekt, b.schnitt_max_pct, 'var(--up)'],
+           ['Regel-Ausstieg', `Trailing-Stop ${de(b.trail_pct, 0)} Prozent unter dem Hoch`, b.wert_regel, b.schnitt_regel_pct, 'var(--a2)'],
+           ['Gehalten bis jetzt', 'Kein Verkauf, aktueller Kurs', b.wert_jetzt, b.schnitt_jetzt_pct, 'var(--ink-2)']].map(([t, sub, wert, pct, farbe]) =>
+            `<div class="card tb-weg" style="--c:${farbe}"><div class="eyebrow">${t}</div><div class="tb-wsub">${sub}</div>
+                <div class="big num" style="margin-top:14px">${usd(wert)}</div>
+                <div class="row" style="gap:10px;margin-top:8px"><span class="num ${cls(g(wert, b.summe_einsatz))}">${g(wert, b.summe_einsatz) >= 0 ? '+' : ''}${usd(g(wert, b.summe_einsatz)).replace('$-', '-$')}</span><span class="dim" style="font-size:.78rem">Ø ${fPct(pct)} je Signal</span></div></div>`).join('')}
+    </div>
+    <p class="sub" style="font-size:.78rem;margin:12px 2px 18px">Rechenbeispiel: ${b.n} Signale mit je ${usd(b.einsatz)} Einsatz, zusammen ${usd(b.summe_einsatz)}. Gebühren und Slippage sind nicht abgezogen.</p>
+    <div class="grid g4" style="gap:12px">
+        ${k('Signale gemessen', b.n)}
+        ${k('Hoch über +20%', b.treffer_20 + ' von ' + b.n, `über +50%: ${b.treffer_50} · über +100%: ${b.treffer_100}`, 'var(--up)')}
+        ${k('Nie spürbar im Plus', b.nie_im_plus + ' von ' + b.n, 'Hoch unter +3%', b.nie_im_plus ? 'var(--down)' : null)}
+        ${k('Zeit bis zum Hoch', dauer(b.stunden_bis_hoch), 'im Schnitt' + (b.bester && b.bester.symbol ? ` · bestes Signal ${esc(b.bester.symbol)} ${fPct(b.bester.max_pct)}` : ''))}
+    </div>`;
+}
+
+function tbZeile(e, d) {
+    const offen = tbOffen === e.id, p0 = e.preis_signal;
+    const gew = pct => pct == null ? '' : `<div class="tb-usd ${cls(pct)}">${pct >= 0 ? '+' : ''}${usd(100 * pct / 100).replace('$-', '-$')}</div>`;
+    return `<div class="tb-z ${offen ? 'offen' : ''}" data-tb="${esc(e.id)}">
+        <div class="tb-c">${e.img ? `<img class="coin-img" src="${esc(e.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="ico-b">${icon('coins')}</span>`}
+            <div style="min-width:0"><div class="nm">${esc(e.symbol)} <span class="dim" style="font-weight:400;font-size:.76rem">${esc(d.chains[e.chain] || e.chain)}</span></div>
+            <div class="sb">${datumZeit(e.ts)} · Score ${de(e.score, 0)}${e.status === 'abgeschlossen' ? ' · abgeschlossen' : ''}</div></div></div>
+        <div class="tb-v">${verlauf(e)}</div>
+        <div class="tb-m tb-ein"><div class="eyebrow">Einstieg</div><div class="num">${fUsd(p0)}</div></div>
+        <div class="tb-m"><div class="eyebrow">Perfekt raus</div><div class="num ${cls(e.max_pct)}" style="font-weight:600">${fPct(e.max_pct)}</div>${gew(e.max_pct)}<div class="tb-zeit">${e.stunden_bis_hoch != null ? 'nach ' + dauer(e.stunden_bis_hoch) : ''}</div></div>
+        <div class="tb-m tb-regel"><div class="eyebrow">Regel raus</div><div class="num ${cls(e.regel_pct)}">${e.regel_pct != null ? fPct(e.regel_pct) : '<span class="dim">läuft</span>'}</div>${gew(e.regel_pct)}</div>
+        <div class="tb-m"><div class="eyebrow">Jetzt</div><div class="num ${cls(e.jetzt_pct)}">${fPct(e.jetzt_pct)}</div>${gew(e.jetzt_pct)}</div>
+        <span class="tb-pf">${icon('chevron-down')}</span>
+        ${offen ? `<div class="tb-detail">
+            <div class="grid g4" style="gap:10px">
+                ${[['Kurs beim Signal', fUsd(p0)], ['Höchster Kurs', fUsd(e.hoch) + (e.hoch_ts ? ' · ' + datumZeit(e.hoch_ts) : '')], ['Tief vor dem Hoch', fPct(e.tief_vor_hoch_pct) + ' · so weit lief es erst gegen dich'], ['Tiefster Stand', fPct(e.tief_pct)],
+                   ['Regel-Ausstieg', e.regel_preis ? fUsd(e.regel_preis) + ' · ' + datumZeit(e.regel_ts) : 'Stop noch nicht ausgelöst'], ['Kurs jetzt', fUsd(e.preis_jetzt)], ['Marktkap. beim Signal', fBig(e.mcap_signal)], ['Gemessen', (e.kerzen || 0) + (e.kerzen === 1 ? ' Kerze' : ' Kerzen') + (e.stand ? ' · ' + ago(ts(e.stand)) : '')]]
+                    .map(([k, v]) => `<div class="card sunk" style="padding:12px 14px"><div class="eyebrow">${k}</div><div style="font-size:.84rem;margin-top:5px">${v}</div></div>`).join('')}
+            </div>
+            ${(e.gruende || []).length ? `<ul class="ts-l up" style="margin-top:14px">${e.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+            ${(e.warnungen || []).length ? `<ul class="ts-l warn" style="margin-top:8px">${e.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+            <div class="row wrap" style="gap:8px;margin-top:14px">${e.url ? `<a class="btn soft" href="${esc(e.url)}" target="_blank" rel="noopener">${icon('external-link')}DexScreener</a>` : ''}<button class="btn soft" data-kopie="${esc(e.token)}">${icon('copy')}CA</button></div>
+        </div>` : ''}
+    </div>`;
+}
+
+function historie(d) {
+    const alle = (d.tagebuch || []).filter(x => kette === 'alle' || x.chain === kette);
+    const liste = alle.filter(x => tbFilter === 'alle' || (tbFilter === 'aktiv' ? x.status !== 'abgeschlossen' : tbFilter === 'treffer' ? (x.max_pct || 0) >= 20 : (x.max_pct || 0) < 3));
+    const tage = {};
+    liste.forEach(x => { (tage[x.datum] = tage[x.datum] || []).push(x); });
+    return card({ eyebrow: 'Signal-Tagebuch', title: 'Was du mit jedem Signal hättest machen können',
+        right: d.tagebuch_stand ? chip('Gemessen ' + ago(ts(d.tagebuch_stand)), 'var(--up)') : '',
+        body: `<p class="sub" style="margin:0 0 18px">Jedes Signal wird hier dauerhaft festgehalten, mit Kurs und Uhrzeit. Danach wird es ${d.bilanz ? d.bilanz.aktiv_tage : 14} Tage lang aus den Kerzen nachgemessen: wie hoch es nach dem Signal lief, also der Gewinn beim Verkauf zum perfekten Zeitpunkt, was ein fester Trailing-Stop gebracht hätte und wo es heute steht.</p>
+        ${tbBilanz(d.bilanz)}
+        <div class="row between wrap" style="margin:26px 0 12px;gap:12px"><div class="eyebrow">${liste.length} ${liste.length === 1 ? 'Eintrag' : 'Einträge'}</div>${seg('tbfilter', [['alle', 'Alle'], ['aktiv', 'Wird gemessen'], ['treffer', 'Über +20%'], ['flop', 'Nie im Plus']], tbFilter)}</div>
+        ${liste.length ? Object.keys(tage).sort().reverse().map(t => `<div class="tb-tag"><span>${esc(t.split('-').reverse().join('.'))}</span><span class="dim">${tage[t].length} ${tage[t].length === 1 ? 'Signal' : 'Signale'}</span></div><div class="tb-liste">${tage[t].map(e => tbZeile(e, d)).join('')}</div>`).join('')
+            : empty(alle.length ? 'Kein Eintrag passt zu diesem Filter.' : 'Noch keine Signale im Tagebuch. Jedes neue Signal wird ab jetzt automatisch eingetragen.')}
+        <p class="sub" style="font-size:.74rem;margin-top:16px">Perfekter Ausstieg heißt Verkauf am höchsten Kerzenhoch nach dem Signal. Das trifft in der Praxis niemand genau, es zeigt das Potenzial. Der Regel-Ausstieg ist der realistische Vergleich: verkauft wird, sobald der Kurs ${d.bilanz ? de(d.bilanz.trail_pct, 0) : 30} Prozent unter das bisherige Hoch fällt. Die Kerze, in die das Signal fällt, zählt nur mit ihrem Schlusskurs.</p>` });
+}
+
+export default {
+    styles: `
+        .ts-fz { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--line); }
+        .ts-fk { width: 80px; } .ts-fs { flex: 1; min-width: 96px; padding: 12px 14px; border-radius: var(--r-md); background: var(--bg); box-shadow: var(--sh-in); }
+        .ts-fs .num { font-size: 1.5rem; font-weight: 300; line-height: 1.1; } .ts-fs .eyebrow { font-size: .56rem; letter-spacing: .12em; margin-top: 4px; }
+        .ts-fs.ziel { background: var(--surface); box-shadow: var(--sh-sm); } .ts-fs.ziel .num { color: var(--up); font-weight: 500; }
+        .ts-fp { color: var(--ink-3); display: grid; } .ts-fp svg { width: 14px; height: 14px; }
+        .ts-sec { display: flex; justify-content: space-between; align-items: baseline; margin: 4px 4px -8px; } .ts-sec .eyebrow:first-child { color: var(--pg); }
+        .ts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 22px; }
+        .ts-k { display: flex; flex-direction: column; gap: 16px; transition: transform .35s var(--ease); } .ts-k:hover { transform: translateY(-3px); }
+        .ts-warten { box-shadow: none; border: 1px dashed color-mix(in srgb, var(--warn) 45%, transparent); }
+        .ts-kz { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 10px; } .ts-kz .num { font-size: .9rem; margin-top: 3px; }
+        .ts-ein { display: flex; gap: 12px; padding: 14px 16px; font-size: .88rem; align-items: flex-start; } .ts-ein .eyebrow { margin-bottom: 3px; }
+        .ts-seit { font-size: .76rem; color: var(--ink-3); margin-top: 6px; }
+        .ts-l { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: .84rem; color: var(--ink-2); }
+        .ts-l li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 9px; align-items: start; } .ts-l svg { width: 15px; height: 15px; margin-top: 3px; }
+        .ts-l.up svg { color: var(--up); } .ts-l.warn svg { color: var(--warn); }
+        .ts-d { border-top: 1px solid var(--line); padding-top: 12px; }
+        .ts-d summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; font-size: .82rem; color: var(--ink-2); }
+        .ts-d summary::-webkit-details-marker { display: none; } .ts-d summary svg { width: 15px; height: 15px; flex: none; }
+        .ts-d summary span { flex: 1; } .ts-d summary svg:last-child { transition: transform .3s var(--ease); } .ts-d[open] summary svg:last-child { transform: rotate(180deg); }
+        .ts-p { display: flex; gap: 10px; align-items: center; font-size: .8rem; margin-top: 8px; }
+        .tb-drei { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .tb-weg { position: relative; overflow: hidden; padding: 20px 22px; }
+        .tb-weg::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
+        .tb-wsub { font-size: .76rem; color: var(--ink-3); margin-top: 4px; }
+        .tb-kpi { padding: 14px 16px; } .tb-kv { font-size: 1.3rem; font-weight: 300; margin-top: 6px; } .tb-ks { font-size: .72rem; color: var(--ink-3); margin-top: 4px; }
+        .tb-tag { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--pg); margin: 18px 4px 8px; }
+        .tb-liste { display: grid; gap: 8px; }
+        .tb-z { display: grid; grid-template-columns: minmax(150px, 1.3fr) 150px repeat(4, minmax(78px, .8fr)) 20px; gap: 14px; align-items: center; padding: 12px 14px; border-radius: var(--r-md); background: var(--bg); box-shadow: var(--sh-in); cursor: pointer; transition: background .2s; }
+        .tb-z:hover { background: color-mix(in srgb, var(--ink) 3%, var(--bg)); }
+        .tb-c { display: flex; gap: 10px; align-items: center; min-width: 0; } .tb-c .nm { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .tb-c .sb { font-size: .7rem; color: var(--ink-3); font-family: var(--mono); }
+        .tb-m .eyebrow { font-size: .54rem; letter-spacing: .12em; } .tb-m .num { font-size: .9rem; margin-top: 3px; }
+        .tb-usd { font-family: var(--mono); font-size: .68rem; } .tb-zeit { font-size: .66rem; color: var(--ink-3); }
+        .tb-svg path { fill: none; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+        .tb-null { stroke: var(--ink-3); stroke-dasharray: 2 3; opacity: .55; } .tb-top { fill: var(--up); }
+        .tb-pf { color: var(--ink-3); display: grid; transition: transform .3s var(--ease); } .tb-pf svg { width: 16px; height: 16px; } .tb-z.offen .tb-pf { transform: rotate(180deg); }
+        .tb-detail { grid-column: 1 / -1; padding-top: 8px; cursor: default; }
+        @media (max-width: 1180px) { .tb-z { grid-template-columns: minmax(140px, 1fr) repeat(3, minmax(70px, .7fr)) 20px; } .tb-v, .tb-ein { display: none; } }
+        @media (max-width: 860px) { .tb-drei { grid-template-columns: minmax(0, 1fr); } .tb-z { grid-template-columns: minmax(0, 1fr) repeat(2, auto) 16px; gap: 10px; } .tb-regel { display: none; } }
+        @media (max-width: 860px) { .ts-grid { grid-template-columns: minmax(0, 1fr); } .ts-fk { width: 100%; } .ts-fp { display: none; } }`,
+    render(root) {
+        const d = daten();
+        const kopf = pageHead('Heute', 'Tages-Signale', 'Tägliche Memecoin-Vorschläge für Solana und Base aus DexScreener. Jeder Coin ist vorher durch 4 Stufen gelaufen: Marktdaten, harte Filter, Score und Vertragsprüfung. Unten im Signal-Tagebuch steht, was jedes Signal gebracht hätte.',
+            d ? seg('tskette', [['alle', 'Alle'], ...Object.entries(d.chains)], kette) : '');
+        root.classList.add('stack');
+        if (!d) { root.innerHTML = kopf + card({ body: empty('Noch keine Signale. Sie entstehen beim nächsten Lauf von fetch_tagessignale.py, also beim nächsten Refresh.') }); return; }
+        root.innerHTML = kopf + ((d.fehler || []).length ? card({ cls: 'flat', body: `<div class="warn" style="font-size:.86rem">${d.fehler.map(esc).join('. ')}</div>` }) : '') +
+            trichter(d) + `<div class="stack" id="tsListe">${liste(d)}</div><div id="tsHist">${historie(d)}</div>` +
+            `<p class="sub" style="font-size:.76rem;max-width:none">Mechanisches Raster, keine Anlageberatung und kein Kaufbefehl. Memecoins können in Minuten auf null fallen. Die Vertragsprüfung senkt das Risiko eines Betrugs, sie schließt ihn nicht aus. Nur Geld einsetzen, dessen Verlust du verkraftest.</p>`;
+        root.onclick = e => {
+            const k = e.target.closest('[data-kopie]');
+            if (k) { navigator.clipboard && navigator.clipboard.writeText(k.dataset.kopie).then(() => { const alt = k.innerHTML; k.textContent = 'Kopiert'; setTimeout(() => { k.innerHTML = alt; }, 1300); }); return; }
+            const f = e.target.closest('[data-seg="tbfilter"] button');
+            if (f) { tbFilter = f.dataset.v; const h = root.querySelector('#tsHist'); h.innerHTML = historie(d); hydrate(h); return; }
+            const z = e.target.closest('[data-tb]');
+            if (z && !e.target.closest('.tb-detail')) { tbOffen = tbOffen === z.dataset.tb ? null : z.dataset.tb; const h = root.querySelector('#tsHist'); h.innerHTML = historie(d); hydrate(h); h.querySelector(`[data-tb="${CSS.escape(z.dataset.tb)}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+            const b = e.target.closest('[data-seg="tskette"] button');
+            if (b) { kette = b.dataset.v; root.querySelectorAll('[data-seg="tskette"] button').forEach(x => x.classList.toggle('on', x === b));
+                const l = root.querySelector('#tsListe'), h = root.querySelector('#tsHist'); l.innerHTML = liste(d); h.innerHTML = historie(d); hydrate(l); hydrate(h); }
+        };
+    },
+};
