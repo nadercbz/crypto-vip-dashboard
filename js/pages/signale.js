@@ -17,8 +17,21 @@ function trichter(d) {
             `<div class="ts-fs ${i === st.length - 1 ? 'ziel' : ''}"><div class="num">${v ?? 0}</div><div class="eyebrow">${k}</div></div>${i < st.length - 1 ? `<span class="ts-fp">${icon('chevron-right')}</span>` : ''}`).join('')}</div>`;
     };
     return card({ eyebrow: 'So wurde geprüft', title: 'Vom Kandidaten zum Signal', right: chip('Stand ' + ago(ts(d.stand)), 'var(--up)'),
-        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal und dem Memecoin-Sammler. Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen und zum Schluss eine Vertragsprüfung: RugCheck für Solana, GoPlus für Base. Ohne bestandene Prüfung gibt es kein Signal.</p>
+        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal, dem Memecoin-Sammler und bei Solana aus den KOL-Käufen von MadeOnSol. Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen, bei Solana zusätzlich Smart Money (wer kauft, wer steigt aus), und zum Schluss eine Vertragsprüfung: RugCheck für Solana, GoPlus für Base. Ohne bestandene Prüfung gibt es kein Signal, und steigen die KOLs gerade aus, auch nicht.</p>
         ${Object.keys(d.chains).map(zeile).join('')}` });
+}
+
+function smartMoney(x) {
+    const k = x.kol;
+    if (!k) return '';
+    const farbe = k.ausstieg ? 'var(--down)' : k.bestaetigt ? 'var(--up)' : 'var(--ink-3)';
+    const titel = k.ausstieg ? 'KOLs steigen aus' : k.bestaetigt ? 'Von Smart Money bestätigt' : 'Kaum KOL-Aktivität';
+    const z = (l, v) => `<div><div class="eyebrow">${l}</div><div class="num">${v}</div></div>`;
+    return `<div class="card sunk ts-sm" style="--c:${farbe}">
+        <div class="row between"><div class="row" style="gap:8px"><span class="ts-sm-ico">${icon(k.ausstieg ? 'log-out' : 'users')}</span><b style="font-weight:500">${titel}</b></div><span class="eyebrow">MadeOnSol</span></div>
+        <div class="ts-sm-kz">${z('Gekauft 24h', k.kauf_24h ?? 0)}${z('Verkauft 24h', k.verkauf_24h ?? 0)}${z('Top-KOLs halten', k.top_halter ?? 0)}${z('Käufer-Qualität', k.kaeufer_score != null ? k.kaeufer_score : '?')}</div>
+        ${(k.namen || []).length ? `<div class="sub" style="font-size:.76rem;margin:10px 0 0">Gekauft zuletzt: ${k.namen.map(esc).join(', ')}</div>` : ''}
+    </div>`;
 }
 
 function karte(x) {
@@ -36,6 +49,7 @@ function karte(x) {
         </div>
         <div class="ts-kz">${kz('Kurs', fUsd(x.preis))}${kz('Marktkap.', fBig(x.mcap))}${kz('Liquidität', fBig(x.liq))}${kz('Volumen 24h', fBig(x.vol24))}${kz('Alter', alter(x.alter_h))}${kz('Käufe 6h', x.kaufanteil6 != null ? de(x.kaufanteil6, 0) + '%' : '?')}</div>
         <div class="row wrap" style="gap:6px">${[['5 Min', c.m5], ['1 Std', c.h1], ['6 Std', c.h6], ['24 Std', c.h24]].map(([k, v]) => chip(k + ' ' + fPct(v), v >= 0 ? 'var(--up)' : 'var(--down)')).join('')}</div>
+        ${smartMoney(x)}
         <div class="card sunk ts-ein"><span class="ico-b">${icon(x.stufe === 'beobachten' ? 'hourglass' : 'crosshair')}</span><div><div class="eyebrow">Einstieg</div><div>${esc(x.einstieg)}</div>${seit}</div></div>
         ${(x.gruende || []).length ? `<ul class="ts-l up">${x.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
         ${(x.warnungen || []).length ? `<ul class="ts-l warn">${x.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
@@ -54,6 +68,25 @@ function karte(x) {
         </div></article>`;
 }
 
+function kolStatus(d) {
+    const st = d.kol_status;
+    if (!st || !st.schluessel) return '';
+    if (st.fehler) return card({ cls: 'flat', body: `<div class="row" style="gap:10px;color:var(--down);font-size:.86rem">${icon('key-round')}<span>Smart Money aus: ${esc(st.fehler)}</span></div>` });
+    if (st.tage_bis_ablauf != null && st.tage_bis_ablauf <= 5)
+        return card({ cls: 'flat', body: `<div class="row" style="gap:10px;color:var(--warn);font-size:.86rem">${icon('key-round')}<span>Der kostenlose MadeOnSol-Schlüssel läuft ${st.tage_bis_ablauf <= 0 ? 'heute' : 'in ' + st.tage_bis_ablauf + (st.tage_bis_ablauf === 1 ? ' Tag' : ' Tagen')} ab. Auf madeonsol.com/developer mit einem Klick erneuern und in madeonsol_key.txt eintragen.</span></div>` });
+    return '';
+}
+
+function kolMarkt(d) {
+    const m = (d.kol_markt || []);
+    if (!m.length || (kette !== 'alle' && kette !== 'solana')) return '';
+    return card({ eyebrow: 'Smart Money live', title: 'Was KOLs gerade kaufen', right: chip('ungeprüft', 'var(--warn)'),
+        body: `<p class="sub" style="margin:0 0 14px">Coins, bei denen mehrere KOL-Wallets in den letzten Stunden gekauft haben. Das ist nur der Rohstoff: was davon die 4 Stufen besteht, steht oben als Signal. Oft sind diese Coins erst Minuten alt und fallen deshalb noch durch die Filter.</p>
+        <div class="list">${m.slice(0, 10).map(x => `<a class="li" style="grid-template-columns:minmax(0,1fr) auto" href="https://dexscreener.com/solana/${esc(x.mint)}" target="_blank" rel="noopener">
+            <div><div class="nm">${esc(x.symbol || x.mint.slice(0, 6))}</div><div class="sb">${esc(x.quelle || '')}${x.beschleunigung ? ' · Tempo ' + de(x.beschleunigung, 1) + 'x' : ''}${x.winrate ? ' · Trefferquote ' + de(x.winrate, 0) + '%' : ''}</div></div>
+            <div class="val"><span>${x.kols || 0} KOLs</span><span class="${cls(x.netto_sol)}" style="min-width:74px">${x.netto_sol != null ? (x.netto_sol > 0 ? '+' : '') + de(x.netto_sol, 0) + ' SOL' : ''}</span></div></a>`).join('')}</div>` });
+}
+
 function liste(d) {
     const ketten = Object.keys(d.chains).filter(c => kette === 'alle' || c === kette);
     const sig = ketten.flatMap(c => (d.ergebnis[c] || {}).signale || []).sort((a, b) => b.score - a.score);
@@ -66,6 +99,7 @@ function liste(d) {
     return `<div class="ts-sec"><div class="eyebrow">Signale heute</div><span class="eyebrow">${sig.length} ${sig.length === 1 ? 'Coin' : 'Coins'}</span></div>
         ${sig.length ? `<div class="ts-grid">${sig.map(karte).join('')}</div>` : card({ cls: 'tint', body: empty('Heute hat kein Coin alle 4 Stufen bestanden. Kein Signal ist auch eine Aussage: lieber nichts kaufen als etwas Halbgares.') })}
         ${beo.length ? `<div class="ts-sec"><div class="eyebrow" style="color:var(--warn)">Geprüft, aber noch kein Einstieg</div><span class="eyebrow">${beo.length}</span></div><div class="ts-grid">${beo.map(karte).join('')}</div>` : ''}
+        ${kolMarkt(d)}
         <div class="grid g2">
             ${card({ eyebrow: 'Warum Coins rausgeflogen sind', body: ausArr.length ? `<div class="stack" style="gap:11px">${ausArr.map(([k, v]) => `<div><div class="row between" style="font-size:.82rem;margin-bottom:5px"><span>${esc(k)}</span><span class="num dim">${v}</span></div>${bar(v / ausMax * 100, 'var(--ink-3)')}</div>`).join('')}</div>` : empty('Keine Ausschlüsse.') })}
             ${card({ eyebrow: 'Nach der Vertragsprüfung abgelehnt', body: (abg.length ? `<div class="list">${abg.map(a => `<a class="li" style="grid-template-columns:minmax(0,1fr) auto" href="${esc(a.url)}" target="_blank" rel="noopener"><div><div class="nm">${esc(a.symbol)} <span class="dim" style="font-weight:400">${esc(d.chains[a.chain])}</span></div><div class="sb" style="white-space:normal;font-family:var(--font)">${esc(a.grund)}</div></div><div class="val">${chip(a.urteil, URTEIL[a.urteil])}</div></a>`).join('')}</div>` : empty('Kein Coin ist an der Vertragsprüfung gescheitert.')) +
@@ -108,7 +142,18 @@ function tbBilanz(b) {
         ${k('Hoch über +20%', b.treffer_20 + ' von ' + b.n, `über +50%: ${b.treffer_50} · über +100%: ${b.treffer_100}`, 'var(--up)')}
         ${k('Nie spürbar im Plus', b.nie_im_plus + ' von ' + b.n, 'Hoch unter +3%', b.nie_im_plus ? 'var(--down)' : null)}
         ${k('Zeit bis zum Hoch', dauer(b.stunden_bis_hoch), 'im Schnitt' + (b.bester && b.bester.symbol ? ` · bestes Signal ${esc(b.bester.symbol)} ${fPct(b.bester.max_pct)}` : ''))}
-    </div>`;
+    </div>
+    ${kolVergleich(b.vergleich_kol)}`;
+}
+
+function kolVergleich(v) {
+    if (!v || !v.mit_kol || !v.mit_kol.n) return `<p class="sub" style="font-size:.76rem;margin:14px 2px 0">Vergleich mit und ohne Smart Money: erscheint, sobald das erste KOL-bestätigte Signal gemessen ist.</p>`;
+    const z = (t, g, farbe) => `<div class="card sunk tb-kpi" style="border-left:3px solid ${farbe}"><div class="eyebrow">${t}</div>
+        <div class="row" style="gap:16px;margin-top:8px;flex-wrap:wrap"><div><div class="tb-ks">Signale</div><div class="num">${g.n}</div></div>
+        <div><div class="tb-ks">Ø perfekt raus</div><div class="num ${cls(g.schnitt_max_pct)}">${fPct(g.schnitt_max_pct)}</div></div>
+        <div><div class="tb-ks">Ø Regel raus</div><div class="num ${cls(g.schnitt_regel_pct)}">${fPct(g.schnitt_regel_pct)}</div></div>
+        <div><div class="tb-ks">Über +20%</div><div class="num">${g.treffer_20 ?? 0}</div></div></div></div>`;
+    return `<div class="eyebrow" style="margin:20px 2px 10px">Bringt Smart Money etwas?</div><div class="grid g2" style="gap:12px">${z('Mit KOL-Bestätigung', v.mit_kol, 'var(--up)')}${v.ohne_kol && v.ohne_kol.n ? z('Ohne KOL-Bestätigung', v.ohne_kol, 'var(--ink-3)') : ''}</div>`;
 }
 
 function tbZeile(e, d) {
@@ -117,7 +162,7 @@ function tbZeile(e, d) {
     return `<div class="tb-z ${offen ? 'offen' : ''}" data-tb="${esc(e.id)}">
         <div class="tb-c">${e.img ? `<img class="coin-img" src="${esc(e.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="ico-b">${icon('coins')}</span>`}
             <div style="min-width:0"><div class="nm">${esc(e.symbol)} <span class="dim" style="font-weight:400;font-size:.76rem">${esc(d.chains[e.chain] || e.chain)}</span></div>
-            <div class="sb">${datumZeit(e.ts)} · Score ${de(e.score, 0)}${e.status === 'abgeschlossen' ? ' · abgeschlossen' : ''}</div></div></div>
+            <div class="sb">${datumZeit(e.ts)} · Score ${de(e.score, 0)}${e.kol && e.kol.bestaetigt ? ' · KOL ✓' : ''}${e.status === 'abgeschlossen' ? ' · abgeschlossen' : ''}</div></div></div>
         <div class="tb-v">${verlauf(e)}</div>
         <div class="tb-m tb-ein"><div class="eyebrow">Einstieg</div><div class="num">${fUsd(p0)}</div></div>
         <div class="tb-m"><div class="eyebrow">Perfekt raus</div><div class="num ${cls(e.max_pct)}" style="font-weight:600">${fPct(e.max_pct)}</div>${gew(e.max_pct)}<div class="tb-zeit">${e.stunden_bis_hoch != null ? 'nach ' + dauer(e.stunden_bis_hoch) : ''}</div></div>
@@ -174,6 +219,11 @@ export default {
         .ts-d summary::-webkit-details-marker { display: none; } .ts-d summary svg { width: 15px; height: 15px; flex: none; }
         .ts-d summary span { flex: 1; } .ts-d summary svg:last-child { transition: transform .3s var(--ease); } .ts-d[open] summary svg:last-child { transform: rotate(180deg); }
         .ts-p { display: flex; gap: 10px; align-items: center; font-size: .8rem; margin-top: 8px; }
+        .ts-sm { padding: 14px 16px; border-left: 3px solid var(--c); }
+        .ts-sm-ico { color: var(--c); display: grid; } .ts-sm-ico svg { width: 16px; height: 16px; }
+        .ts-sm-kz { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+        .ts-sm-kz .eyebrow { font-size: .52rem; letter-spacing: .1em; } .ts-sm-kz .num { font-size: .92rem; margin-top: 3px; }
+        @media (max-width: 860px) { .ts-sm-kz { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         .tb-drei { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
         .tb-weg { position: relative; overflow: hidden; padding: 20px 22px; }
         .tb-weg::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
@@ -200,7 +250,7 @@ export default {
         root.classList.add('stack');
         if (!d) { root.innerHTML = kopf + card({ body: empty('Noch keine Signale. Sie entstehen beim nächsten Lauf von fetch_tagessignale.py, also beim nächsten Refresh.') }); return; }
         root.innerHTML = kopf + ((d.fehler || []).length ? card({ cls: 'flat', body: `<div class="warn" style="font-size:.86rem">${d.fehler.map(esc).join('. ')}</div>` }) : '') +
-            trichter(d) + `<div class="stack" id="tsListe">${liste(d)}</div><div id="tsHist">${historie(d)}</div>` +
+            kolStatus(d) + trichter(d) + `<div class="stack" id="tsListe">${liste(d)}</div><div id="tsHist">${historie(d)}</div>` +
             `<p class="sub" style="font-size:.76rem;max-width:none">Mechanisches Raster, keine Anlageberatung und kein Kaufbefehl. Memecoins können in Minuten auf null fallen. Die Vertragsprüfung senkt das Risiko eines Betrugs, sie schließt ihn nicht aus. Nur Geld einsetzen, dessen Verlust du verkraftest.</p>`;
         root.onclick = e => {
             const k = e.target.closest('[data-kopie]');
