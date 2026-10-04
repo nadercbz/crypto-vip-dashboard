@@ -15,6 +15,12 @@ let altLink = '';
 $('nav').innerHTML = NAV.map(g => `<div class="nav-group eyebrow">${esc(g.group)}</div>` +
     g.items.map(i => `<a data-go="${i.id}" title="${READY.has(i.id) ? '' : 'Früher: ' + esc(i.alt)}">${icon(i.icon)}<span>${esc(i.label)}</span>${READY.has(i.id) ? '' : '<span class="soon">BALD</span>'}</a>`).join('')).join('');
 
+/* ── Leiste unten auf dem Handy: die vier meistgenutzten Seiten plus Menü ── */
+const TABS = ['cockpit', 'signale', 'kurse', 'radar'].map(id => ALL.find(i => i.id === id)).filter(Boolean);
+$('tabbar').innerHTML = TABS.map(t => `<a data-go="${t.id}" data-tab="${t.id}">${icon(t.icon)}<span>${esc({ cockpit: 'Cockpit', signale: 'Signale', kurse: 'Kurse', radar: 'Radar' }[t.id] || t.label)}</span></a>`).join('') +
+    `<button id="tabMenu" type="button">${icon('menu')}<span>Menü</span></button>`;
+$('tabMenu').onclick = () => { $('side').classList.add('on'); $('scrim').classList.add('on'); };
+
 /* ── Seitenwechsel ── */
 const styled = new Set();
 async function go(id) {
@@ -22,6 +28,8 @@ async function go(id) {
     if (activeMod && activeMod.destroy) try { activeMod.destroy(); } catch (e) {}
     active = item.id; activeMod = null;
     document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.go === active));
+    document.querySelectorAll('#tabbar [data-tab]').forEach(a => a.classList.toggle('on', a.dataset.tab === active));
+    $('scrim').classList.remove('on');
     $('side').classList.remove('on');
     document.title = item.label + (OEFFENTLICH ? ' · Crypto Biz' : ' · Crypto Biz 2.0');
     const root = document.createElement('div');
