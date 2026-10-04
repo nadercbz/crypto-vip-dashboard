@@ -1,7 +1,7 @@
 /* Service Worker der VIP-Seite (Dashboard 2.0). Zuerst das Netz, bei Erfolg
    in den Cache. Ohne Verbindung kommt der letzte Stand statt einer Fehlerseite.
    Live-Kurse und fremde Server gehoeren nie in den Cache. */
-const CACHE = 'cryptobiz2-202610042302';
+const CACHE = 'cryptobiz2-202610042304';
 const KERN = ['./', './index.html', './manifest.webmanifest', './assets/icon-192.png', './css/app.css', './js/app.js', './js/nav.js'];
 
 self.addEventListener('install', e => {
@@ -19,7 +19,9 @@ self.addEventListener('fetch', e => {
     const url = new URL(e.request.url);
     if (url.origin !== location.origin) return;
     e.respondWith(
-        fetch(e.request)
+        // no-cache: beim Server nachfragen (ETag), sonst mischt der Browser bis zu
+        // 10 Minuten alte Module mit neuen Daten. Unveraenderte Dateien kommen als 304.
+        fetch(e.request, { cache: 'no-cache' })
             .then(res => {
                 if (res && res.status === 200) {
                     const kopie = res.clone();
