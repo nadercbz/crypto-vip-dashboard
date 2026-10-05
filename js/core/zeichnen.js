@@ -13,8 +13,11 @@ export const WERKZEUGE = [
     ['fib', 'percent', 'Fibonacci-Retracement (F)'],
 ];
 const TASTE = { v: 'zeiger', t: 'trend', r: 'strahl', h: 'hlinie', z: 'rechteck', f: 'fib' };
+const STAND = 'cb2_zeichnungen_stand';       // je Coin der Zeitpunkt der letzten Änderung
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const alle = () => store.get(KEY, {}) || {};
+let sichern = () => {};                        // öffentliche Fassung: nur im Browser
+
 const neueId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const de = (v, d) => v.toFixed(d).replace('.', ',');
 
@@ -29,7 +32,12 @@ export function zeichner({ chart, series, box, bars, sym, magnet = true, onTool 
     svg.setAttribute('class', 'zc-svg');
     box.appendChild(svg);
 
-    const speichern = () => { const a = alle(); if (liste.length) a[sym] = liste; else delete a[sym]; store.set(KEY, a); };
+    const speichern = () => {
+        const a = alle(), st = store.get(STAND, {}) || {};
+        a[sym] = liste; st[sym] = Date.now();
+        store.set(KEY, a); store.set(STAND, st);
+        sichern();
+    };
 
     function zuLogisch(t) {
         const n = zeiten.length;
