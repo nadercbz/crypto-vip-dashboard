@@ -34,6 +34,42 @@ function smartMoney(x) {
     </div>`;
 }
 
+function kerzenSvg(reihe, plan) {
+    if (!reihe || reihe.length < 5) return '';
+    const W = 360, H = 130, n = reihe.length, schritt = W / n;
+    const lv = plan ? [plan.stop, plan.ziel1, plan.stuetze].filter(v => v > 0) : [];
+    let lo = Math.min(...reihe.map(k => k[3]), ...lv), hi = Math.max(...reihe.map(k => k[2]), ...lv);
+    const pad = (hi - lo) * 0.06 || hi * 0.05; lo -= pad; hi += pad;
+    const y = v => (H - (v - lo) / (hi - lo) * H).toFixed(1);
+    const vmax = Math.max(...reihe.map(k => k[5] || 0)) || 1;
+    const kerzen = reihe.map((k, i) => {
+        const [, o, h, l, c, v] = k, x = i * schritt + schritt / 2, auf = c >= o;
+        const top = y(Math.max(o, c)), hoehe = Math.max(0.8, y(Math.min(o, c)) - top);
+        return `<rect class="kv" x="${(x - schritt * .35).toFixed(1)}" y="${(H - (v || 0) / vmax * H * .22).toFixed(1)}" width="${(schritt * .7).toFixed(1)}" height="${((v || 0) / vmax * H * .22).toFixed(1)}"/>`
+            + `<line class="${auf ? 'ku' : 'kd'}" x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${y(h)}" y2="${y(l)}"/>`
+            + `<rect class="${auf ? 'ku' : 'kd'}" x="${(x - schritt * .32).toFixed(1)}" y="${top}" width="${(schritt * .64).toFixed(1)}" height="${hoehe.toFixed(1)}"/>`;
+    }).join('');
+    const linie = (v, c) => v > 0 ? `<line class="kl ${c}" x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}"/>` : '';
+    return `<svg class="ts-kc" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Kerzenchart">${kerzen}${plan ? linie(plan.stuetze, 'st') + linie(plan.stop, 'sp') + linie(plan.ziel1, 'z1') : ''}</svg>`;
+}
+
+function chartAnalyse(x) {
+    const a = x.chart;
+    if (!a || !a.analyse) return '';
+    const p = a.plan || {}, farbe = scoreVar(a.score);
+    const kz = (k, v, c) => `<div><div class="eyebrow">${k}</div><div class="num" style="${c ? 'color:' + c : ''}">${v}</div></div>`;
+    return `<div class="card sunk ts-ca">
+        <div class="row between" style="gap:10px"><div class="row" style="gap:8px;min-width:0"><span class="ts-sm-ico" style="--c:${farbe}">${icon('candlestick-chart')}</span><b style="font-weight:500">Chart-Analyse</b>${chip(a.fazit + ' · ' + de(a.score, 0), farbe)}</div>
+            <span class="eyebrow" title="Quelle ${esc(a.quelle || '')}">${(a.reihe || []).length} ${esc(a.tf === 'hour' ? 'Std-Kerzen' : '15-Min-Kerzen')}</span></div>
+        ${kerzenSvg(a.reihe, p)}
+        <div class="ts-leg"><span class="st">Unterstützung</span><span class="sp">Stop</span><span class="z1">Ziel 1</span></div>
+        <div class="ts-sm-kz">${kz('Stop', p.stop_pct != null ? fPct(p.stop_pct) : '?', 'var(--down)')}${kz('Ziel 1', p.ziel1_pct != null ? fPct(p.ziel1_pct) : 'am Hoch', 'var(--up)')}${kz('Ziel 2', p.ziel2_pct != null ? fPct(p.ziel2_pct) : '—', 'var(--up)')}${kz('Chance/Risiko', p.crv != null ? de(p.crv) + ' : 1' : '?', p.crv >= 2 ? 'var(--up)' : p.crv != null && p.crv < 1.2 ? 'var(--down)' : '')}</div>
+        <details class="ts-d" style="margin-top:12px"><summary>${icon('file-text')}<span>Analyse in Worten, ${esc(a.zeitraum || '')}</span>${icon('chevron-down')}</summary>
+            <div class="ts-at">${a.analyse.map(t => `<p>${esc(t)}</p>`).join('')}
+            <p class="dim" style="font-size:.72rem">Regelbasiert aus den Kerzen gerechnet (Struktur, Rücksetzer, Volumen, Swing-Hochs und Tiefs). Keine Vorhersage, keine Anlageberatung.</p></div></details>
+    </div>`;
+}
+
 function karte(x) {
     const [stText, stFarbe] = STUFE[x.stufe] || STUFE.solide, s = x.sicherheit || {}, c = x.chg || {};
     const kz = (k, v) => `<div><div class="eyebrow">${k}</div><div class="num">${v}</div></div>`;
@@ -51,6 +87,7 @@ function karte(x) {
         <div class="row wrap" style="gap:6px">${[['5 Min', c.m5], ['1 Std', c.h1], ['6 Std', c.h6], ['24 Std', c.h24]].map(([k, v]) => chip(k + ' ' + fPct(v), v >= 0 ? 'var(--up)' : 'var(--down)')).join('')}</div>
         ${smartMoney(x)}
         <div class="card sunk ts-ein"><span class="ico-b">${icon(x.stufe === 'beobachten' ? 'hourglass' : 'crosshair')}</span><div><div class="eyebrow">Einstieg</div><div>${esc(x.einstieg)}</div>${seit}</div></div>
+        ${chartAnalyse(x)}
         ${(x.gruende || []).length ? `<ul class="ts-l up">${x.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
         ${(x.warnungen || []).length ? `<ul class="ts-l warn">${x.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
         <details class="ts-d"><summary>${icon('shield-check')}<span>Vertragsprüfung: <b style="color:${URTEIL[s.urteil] || 'var(--ink-2)'}">${esc(s.urteil || 'ungeprüft')}</b> · ${esc(s.quelle || '')}</span>${icon('chevron-down')}</summary>
@@ -287,6 +324,17 @@ export default {
         .ts-d summary span { flex: 1; } .ts-d summary svg:last-child { transition: transform .3s var(--ease); } .ts-d[open] summary svg:last-child { transform: rotate(180deg); }
         .ts-p { display: flex; gap: 10px; align-items: center; font-size: .8rem; margin-top: 8px; }
         .ts-sm { padding: 14px 16px; border-left: 3px solid var(--c); }
+        .ts-ca { padding: 14px 16px; }
+        .ts-kc { display: block; width: 100%; height: 130px; margin: 12px 0 6px; overflow: visible; }
+        .ts-kc .ku { fill: var(--up); stroke: var(--up); stroke-width: 1; vector-effect: non-scaling-stroke; }
+        .ts-kc .kd { fill: var(--down); stroke: var(--down); stroke-width: 1; vector-effect: non-scaling-stroke; }
+        .ts-kc .kv { fill: var(--ink-3); opacity: .18; }
+        .ts-kc .kl { stroke-width: 1.2; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+        .ts-kc .st { stroke: var(--ink-3); } .ts-kc .sp { stroke: var(--down); } .ts-kc .z1 { stroke: var(--up); }
+        .ts-leg { display: flex; gap: 14px; flex-wrap: wrap; font-family: var(--mono); font-size: .6rem; letter-spacing: .08em; color: var(--ink-3); margin-bottom: 4px; }
+        .ts-leg span::before { content: ''; display: inline-block; width: 14px; border-top: 1.5px dashed; margin-right: 6px; vertical-align: middle; }
+        .ts-leg .st::before { border-color: var(--ink-3); } .ts-leg .sp::before { border-color: var(--down); } .ts-leg .z1::before { border-color: var(--up); }
+        .ts-at { margin-top: 10px; } .ts-at p { margin: 0 0 8px; font-size: .84rem; color: var(--ink-2); line-height: 1.5; }
         .ts-sm-ico { color: var(--c); display: grid; } .ts-sm-ico svg { width: 16px; height: 16px; }
         .ts-sm-kz { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
         .ts-sm-kz .eyebrow { font-size: .52rem; letter-spacing: .1em; } .ts-sm-kz .num { font-size: .92rem; margin-top: 3px; }
