@@ -1,6 +1,6 @@
 import { D, coin, store } from '../core/data.js';
-import { esc, fUsd } from '../core/fmt.js';
-import { card, pageHead, seg, chip, pct, coinImg, empty, icon, hydrate } from '../core/ui.js';
+import { esc, fUsd, cls } from '../core/fmt.js';
+import { card, pageHead, seg, chip, pct, coinImg, empty, icon, hydrate, scoreBadge } from '../core/ui.js';
 
 const PP_PROFILES = {
     defensiv:   { safe: 45, core: 30, growth: 20, moon: 5 },
@@ -15,6 +15,7 @@ const PP_TIERS = [
 ];
 let ppProfile = 'ausgewogen';
 let alleZeigen = false;
+let pfWahl = 'alle', checkAlle = false;
 const PP_SECTOR_CAP = 3;   // max. Coins pro Narrativ im Depot
 
 const PP_DERIV_RE = /(wrapped|staked|liquid staking|restaked|bridged|binance-peg|pegged)/i;
@@ -264,6 +265,12 @@ export default {
         .pp-donut-leg em { font-style: normal; min-width: 92px; text-align: right; color: var(--ink-2); }
         .pp-donut-leg i { width: 9px; height: 9px; border-radius: 50%; flex: none; } .pp-donut-leg span { margin-left: auto; }
         @media (max-width: 860px) { .pp-donut { grid-template-columns: minmax(0, 1fr); } .pp-donut-ring { max-width: 280px; margin: 0 auto; } }
+        .pp-pfgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-top: 18px; }
+        .pp-pf { text-align: left; padding: 16px 18px; cursor: pointer; transition: transform .25s var(--ease); }
+        .pp-pf:hover { transform: translateY(-2px); }
+        .pp-pfwert { font-size: 1.4rem; font-weight: 300; margin: 8px 0 6px; }
+        .pp-pfzeile { display: flex; flex-wrap: wrap; gap: 4px 12px; font-family: var(--mono); font-size: .7rem; color: var(--ink-3); margin-top: 3px; }
+        @media (max-width: 860px) { .pp-pfgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .pp-pfwert { font-size: 1.15rem; } }
         .pp-sec { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 6px 4px -8px; }
         .pp-sec .eyebrow:first-child { color: var(--pg); }
         .pp-kb-form { gap: 10px; flex-wrap: nowrap; } .pp-kb-form .input { width: 180px; }
@@ -329,7 +336,7 @@ export default {
             d.querySelectorAll('[data-pi]').forEach(el => el.classList.toggle('hi', idx != null && el.dataset.pi === idx));
             if (!m) return;
             const leg = idx != null ? d.querySelector(`.pp-donut-leg [data-pi="${idx}"]`) : null;
-            m.innerHTML = leg ? mitte(esc(leg.dataset.coin), esc(leg.dataset.pv), esc(leg.dataset.ps) + '% · ' + esc(leg.dataset.pn)) : m.dataset.std;
+            m.innerHTML = leg ? mitte(esc(leg.dataset.sym), esc(leg.dataset.pv), esc(leg.dataset.ps) + '% · ' + esc(leg.dataset.pn)) : m.dataset.std;
         };
         root.onmouseover = e => { const el = e.target.closest ? e.target.closest('.pp-donut [data-pi]') : null; if (el) hebe(el.dataset.pi); };
         root.onmouseout = e => {
