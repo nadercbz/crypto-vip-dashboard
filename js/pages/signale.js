@@ -60,7 +60,7 @@ function chartAnalyse(x) {
     const kz = (k, v, c) => `<div><div class="eyebrow">${k}</div><div class="num" style="${c ? 'color:' + c : ''}">${v}</div></div>`;
     return `<div class="card sunk ts-ca">
         <div class="row between" style="gap:10px"><div class="row" style="gap:8px;min-width:0"><span class="ts-sm-ico" style="--c:${farbe}">${icon('candlestick-chart')}</span><b style="font-weight:500">Chart-Analyse</b>${chip(a.fazit + ' · ' + de(a.score, 0), farbe)}</div>
-            <span class="eyebrow" title="Quelle ${esc(a.quelle || '')}">${(a.reihe || []).length} ${esc(a.tf === 'hour' ? 'Std-Kerzen' : '15-Min-Kerzen')}</span></div>
+            <span class="eyebrow ts-ca-n" title="Quelle ${esc(a.quelle || '')}">${(a.reihe || []).length} ${esc(a.tf === 'hour' ? 'Std-Kerzen' : '15-Min-Kerzen')}</span></div>
         ${kerzenSvg(a.reihe, p)}
         <div class="ts-leg"><span class="st">Unterstützung</span><span class="sp">Stop</span><span class="z1">Ziel 1</span></div>
         <div class="ts-sm-kz">${kz('Stop', p.stop_pct != null ? fPct(p.stop_pct) : '?', 'var(--down)')}${kz('Ziel 1', p.ziel1_pct != null ? fPct(p.ziel1_pct) : 'am Hoch', 'var(--up)')}${kz('Ziel 2', p.ziel2_pct != null ? fPct(p.ziel2_pct) : '—', 'var(--up)')}${kz('Chance/Risiko', p.crv != null ? de(p.crv) + ' : 1' : '?', p.crv >= 2 ? 'var(--up)' : p.crv != null && p.crv < 1.2 ? 'var(--down)' : '')}</div>
@@ -324,7 +324,7 @@ export default {
         .ts-d summary span { flex: 1; } .ts-d summary svg:last-child { transition: transform .3s var(--ease); } .ts-d[open] summary svg:last-child { transform: rotate(180deg); }
         .ts-p { display: flex; gap: 10px; align-items: center; font-size: .8rem; margin-top: 8px; }
         .ts-sm { padding: 14px 16px; border-left: 3px solid var(--c); }
-        .ts-ca { padding: 14px 16px; }
+        .ts-ca { padding: 14px 16px; } .ts-ca .chip, .ts-ca b { white-space: nowrap; }
         .ts-kc { display: block; width: 100%; height: 130px; margin: 12px 0 6px; overflow: visible; }
         .ts-kc .ku { fill: var(--up); stroke: var(--up); stroke-width: 1; vector-effect: non-scaling-stroke; }
         .ts-kc .kd { fill: var(--down); stroke: var(--down); stroke-width: 1; vector-effect: non-scaling-stroke; }
@@ -338,7 +338,7 @@ export default {
         .ts-sm-ico { color: var(--c); display: grid; } .ts-sm-ico svg { width: 16px; height: 16px; }
         .ts-sm-kz { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
         .ts-sm-kz .eyebrow { font-size: .52rem; letter-spacing: .1em; } .ts-sm-kz .num { font-size: .92rem; margin-top: 3px; }
-        @media (max-width: 860px) { .ts-sm-kz { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 860px) { .ts-sm-kz { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ts-ca-n { display: none; } }
         .tb-drei { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
         .tb-weg { position: relative; overflow: hidden; padding: 20px 22px; }
         .tb-weg::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
