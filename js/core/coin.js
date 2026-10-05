@@ -1,6 +1,7 @@
 import { D, coin, signal, watch, store, proxy } from './data.js';
 import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js';
 import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js';
+import { zeichner, WERKZEUGE } from './zeichnen.js';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -32,6 +33,7 @@ let loadSeq = 0, shownPrice = null, liveTimer = null;
 const klineCache = {}, klineVol = {}, geckoCache = {}, dailyCache = {};
 let cmpSyms = [], cmpDays = 30, cmpChart = null, cmpRO = null, cmpSers = [], cmpSeq = 0;
 let zoomPh = null, zoomBd = null;
+let zc = null, zcMagnet = true, zcAus = false;     // Zeichenwerkzeuge, siehe zeichnen.js
 
 /* ── Eigenes CSS, einmalig ── */
 const STYLE = `
@@ -71,7 +73,24 @@ const STYLE = `
 .cd-wrap:not(.zoom) .cd-zo { display: none; }
 .cd-note { margin-left: auto; font-family: var(--mono); font-size: .58rem; letter-spacing: .05em; color: var(--ink-3); text-align: right; }
 .cd-note:empty { display: none; }
-.cd-chart { height: clamp(300px, 40vh, 460px); position: relative; cursor: zoom-in; padding: 0 4px 4px; }
+.cd-body { position: relative; }
+.cd-chart { height: clamp(300px, 40vh, 460px); position: relative; cursor: zoom-in; padding: 0 4px 4px; overflow: hidden; }
+.cd-tools { display: none; }
+.cd-tb { width: 36px; height: 36px; flex: none; border-radius: 12px; display: grid; place-items: center; color: var(--ink-3); transition: color .2s, background .2s, box-shadow .2s, transform .2s var(--ease-spring); }
+.cd-tb svg { width: 17px; height: 17px; }
+.cd-tb:hover { color: var(--ink); background: var(--bg); }
+.cd-tb:active { transform: scale(.92); }
+.cd-tb.on { color: var(--a2); background: var(--bg); box-shadow: var(--sh-in); }
+.cd-tb.weg:hover { color: var(--down); }
+.cd-tb[disabled] { opacity: .3; pointer-events: none; }
+.cd-tsep { flex: none; height: 1px; background: var(--line); margin: 4px 6px; }
+.zc-svg { position: absolute; z-index: 3; pointer-events: none; overflow: hidden; }
+.zc-svg.aktiv { pointer-events: all; cursor: crosshair; touch-action: none; }
+.zc-hit { stroke: transparent; stroke-width: 14; fill: none; pointer-events: stroke; cursor: move; }
+.zc-hitf { pointer-events: all; cursor: move; }
+.zc-h { fill: var(--surface); stroke-width: 2; pointer-events: all; cursor: grab; }
+.zc-t { font-family: var(--mono); font-size: 10px; pointer-events: none; }
+.zc-svg.aktiv .zc-hit, .zc-svg.aktiv .zc-hitf, .zc-svg.aktiv .zc-h { cursor: crosshair; }
 .cd-chart .skel { height: 100%; }
 .cd-msg { display: grid; place-items: center; height: 100%; padding: 20px; text-align: center; color: var(--ink-3); font-size: .8rem; }
 .cd-backdrop { position: fixed; inset: 0; z-index: 96; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: cdFade .2s var(--ease) both; }
@@ -79,7 +98,10 @@ const STYLE = `
 .cd-wrap.zoom { position: fixed; inset: 3vh 3vw; z-index: 97; margin: 0; background: var(--surface); box-shadow: var(--sh-float); border-radius: var(--r-xl); display: flex; flex-direction: column; animation: cdZoom .25s var(--ease) both; }
 @keyframes cdZoom { from { opacity: 0; transform: scale(.985); } }
 .cd-wrap.zoom .cd-tabs { padding: 16px 18px 8px; }
-.cd-wrap.zoom .cd-chart { flex: 1; height: auto; cursor: default; padding: 0 10px 10px; }
+/* min-height: 0, sonst wächst der Chart im Flex-Rahmen mit seinem eigenen Inhalt mit */
+.cd-wrap.zoom .cd-body { flex: 1; min-height: 0; display: flex; }
+.cd-wrap.zoom .cd-tools { display: flex; flex-direction: column; gap: 4px; padding: 2px 4px 10px 12px; overflow-y: auto; }
+.cd-wrap.zoom .cd-chart { flex: 1; min-width: 0; min-height: 0; height: auto; cursor: default; padding: 0 10px 10px; }
 .cd-wrap.zoom .cd-note { font-size: .68rem; }
 .cd-sec { margin: 24px 0 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .cd-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
@@ -107,6 +129,9 @@ const STYLE = `
     .cd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .cd-chart { height: clamp(260px, 38vh, 380px); }
     .cd-wrap.zoom { inset: 10px; }
+    .cd-wrap.zoom .cd-body { flex-direction: column; }
+    .cd-wrap.zoom .cd-tools { flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 0 10px 6px; scrollbar-width: none; }
+    .cd-wrap.zoom .cd-tsep { width: 1px; height: auto; margin: 6px 4px; }
     .cd-tabs .seg button, .cd-tog { padding-left: 8px; padding-right: 8px; }
 }`;
 function ensureStyle() {
@@ -310,7 +335,25 @@ function emaSeries(bars, closes, period) {
     for (let i = period; i < closes.length; i++) { e = closes[i] * k + e * (1 - k); out.push({ time: bars[i].time, value: e }); }
     return out;
 }
+function innen(box) {
+    const s = getComputedStyle(box);
+    return {
+        width: Math.max(0, Math.floor(box.clientWidth - (parseFloat(s.paddingLeft) || 0) - (parseFloat(s.paddingRight) || 0))),
+        height: Math.max(0, Math.floor(box.clientHeight - (parseFloat(s.paddingTop) || 0) - (parseFloat(s.paddingBottom) || 0))),
+    };
+}
+function folgeGroesse(ch, box) {
+    let alt = '';
+    const ro = new ResizeObserver(() => {
+        if (!ch || !box.clientWidth) return;
+        const m = innen(box), k = m.width + 'x' + m.height;
+        if (k !== alt) { alt = k; ch.applyOptions(m); }
+    });
+    ro.observe(box);
+    return ro;
+}
 function destroyChart() {
+    if (zc) { zc.destroy(); zc = null; }
     if (chartRO) { chartRO.disconnect(); chartRO = null; }
     if (chart) { try { chart.remove(); } catch (e) {} chart = null; }
     mainSer = null; mainKind = ''; areaVar = ''; volSer = null; volKey = ''; emaSers = [];
@@ -318,9 +361,8 @@ function destroyChart() {
 function makeChart(box) {
     destroyChart();
     box.innerHTML = '';
-    chart = LightweightCharts.createChart(box, { ...chartOpts(pal()), width: box.clientWidth, height: box.clientHeight });
-    chartRO = new ResizeObserver(() => { if (chart && box.clientWidth) chart.applyOptions({ width: box.clientWidth, height: box.clientHeight }); });
-    chartRO.observe(box);
+    chart = LightweightCharts.createChart(box, { ...chartOpts(pal()), ...innen(box) });
+    chartRO = folgeGroesse(chart, box);
     return chart;
 }
 function syncTabs() {
@@ -337,6 +379,34 @@ function areaChart(box, pts, v) {
     mainSer = ch.addAreaSeries({ ...areaOpts(css(v)), priceFormat: priceFmt(pts[pts.length - 1].value) });
     mainSer.setData(pts);
     ch.timeScale().fitContent();
+    zeichnenAn(box, pts);
+}
+/* ── Zeichnen: Trendlinien, Preislevel, Zonen, Fibonacci, je Coin gespeichert ── */
+function zeichnenAn(box, bars) {
+    if (zc) { zc.destroy(); zc = null; }
+    if (!chart || !mainSer || !current || bars.length < 2) { syncTools(); return; }
+    zc = zeichner({ chart, series: mainSer, box, bars, sym: current, magnet: zcMagnet, onTool: syncTools });
+    if (zcAus) zc.ausblenden(true);
+    syncTools();
+}
+function toolsHtml() {
+    return WERKZEUGE.map(([id, ic, t]) => `<button class="cd-tb" data-tool="${id}" title="${esc(t)}">${icon(ic)}</button>`).join('') +
+        `<span class="cd-tsep"></span>
+        <button class="cd-tb" id="cdMagnet" title="Magnet: rastet auf Hoch, Tief, Eröffnung und Schluss der Kerzen ein">${icon('magnet')}</button>
+        <button class="cd-tb" id="cdZcAus" title="Zeichnungen aus- und einblenden">${icon('eye-off')}</button>
+        <button class="cd-tb weg" id="cdZcDel" title="Ausgewählte Zeichnung löschen (Entf)">${icon('trash-2')}</button>
+        <button class="cd-tb weg" id="cdZcAll" title="Alle Zeichnungen dieses Coins löschen">${icon('eraser')}</button>`;
+}
+function syncTools() {
+    const t = $('cdTools');
+    if (!t) return;
+    const tool = zc ? zc.tool : 'zeiger';
+    t.querySelectorAll('[data-tool]').forEach(b => { b.classList.toggle('on', b.dataset.tool === tool); b.disabled = !zc; });
+    const m = $('cdMagnet'), a = $('cdZcAus'), d = $('cdZcDel'), all = $('cdZcAll');
+    if (m) m.classList.toggle('on', zcMagnet);
+    if (a) a.classList.toggle('on', zcAus);
+    if (d) d.disabled = !(zc && zc.auswahl);
+    if (all) all.disabled = !(zc && zc.anzahl);
 }
 async function loadChart(c, tf) {
     curTf = tf;
@@ -377,6 +447,7 @@ async function loadChart(c, tf) {
                 });
             }
             ch.timeScale().fitContent();
+            zeichnenAn(box, bars);
             const ema = showEma ? ' · EMA 50/200' : '';
             if (tf === 'all' && bars.length) {
                 const ab = new Date(bars[0].time * 1000);
@@ -475,10 +546,9 @@ async function drawCompare() {
     box.innerHTML = '';
     const ok = sets.filter(Boolean);
     if (!ok.length) { box.innerHTML = '<div class="cd-msg">Für diese Auswahl gibt es keine Tagesdaten.</div>'; return; }
-    cmpChart = LightweightCharts.createChart(box, { ...chartOpts(pal()), width: box.clientWidth, height: box.clientHeight });
+    cmpChart = LightweightCharts.createChart(box, { ...chartOpts(pal()), ...innen(box) });
     cmpChart.applyOptions({ timeScale: { timeVisible: false }, crosshair: { mode: 1 } });
-    cmpRO = new ResizeObserver(() => { if (cmpChart && box.clientWidth) cmpChart.applyOptions({ width: box.clientWidth, height: box.clientHeight }); });
-    cmpRO.observe(box);
+    cmpRO = folgeGroesse(cmpChart, box);
     ok.forEach(set => {
         const ser = cmpChart.addLineSeries({ color: css(set.v), lineWidth: 2, priceLineVisible: false, title: set.sym,
             priceFormat: { type: 'custom', minMove: 0.1, formatter: v => fPct(v, 1) } });
@@ -546,10 +616,12 @@ export function openCoin(sym) {
                 ${seg('cdtf', TF_LABEL, curTf)}
                 <button class="cd-tog" id="cdEma" title="Gleitende Durchschnitte 50 und 200">EMA</button>
                 <button class="cd-tog" id="cdVol" title="Volumen einblenden">VOL</button>
+                <button class="cd-tog cd-zi" id="cdDraw" title="Zeichnen: Trendlinien, Preislevel, Zonen, Fibonacci">${icon('pencil')}</button>
                 <button class="cd-tog" id="cdZoom" title="Chart vergrößern (Klick in den Chart geht auch, Esc schließt)"><span class="cd-zi">${icon('maximize-2')}</span><span class="cd-zo">${icon('minimize-2')}</span></button>
                 <span class="cd-note" id="cdNote"></span>
             </div>
-            <div class="cd-chart" id="cdChart"><div class="skel"></div></div>
+            <div class="cd-body"><div class="cd-tools" id="cdTools">${toolsHtml()}</div>
+            <div class="cd-chart" id="cdChart"><div class="skel"></div></div></div>
         </div>
         <div class="cd-stats" id="cdStats"></div>
         <div class="cd-deriv" id="cdDeriv"></div>
@@ -579,6 +651,7 @@ export function openCoin(sym) {
         const b = e.target.closest('button');
         if (!b || !current) return;
         if (b.id === 'cdZoom') { zoomToggle(); return; }
+        if (b.id === 'cdDraw') { zoomOn(); if (zc) zc.setTool('trend'); return; }
         const cc = coin(current);
         if (!cc) return;
         if (b.id === 'cdEma') showEma = !showEma;
@@ -587,6 +660,17 @@ export function openCoin(sym) {
         loadChart(cc, b.dataset.v || curTf);
     };
     $('cdChart').onclick = () => { if (!zoomed()) zoomOn(); };
+    $('cdTools').onclick = e => {
+        const b = e.target.closest('button');
+        if (!b || !zc) return;
+        if (b.dataset.tool) { zc.setTool(b.dataset.tool === zc.tool && b.dataset.tool !== 'zeiger' ? 'zeiger' : b.dataset.tool); }
+        else if (b.id === 'cdMagnet') { zcMagnet = !zcMagnet; zc.setMagnet(zcMagnet); }
+        else if (b.id === 'cdZcAus') { zcAus = !zcAus; zc.ausblenden(zcAus); }
+        else if (b.id === 'cdZcDel') zc.loeschen();
+        else if (b.id === 'cdZcAll') { if (zc.anzahl && confirm('Alle ' + zc.anzahl + ' Zeichnungen für ' + current + ' löschen?')) zc.alleLoeschen(); }
+        syncTools();
+    };
+    $('cdChart').addEventListener('pointerup', () => setTimeout(syncTools, 0));
 
     $('cdCompare').onclick = e => {
         const x = e.target.closest('[data-x]');
