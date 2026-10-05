@@ -59,7 +59,7 @@ function angstGier() {
     const vorher = h.length > 7 ? h[h.length - 8].value : null;
     return card({ cls: 'stat', body: `
         <div class="eyebrow">Angst und Gier</div>
-        <div class="row" style="gap:16px;margin-top:10px">${ring(f.value, f.label || '', 104)}
+        <div class="ck-fng">${ring(f.value, f.label || '', 96)}
             <div class="stack" style="gap:6px;min-width:0">${sparkline(h.slice(-30).map(x => x.value), 90, 30, scoreVar(f.value))}
             ${vorher != null ? `<div class="foot"><span class="${cls(f.value - vorher)} num">${f.value - vorher > 0 ? '+' : ''}${f.value - vorher}</span><span>zur Vorwoche</span></div>` : ''}</div>
         </div>` });
@@ -348,6 +348,8 @@ export default {
         .ck-fr.voll { outline: 1px solid color-mix(in srgb, var(--warn) 30%, transparent); }
         .ck-voll { font-family: var(--mono); font-size: .6rem; letter-spacing: .08em; color: var(--warn); margin-top: 2px; }
         .ck-news { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+        .ck-fng { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 10px; min-width: 0; }
+        .ck-fng .spark { max-width: 100%; }
         .ck-mini { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .ck-zwei { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         .ck-bars { display: flex; align-items: flex-end; gap: 4px; height: 74px; padding: 4px 0; }
