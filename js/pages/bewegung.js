@@ -1,22 +1,9 @@
-import { D, signal } from '../core/data.js';
+import { D } from '../core/data.js';
 import { esc, fUsd, fPct } from '../core/fmt.js';
-import { card, pageHead, seg, sparkline, coinImg, empty, icon, icons } from '../core/ui.js';
+import { card, pageHead, seg, sparkFor, coinImg, empty, icon, icons } from '../core/ui.js';
 
 const st = { tf: '24h', min: 50000000 };
 const FELD = { '24h': 'price_change_percentage_24h', '7d': 'price_change_percentage_7d_in_currency', '30d': 'price_change_percentage_30d' };
-
-function spark(sym) {
-    const k = String(sym || '').toLowerCase(), r = signal(k);
-    let werte = r && r.spark && r.spark.length >= 3 ? r.spark : null;
-    if (!werte) {
-        const reihe = D.series && D.series.coins && D.series.coins[k];
-        if (reihe) {
-            const g = reihe.filter(v => v != null);
-            if (g.length >= 3) { const basis = g[0] || 1; werte = g.map(v => (v / basis - 1) * 100); }
-        }
-    }
-    return werte ? sparkline(werte, 58, 20) : '';
-}
 
 function liste(coins, gewinner, feld) {
     if (!coins.length) return empty('Kein Coin passt zu diesem Filter.');
@@ -25,7 +12,7 @@ function liste(coins, gewinner, feld) {
         return `<div class="li bw-li" data-coin="${esc(S)}">
             ${coinImg(c.image)}
             <div style="min-width:0"><div class="nm">${esc(c.name)}</div><div class="sb">${i + 1} · ${esc(S)}</div></div>
-            <div class="val"><span class="bw-spark">${spark(c.symbol)}</span><span class="dim bw-preis">${fUsd(c.current_price)}</span>
+            <div class="val"><span class="bw-spark">${sparkFor(c.symbol, 58, 20)}</span><span class="dim bw-preis">${fUsd(c.current_price)}</span>
                 <span class="bw-pct ${gewinner ? 'up' : 'down'}">${fPct(chg, 2)}</span></div></div>`;
     }).join('')}</div>`;
 }

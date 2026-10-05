@@ -1,4 +1,5 @@
 import { esc, fPct, cls } from './fmt.js';
+import { D, signal } from './data.js';
 
 export const icon = (name, extra = '') => `<i data-lucide="${name}" ${extra}></i>`;
 export function icons(root = document) { if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.7 }, nameAttr: 'data-lucide', root }); }
@@ -21,6 +22,19 @@ export function sparkline(arr, w = 70, h = 22, color) {
     const pts = a.map((v, i) => (i / (a.length - 1) * w).toFixed(1) + ',' + (h - 2 - (v - min) / span * (h - 4)).toFixed(1));
     const c = color || (a[a.length - 1] >= a[0] ? 'var(--up)' : 'var(--down)');
     return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><path d="M${pts.join(' L')}" stroke="${c}"/></svg>`;
+}
+
+export function sparkFor(sym, w, h) {
+    const r = signal(sym);
+    let a = r && r.spark && r.spark.length >= 3 ? r.spark : null;
+    if (!a) {
+        const sd = D.series, reihe = sd && sd.coins && sd.coins[String(sym || '').toLowerCase()];
+        if (reihe) {
+            const g = reihe.filter(v => v != null);
+            if (g.length >= 3) { const basis = g[0] || 1; a = g.map(v => (v / basis - 1) * 100); }
+        }
+    }
+    return a ? sparkline(a, w, h) : '';
 }
 
 export function dotChart(arr, { rows = 9, cols = 40, hot = 14 } = {}) {

@@ -1,6 +1,6 @@
-import { D, signal } from '../core/data.js';
+import { D } from '../core/data.js';
 import { esc, fBig } from '../core/fmt.js';
-import { card, pageHead, sparkline, bar, coinImg, chip, seg, empty, icon, hydrate } from '../core/ui.js';
+import { card, pageHead, sparkFor, bar, coinImg, chip, seg, empty, icon, hydrate } from '../core/ui.js';
 
 let gemTier = 'micro';   // aktiver Tab
 
@@ -10,19 +10,6 @@ const fmtCap = v => v == null ? '—' : fBig(v);
 const sgn = v => (v >= 0 ? '+' : '') + z(v) + '%';
 const code = t => `<code class="mono gm-code">${t}</code>`;
 const mchip = (html, farbe, title) => `<span class="chip" style="${farbe ? '--c:' + farbe : ''}"${title ? ` title="${esc(title)}"` : ''}>${html}</span>`;
-
-function sparkFor(sym, w, h) {
-    const r = signal(sym);
-    let a = r && r.spark && r.spark.length >= 3 ? r.spark : null;
-    if (!a) {
-        const sd = D.series, reihe = sd && sd.coins && sd.coins[String(sym || '').toLowerCase()];
-        if (reihe) {
-            const g = reihe.filter(v => v != null);
-            if (g.length >= 3) { const basis = g[0] || 1; a = g.map(v => (v / basis - 1) * 100); }
-        }
-    }
-    return a ? sparkline(a, w, h) : '';
-}
 
 function staleHtml(G) {
     const ts = G.generated_ts ? G.generated_ts * 1000 : null;

@@ -1,23 +1,10 @@
-import { D, signal } from '../core/data.js';
+import { D } from '../core/data.js';
 import { esc } from '../core/fmt.js';
-import { card, pageHead, sparkline, bar, coinImg, chip, empty, icon } from '../core/ui.js';
+import { card, pageHead, sparkFor, bar, coinImg, chip, empty, icon } from '../core/ui.js';
 
 const z = (v, d = 2) => Number(v).toLocaleString('de-DE', { maximumFractionDigits: d });
 const fmtViews = v => v == null ? '' : v >= 1e6 ? z(v / 1e6, 1) + ' Mio' : v >= 1e3 ? z(v / 1e3, 0) + ' Tsd' : String(v);
 const sign = v => (v >= 0 ? '+' : '') + z(v);
-
-function sparkFor(sym, w, h) {
-    const r = signal(sym);
-    let a = r && r.spark && r.spark.length >= 3 ? r.spark : null;
-    if (!a) {
-        const sd = D.series, reihe = sd && sd.coins && sd.coins[String(sym || '').toLowerCase()];
-        if (reihe) {
-            const g = reihe.filter(v => v != null);
-            if (g.length >= 3) { const basis = g[0] || 1; a = g.map(v => (v / basis - 1) * 100); }
-        }
-    }
-    return a ? sparkline(a, w, h) : '';
-}
 
 const tag = (html, k = '') => `<span class="bz-sig ${k}">${html}</span>`;
 
