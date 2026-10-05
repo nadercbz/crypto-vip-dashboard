@@ -318,7 +318,9 @@ export default {
         root.classList.add('stack', 'pp-page');
         const zeichne = () => {
             const pf = computePerfectPortfolio(D.coins);
-            let html = pageHead('Portfolio', 'Regel-Portfolio', '12 Coins, mechanisch aus dem Live-Universe gefiltert. Gewichtet nach Momentum, Hype, Liquidität und Risiko-Tier. Keine Meinung, nur Regeln.' + (window.CB2_PUBLIC ? '' : ' Darüber: deine echten Bestände und wie weit sie von den Regeln abweichen.'));
+            let html = (window.CB2_PUBLIC
+                ? pageHead('Portfolio', 'Regel-Portfolio', '12 Coins, mechanisch aus dem Live-Universe gefiltert. Gewichtet nach Momentum, Hype, Liquidität und Risiko-Tier. Keine Meinung, nur Regeln.')
+                : pageHead('Portfolio', 'My Portfolio', 'Deine echten Bestände aus allen Portfolios, mit Live-Kursen, Gewinn und Verlust und dem Check durch die Signal-Engine. Darunter das Regel-Portfolio: 12 Coins nach festen Regeln, und wie weit du davon abweichst.'));
             root.innerHTML = html + `<div class="pp-sec"><div class="eyebrow">Regel-Portfolio</div></div>` + engine(pf);
         };
         zeichne();

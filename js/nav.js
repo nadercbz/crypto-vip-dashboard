@@ -6,7 +6,7 @@ export const NAV = [
         { id: 'tagebuch',   label: 'Analyse-Tagebuch',  icon: 'notebook-pen',     alt: 'Tagebuch' },
     ] },
     { group: 'Portfolio', items: [
-        { id: 'portfolio',  label: 'Regel-Portfolio',   icon: 'pie-chart',        alt: 'Perfect Portfolio' },
+        { id: 'portfolio',  label: window.CB2_PUBLIC ? 'Regel-Portfolio' : 'My Portfolio', icon: window.CB2_PUBLIC ? 'pie-chart' : 'wallet', alt: 'Perfect Portfolio' },
         { id: 'watchlist',  label: 'Watchlist',         icon: 'star',             alt: 'Watchlist' },
     ] },
     { group: 'Markt', items: [
