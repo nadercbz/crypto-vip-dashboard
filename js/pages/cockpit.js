@@ -1,6 +1,6 @@
-import { D, coin, watch, store } from '../core/data.js';
-import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js';
-import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js';
+import { D, coin, watch, store } from '../core/data.js?v=202610052250';
+import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610052250';
+import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js?v=202610052250';
 
 
 function ampel() {
@@ -312,7 +312,7 @@ let galerieAuf = false;
 const leiste = () => `<div class="ck-bar card tint${galerieAuf ? ' auf' : ''}">
     <div class="row between wrap" style="gap:12px">
         <div style="min-width:0;flex:1"><div class="eyebrow">Cockpit einrichten</div>
-            <p class="sub ck-hilfe" style="margin-top:6px">Widget ziehen oder mit den Pfeilen verschieben. Das Größen-Symbol schaltet die Breite, das Auge blendet aus. Alles wird sofort gespeichert.</p></div>
+            <p class="sub ck-hilfe" style="margin-top:6px">Widget ziehen (am Handy lange drücken) oder mit den Pfeilen verschieben. Das Größen-Symbol schaltet die Breite, das Auge blendet aus. Alles wird sofort gespeichert.</p></div>
         <div class="row wrap" style="gap:10px">
             <button class="btn soft" data-ck="galerie">${icon('plus')}<span class="ck-std">Widget</span> hinzufügen<span class="chip ck-zahl">${freiZahl()}</span></button>
             <button class="btn soft" data-ck="standard" title="Standard wiederherstellen">${icon('rotate-ccw')}<span class="ck-std">Standard</span></button>
@@ -336,7 +336,7 @@ function flip(grid, aendern) {
 const aufbauen = el => { hydrate(el); el.classList.add('done'); };
 const fertig = (anim, ms) => Promise.race([anim.finished.catch(() => {}), new Promise(r => setTimeout(r, ms + 60))]);
 
-let onLive = null, onWatch = null, timer = null, onFocus = null, onKey = null, ziehen = null;
+let onLive = null, onWatch = null, timer = null, onFocus = null, onKey = null, ziehen = null, ziehRaus = null;
 
 export default {
     styles: `
@@ -378,7 +378,8 @@ export default {
         .ck-edit .ck-tools { opacity: 1; transform: none; pointer-events: auto; }
         .ck-edit .ck-w > .card { pointer-events: none; user-select: none; -webkit-user-select: none;
             outline: 1.5px dashed color-mix(in srgb, var(--pg) 45%, transparent); outline-offset: 5px; transition: outline-color .2s, transform .3s var(--ease); }
-        .ck-edit .ck-w { cursor: grab; }
+        .ck-edit .ck-w { cursor: grab; -webkit-touch-callout: none; }
+        .ck-edit .ck-w.ck-halten > .card { transform: scale(.97); transition: transform .4s var(--ease); outline-color: var(--pg); }
         .ck-edit .ck-w:hover > .card { outline-color: var(--pg); }
         .ck-edit .ck-w > .card .ck-brief { overflow: hidden; }
 
@@ -540,6 +541,7 @@ export default {
                 document.removeEventListener('pointermove', bewegen);
                 document.removeEventListener('pointerup', ende);
                 document.removeEventListener('pointercancel', ende);
+                if (ziehRaus) { ziehRaus(); ziehRaus = null; }
                 cancelAnimationFrame(raf);
                 const p = ph.getBoundingClientRect();
                 const anim = el.animate([{ transform: el.style.transform }, { transform: `translate3d(${p.left - r.left}px,${p.top - r.top}px,0)` }],
@@ -558,6 +560,9 @@ export default {
             document.addEventListener('pointermove', bewegen);
             document.addEventListener('pointerup', ende);
             document.addEventListener('pointercancel', ende);
+            const halt = ev => { if (ev.cancelable) ev.preventDefault(); };
+            document.addEventListener('touchmove', halt, { passive: false });
+            ziehRaus = () => document.removeEventListener('touchmove', halt);
             ziehen = ende;
         };
 
@@ -566,7 +571,17 @@ export default {
             const el = e.target.closest('.ck-grid > .ck-w'); if (!el) return;
             const amGriff = !!e.target.closest('.ck-griff');
             if (e.target.closest('.ck-t') && !amGriff) return;
-            if (e.pointerType === 'touch' && !amGriff) return;
+            if (e.pointerType === 'touch' && !amGriff) {
+                const sx = e.clientX, sy = e.clientY;
+                let letzt = e;
+                el.classList.add('ck-halten');
+                const t = setTimeout(() => { aus(); if (navigator.vibrate) navigator.vibrate(12); ziehStart(letzt, el); }, 400);
+                const mv = ev => { letzt = ev; if (Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) { clearTimeout(t); aus(); } };
+                const aus = () => { el.classList.remove('ck-halten'); document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', stop); document.removeEventListener('pointercancel', stop); };
+                const stop = () => { clearTimeout(t); aus(); };
+                document.addEventListener('pointermove', mv); document.addEventListener('pointerup', stop); document.addEventListener('pointercancel', stop);
+                return;
+            }
             e.preventDefault();
             if (amGriff) { ziehStart(e, el); return; }
             const sx = e.clientX, sy = e.clientY;

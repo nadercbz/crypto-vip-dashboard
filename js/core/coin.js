@@ -1,7 +1,7 @@
-import { D, coin, signal, watch, store, proxy } from './data.js';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js';
-import { zeichner, WERKZEUGE } from './zeichnen.js';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610052250';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610052250';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610052250';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610052250';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -92,7 +92,8 @@ const STYLE = `
 .zc-t { font-family: var(--mono); font-size: 10px; pointer-events: none; }
 .zc-svg.aktiv .zc-hit, .zc-svg.aktiv .zc-hitf, .zc-svg.aktiv .zc-h { cursor: crosshair; }
 .cd-chart .skel { height: 100%; }
-.cd-msg { display: grid; place-items: center; height: 100%; padding: 20px; text-align: center; color: var(--ink-3); font-size: .8rem; }
+.cd-msg { display: grid; place-content: center; justify-items: center; gap: 12px; height: 100%; padding: 20px; text-align: center; color: var(--ink-3); font-size: .8rem; }
+.cd-msg::before { content: ''; width: 30px; height: 30px; border-radius: 50%; border: 1.5px dashed color-mix(in srgb, var(--ink-3) 55%, transparent); }
 .cd-backdrop { position: fixed; inset: 0; z-index: 96; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: cdFade .2s var(--ease) both; }
 @keyframes cdFade { from { opacity: 0; } }
 .cd-wrap.zoom { position: fixed; inset: 3vh 3vw; z-index: 97; margin: 0; background: var(--surface); box-shadow: var(--sh-float); border-radius: var(--r-xl); display: flex; flex-direction: column; animation: cdZoom .25s var(--ease) both; }
@@ -572,6 +573,7 @@ export function closeCoin() {
     if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
     destroyChart(); destroyCmp();
     current = null; shownPrice = null;
+    document.dispatchEvent(new CustomEvent('cb2:fokus', { detail: null }));
     const d = el(), sc = $('scrim');
     if (d) { d.classList.remove('on'); d.setAttribute('aria-hidden', 'true'); }
     if (sc) sc.classList.remove('on');
@@ -586,6 +588,7 @@ export function openCoin(sym) {
     const S = upper(c.symbol);
     current = S;
     shownPrice = c.current_price;
+    document.dispatchEvent(new CustomEvent('cb2:fokus', { detail: S }));
     const s = signal(c.symbol), p = (s && s.parts) || {};
     const notes = store.get(NOTE, {}) || {};
     const cats = [...new Set([c.cat, ...(c.cats || []), ...(c.subs || [])].filter(x => x && x !== 'Other'))].slice(0, 4);

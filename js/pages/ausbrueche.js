@@ -1,6 +1,6 @@
-import { D } from '../core/data.js';
-import { esc, fUsd, fNum } from '../core/fmt.js';
-import { card, pageHead, seg, coinImg, pct, chip, empty } from '../core/ui.js';
+import { D } from '../core/data.js?v=202610052250';
+import { esc, fUsd, fNum } from '../core/fmt.js?v=202610052250';
+import { card, pageHead, seg, coinImg, pct, chip, empty } from '../core/ui.js?v=202610052250';
 
 let brkFilter = 'all';
 
@@ -83,7 +83,7 @@ export default {
         root.innerHTML = pageHead('Markt', 'Ausbrüche',
             'Coins die gerade ausbrechen: 24h-Momentum übertrifft 7d-Trend. Wer heute stärker ist als die ganze Woche = Beschleunigung.',
             `<span class="eyebrow">Stand ${esc(D.coinsStand)}</span>`) +
-            card({ body: `${seg('abf', [['all', 'Alle'], ['accel', 'Acceleration'], ['volspike', 'Volume Spike'], ['dip', 'Dip Recovery']], brkFilter)}
+            card({ body: `<div class="filterleiste">${seg('abf', [['all', 'Alle'], ['accel', 'Acceleration'], ['volspike', 'Volume Spike'], ['dip', 'Dip Recovery']], brkFilter)}</div>
                 <div id="abBody">${inhalt()}</div>` });
         const el = root.querySelector('[data-seg="abf"]'), body = root.querySelector('#abBody');
         el.onclick = e => {

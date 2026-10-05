@@ -1,6 +1,6 @@
-import { D } from '../core/data.js';
-import { esc, fBig } from '../core/fmt.js';
-import { card, pageHead, sparkFor, bar, coinImg, chip, seg, empty, icon, hydrate } from '../core/ui.js';
+import { D } from '../core/data.js?v=202610052250';
+import { esc, fBig } from '../core/fmt.js?v=202610052250';
+import { card, pageHead, sparkFor, bar, coinImg, chip, seg, empty, icon, hydrate } from '../core/ui.js?v=202610052250';
 
 let gemTier = 'micro';   // aktiver Tab
 
@@ -132,7 +132,7 @@ function body(G) {
     const tier = G.tiers.find(t => t.key === gemTier) || G.tiers[0];
     const coins = tier.coins || [];
     const kopf = staleHtml(G) + metaHtml(G) +
-        `<div class="stack" style="gap:12px">${seg('gmtier', G.tiers.map(t => [t.key, `${t.label} ${t.count}`]), gemTier)}
+        `<div class="stack" style="gap:12px"><div class="filterleiste">${seg('gmtier', G.tiers.map(t => [t.key, `${t.label} ${t.count}`]), gemTier)}</div>
             <p class="sub" style="margin:0">${esc(tier.blurb || '')}</p></div>`;
     if (!coins.length) {
         const msg = tier.tooThin

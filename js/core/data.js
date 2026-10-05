@@ -42,7 +42,16 @@ export function coin(sym) {
 }
 export function signal(sym) {
     const s = D.signals, k = String(sym || '').toLowerCase();
-    return s && s.coins ? s.coins.find(c => c.symbol === k) || null : null;
+    if (!s || !s.coins) return null;
+    const treffer = s.coins.filter(c => c.symbol === k);
+    if (treffer.length <= 1) return treffer[0] || null;
+    const c = coin(sym);
+    return (c && (treffer.find(x => x.id && x.id === c.id) || treffer.find(x => x.name === c.name))) || treffer[0];
+}
+let byId = null;
+export function coinById(id) {
+    if (!byId) { byId = new Map(); D.coins.forEach(c => { if (c.id && !byId.has(c.id)) byId.set(c.id, c); }); }
+    return byId.get(String(id || '')) || null;
 }
 
 export const store = {

@@ -1,5 +1,5 @@
-import { esc, fPct, cls } from './fmt.js';
-import { D, signal } from './data.js';
+import { esc, fPct, cls } from './fmt.js?v=202610052250';
+import { D, signal } from './data.js?v=202610052250';
 
 export const icon = (name, extra = '') => `<i data-lucide="${name}" ${extra}></i>`;
 export function icons(root = document) { if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.7 }, nameAttr: 'data-lucide', root }); }
@@ -67,6 +67,7 @@ export const coinRow = (sym, name, img, sub, right) =>
 export const pct = (v, d) => `<span class="${cls(v)}">${fPct(v, d)}</span>`;
 export const chip = (text, color) => `<span class="chip" style="${color ? '--c:' + color : ''}">${esc(text)}</span>`;
 export const empty = text => `<div class="empty">${esc(text)}</div>`;
+export const laden = (text = 'Lädt …') => `<div class="empty lade">${esc(text)}</div>`;
 
 export function card({ eyebrow, title, right = '', body = '', cls: c = '', attr = '' }) {
     const head = (eyebrow || title || right)

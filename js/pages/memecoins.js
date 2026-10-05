@@ -1,6 +1,6 @@
-import { D } from '../core/data.js';
-import { esc } from '../core/fmt.js';
-import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js';
+import { D } from '../core/data.js?v=202610052250';
+import { esc } from '../core/fmt.js?v=202610052250';
+import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610052250';
 
 const state = { seite: 'long', chain: 'alle', sort: 'score' };
 
@@ -147,7 +147,7 @@ function inhalt() {
                 esc(a.mit_struktur) + ' von ' + esc(a.gesamt) + ' Pools sind vollständig geprüft.';
         }
     }
-    return `<div class="stack" style="gap:12px;margin-bottom:22px">${zeilen.map(x => `<div>${x}</div>`).join('')}</div>${html}` +
+    return `<div class="stack filterleiste" style="gap:12px;margin-bottom:22px">${zeilen.map(x => `<div>${x}</div>`).join('')}</div>${html}` +
         (note ? `<p class="sub mc-note">${note}</p>` : '');
 }
 

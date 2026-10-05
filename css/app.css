@@ -231,7 +231,10 @@ img { max-width: 100%; }
 .tbl tr[data-coin] { cursor: pointer; transition: background .15s; }
 .tbl tr[data-coin]:hover td { background: color-mix(in srgb, var(--ink) 3.5%, transparent); }
 .tbl .r { text-align: right; font-family: var(--mono); }
-.empty { padding: 28px 10px; text-align: center; color: var(--ink-3); font-size: .86rem; }
+/* Leer- und Ladezustand überall gleich: Kreis darüber, gedämpfter Text */
+.empty { display: grid; justify-items: center; gap: 12px; padding: 28px 14px; text-align: center; color: var(--ink-3); font-size: .86rem; line-height: 1.5; }
+.empty::before { content: ''; width: 30px; height: 30px; border-radius: 50%; border: 1.5px dashed color-mix(in srgb, var(--ink-3) 55%, transparent); }
+.empty.lade::before { border-style: solid; border-color: color-mix(in srgb, var(--ink-3) 25%, transparent); border-top-color: var(--pg); animation: spin .9s linear infinite; }
 
 /* ── Schublade, Palette, Toast ────────────────────────────────────────────── */
 .scrim { position: fixed; inset: 0; z-index: 80; background: color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; pointer-events: none; transition: opacity .3s; }
@@ -302,3 +305,25 @@ img { max-width: 100%; }
     /* Kartenköpfe mit Schaltern umbrechen statt über die Karte hinauszuwachsen */
     .card-head { flex-wrap: wrap; } .card-head > *, .row > .seg, .row > * > .seg { min-width: 0; max-width: 100%; }
 }
+
+/* ── Meldungen (Glocke) ───────────────────────────────────────────────────── */
+.ibtn.bell { position: relative; }
+.bell-n { position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--down); color: #fff;
+    font-family: var(--mono); font-size: .58rem; font-weight: 600; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--bg); animation: bellPop .4s var(--ease-spring); }
+@keyframes bellPop { from { transform: scale(.4); } }
+.bell-panel { position: fixed; top: 72px; right: 22px; z-index: 90; width: min(400px, calc(100vw - 32px)); max-height: min(70vh, 620px); overflow-y: auto;
+    padding: 16px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-float), inset 0 0 0 1px var(--line);
+    opacity: 0; transform: translateY(-8px) scale(.98); transform-origin: top right; pointer-events: none; transition: opacity .2s var(--ease), transform .3s var(--ease-spring); }
+.bell-panel.on { opacity: 1; transform: none; pointer-events: auto; }
+.bell-li { align-items: start; }
+.bell-li.neu { background: color-mix(in srgb, var(--a2) 8%, transparent); }
+.bell-li.neu .nm::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--a2); margin-right: 7px; vertical-align: middle; }
+@media (max-width: 860px) {
+    .bell-panel { top: auto; bottom: calc(86px + env(safe-area-inset-bottom)); right: 16px; left: 16px; width: auto; transform-origin: bottom center; }
+}
+
+/* ── Filterleisten bleiben beim Scrollen oben stehen ─────────────────────── */
+.filterleiste { position: sticky; top: -8px; z-index: 20; margin: -6px -8px 0; padding: 10px 8px 8px; border-radius: var(--r-md);
+    background: color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); }
+.card.filterleiste { margin: 0; padding: 16px 20px; top: 0; background: color-mix(in srgb, var(--surface) 90%, transparent); }
+@media (max-width: 860px) { .filterleiste { top: -6px; } .card.filterleiste { top: 0; padding: 12px 14px; } }

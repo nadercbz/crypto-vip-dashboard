@@ -1,6 +1,6 @@
-import { D } from '../core/data.js';
-import { esc, fPct, fBig, cls } from '../core/fmt.js';
-import { pageHead, seg, sparkline, bar, empty, icon, icons } from '../core/ui.js';
+import { D } from '../core/data.js?v=202610052250';
+import { esc, fPct, fBig, cls } from '../core/fmt.js?v=202610052250';
+import { pageHead, seg, sparkline, bar, empty, icon, icons, laden } from '../core/ui.js?v=202610052250';
 
 const META = {
     AI:       { icon: 'bot',            blurb: 'Artificial Intelligence & Agents' },
@@ -146,7 +146,7 @@ function draw(root, animate) {
     const wrap = root.querySelector('#nvWrap');
     if (!wrap) return;
     const db = D.coins;
-    if (!db.length) { wrap.innerHTML = `<div class="card">${empty('Lade Coins …')}</div>`; return; }
+    if (!db.length) { wrap.innerHTML = `<div class="card">${laden('Lade Coins …')}</div>`; return; }
     const list = compute(db, st.tf);
     last = list;
     const old = animate ? positions(wrap) : null;

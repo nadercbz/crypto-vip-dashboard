@@ -1,8 +1,9 @@
-import { NAV, ALL, READY } from './nav.js';
-import { D, coin, watch } from './core/data.js';
-import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js';
-import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js';
-import { openCoin, closeCoin } from './core/coin.js';
+import { NAV, ALL, READY } from './nav.js?v=202610052250';
+import { D, coin, watch } from './core/data.js?v=202610052250';
+import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js?v=202610052250';
+import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js?v=202610052250';
+import * as glocke from './core/meldungen.js?v=202610052250';
+import { openCoin, closeCoin } from './core/coin.js?v=202610052250';
 
 const $ = id => document.getElementById(id);
 const main = $('main');
@@ -38,7 +39,7 @@ async function go(id) {
     const paint = async () => {
         if (READY.has(active)) {
             try {
-                const mod = (await import(`./pages/${active}.js`)).default;
+                const mod = (await import(`./pages/${active}.js?v=202610052250`)).default;
                 if (mod.styles && !styled.has(active)) { const s = document.createElement('style'); s.textContent = mod.styles; document.head.appendChild(s); styled.add(active); }
                 activeMod = mod;
                 await mod.render(root, { go, openCoin, rerender: () => go(active) });
@@ -106,6 +107,51 @@ async function liveAlle() {
     } catch (e) {}
 }
 
+/* ── Live-Kurse in Echtzeit: Binance-WebSocket (kostenlos, ohne Schlüssel) ──
+   Abonniert BTC, ETH, SOL, die Watchlist und den gerade geöffneten Coin als
+   Mini-Ticker. Binance schickt Änderungen etwa jede Sekunde, die Oberfläche
+   wird höchstens alle 1,5 Sekunden neu gezeichnet. Bricht die Verbindung ab,
+   übernimmt der Abruf alle 20 Sekunden, und nach kurzer Pause wird neu verbunden.
+   Im Hintergrund-Tab ist die Verbindung zu, das spart Akku und Daten. */
+const WS = { sock: null, abo: new Set(), fokus: null, offen: false, timer: 0, zeichnen: 0, versuch: 0, nachrichten: 0 };
+window.CB2_WS = WS;   // zur Fehlersuche in der Konsole: CB2_WS.offen, CB2_WS.abo, CB2_WS.nachrichten
+function wsWunsch() {
+    const syms = new Set(['BTC', 'ETH', 'SOL', ...watch.list()]);
+    if (WS.fokus) syms.add(WS.fokus);
+    return new Set([...syms].map(coin).filter(c => c && c.binance).map(c => c.binance.toLowerCase() + '@miniTicker'));
+}
+function wsAbgleich() {
+    if (!WS.sock || WS.sock.readyState !== 1) return;
+    const soll = wsWunsch(), neu = [...soll].filter(x => !WS.abo.has(x)), weg = [...WS.abo].filter(x => !soll.has(x));
+    if (neu.length) WS.sock.send(JSON.stringify({ method: 'SUBSCRIBE', params: neu, id: Date.now() % 1e6 }));
+    if (weg.length) WS.sock.send(JSON.stringify({ method: 'UNSUBSCRIBE', params: weg, id: (Date.now() + 1) % 1e6 }));
+    WS.abo = soll;
+}
+function wsAuf() {
+    if (WS.sock || document.hidden || !('WebSocket' in window)) return;
+    let s;
+    try { s = new WebSocket('wss://stream.binance.com:9443/ws'); } catch (e) { return; }
+    WS.sock = s; WS.abo = new Set();
+    s.onopen = () => { WS.offen = true; WS.versuch = 0; wsAbgleich(); };
+    s.onmessage = ev => {
+        let t; try { t = JSON.parse(ev.data); } catch (e) { return; }
+        if (!t || t.e !== '24hrMiniTicker') return;
+        WS.nachrichten++;
+        const p = +t.c, o = +t.o;
+        D.coins.forEach(c => { if (c.binance === t.s && p > 0) { c.current_price = p; if (o > 0) c.price_change_percentage_24h = (p / o - 1) * 100; } });
+        if (!WS.zeichnen) WS.zeichnen = setTimeout(() => { WS.zeichnen = 0; pills(); document.dispatchEvent(new CustomEvent('cb2:live')); }, 1500);
+    };
+    s.onclose = () => {
+        WS.sock = null; WS.offen = false;
+        if (!document.hidden) { WS.versuch++; clearTimeout(WS.timer); WS.timer = setTimeout(wsAuf, Math.min(30000, 2000 * WS.versuch)); }
+    };
+    s.onerror = () => { try { s.close(); } catch (e) {} };
+}
+function wsZu() { clearTimeout(WS.timer); if (WS.sock) { const s = WS.sock; WS.sock = null; s.onclose = null; try { s.close(); } catch (e) {} } WS.offen = false; }
+document.addEventListener('visibilitychange', () => { if (document.hidden) wsZu(); else { wsAuf(); live(); } });
+document.addEventListener('cb2:watch', wsAbgleich);
+document.addEventListener('cb2:fokus', e => { WS.fokus = e.detail || null; wsAbgleich(); });
+
 /* ── Datenfrische und Refresh ── */
 function fresh() {
     const s = D.status, f = $('fresh');
@@ -143,9 +189,34 @@ function search(q) {
     const coins = !q ? [] : D.coins.filter(c => (c.symbol || '').toLowerCase().startsWith(q) || (c.name || '').toLowerCase().includes(q))
         .sort((a, b) => ((a.symbol.toLowerCase() === q ? 0 : 1) - (b.symbol.toLowerCase() === q ? 0 : 1)) || (a.market_cap_rank || 1e9) - (b.market_cap_rank || 1e9)).slice(0, 8)
         .map(c => ({ html: `<div class="li" data-coin="${esc(c.symbol.toUpperCase())}">${coinImg(c.image)}<div><div class="nm">${esc(c.name)}</div><div class="sb">${esc(c.symbol.toUpperCase())} · Rang ${c.market_cap_rank || '—'}</div></div><div class="val">${fUsd(c.current_price)}</div></div>` }));
-    hits = [...coins, ...pages]; sel = 0;
+    const mehr = q.length >= 2 ? inhalte(q) : [];
+    hits = [...coins, ...mehr, ...pages]; sel = 0;
     $('paletteRes').innerHTML = hits.map(h => h.html).join('') || '<div class="empty">Nichts gefunden.</div>';
     icons($('paletteRes')); mark();
+}
+function inhalte(q) {
+    const out = [], lies = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
+    const stelle = (txt, q) => { const i = txt.toLowerCase().indexOf(q); if (i < 0) return ''; const a = Math.max(0, i - 30);
+        return (a ? '…' : '') + txt.slice(a, i + q.length + 50).replace(/\s+/g, ' ') + (i + q.length + 50 < txt.length ? '…' : ''); };
+    const zeile = (attr, ic, titel, sub, art) => ({ html: `<div class="li" ${attr}><span class="ico-b">${icon(ic)}</span><div style="min-width:0"><div class="nm">${esc(titel)}</div><div class="sb" style="font-family:var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(sub)}</div></div><div class="val dim">${art}</div></div>` });
+    const ts = window.TAGESSIGNALE_DATA;
+    if (ts && ts.ergebnis) Object.keys(ts.ergebnis).forEach(ch => ['signale', 'beobachten'].forEach(k => (ts.ergebnis[ch][k] || []).forEach(x => {
+        if ((x.symbol || '').toLowerCase().includes(q) || (x.name || '').toLowerCase().includes(q))
+            out.push(zeile('data-go="signale"', 'crosshair', x.symbol + ' · ' + x.name, `${(ts.chains || {})[ch] || ch}, Score ${Math.round(x.score)}${k === 'beobachten' ? ', beobachten' : ''}`, 'Signal'));
+    })));
+    let notizen = {}; try { notizen = JSON.parse(lies('c2_watch_notes') || '{}') || {}; } catch (e) {}
+    Object.entries(notizen).forEach(([sym, t]) => {
+        if (sym.toLowerCase().includes(q) || String(t).toLowerCase().includes(q))
+            out.push(zeile(`data-coin="${esc(sym)}"`, 'sticky-note', 'Notiz zu ' + sym, stelle(String(t), q) || String(t).slice(0, 80), 'Notiz'));
+    });
+    [['c2_notes_general', 'General Notes'], ['c2_notes_buys', 'Buy Zone']].forEach(([k, n]) => {
+        const t = lies(k); if (t && t.toLowerCase().includes(q)) out.push(zeile('data-go="notizen"', 'pencil-line', n, stelle(t, q), 'Notiz'));
+    });
+    ((D.tagebuch && D.tagebuch.eintraege) || []).forEach(e => {
+        const txt = JSON.stringify(e).toLowerCase();
+        if (txt.includes(q)) out.push(zeile('data-go="tagebuch"', 'book-open', e.titel || e.datum, (e.datum || '').split('-').reverse().join('.') + ' · ' + (stelle(e.titel + ' ' + (e.fazit || e.quelle || ''), q) || 'Treffer im Eintrag'), 'Tagebuch'));
+    });
+    return out.slice(0, 8);
 }
 function mark() { [...$('paletteRes').children].forEach((el, i) => el.classList.toggle('sel', i === sel)); const s = $('paletteRes').children[sel]; if (s && s.scrollIntoView) s.scrollIntoView({ block: 'nearest' }); }
 $('searchBtn').onclick = openPalette;
@@ -159,11 +230,23 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Enter') { const s = $('paletteRes').children[sel]; if (s) s.click(); }
 });
 
+/* ── Meldungen (Glocke) ── */
+$('bellBtn').onclick = e => { e.stopPropagation(); glocke.umschalten(); };
+document.addEventListener('click', e => {
+    const p = $('bellPanel');
+    if (!p.classList.contains('on') || e.target.closest('#bellBtn')) return;
+    if (!e.target.closest('#bellPanel') || e.target.closest('[data-go],[data-coin]')) glocke.umschalten(false);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') glocke.umschalten(false); });
+document.addEventListener('cb2:live', () => glocke.badge());
+glocke.badge();
+
+
 /* ── Uhr und Start ── */
 const tick = () => { $('clock').textContent = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); };
 tick(); setInterval(tick, 20000);
 icons(); themeIcon(); pills(); fresh();
 go(location.hash.replace(/^#\/?/, '') || 'cockpit');
-live(); setInterval(live, 20000);
+live(); setInterval(() => { if (!WS.offen) live(); }, 20000); wsAuf();
 setTimeout(liveAlle, 4000); setInterval(liveAlle, 60000);
 try { const r = sessionStorage.getItem('cb2_reopen'); if (r) { sessionStorage.removeItem('cb2_reopen'); lastCoin = r; setTimeout(() => openCoin(r), 400); } } catch (x) {}

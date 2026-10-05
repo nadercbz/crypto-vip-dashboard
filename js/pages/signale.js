@@ -1,5 +1,5 @@
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610052250';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610052250';
 
 let kette = 'alle';
 const daten = () => window.TAGESSIGNALE_DATA || null;
@@ -70,6 +70,16 @@ function chartAnalyse(x) {
     </div>`;
 }
 
+function kurzChips(x) {
+    const s = x.sicherheit || {}, k = x.kol, g = (x.gruende || []).length, w = (x.warnungen || []).length;
+    return [
+        s.urteil ? chip('Vertrag ' + s.urteil, URTEIL[s.urteil]) : '',
+        k ? chip(k.ausstieg ? 'KOLs steigen aus' : k.bestaetigt ? 'Smart Money kauft' : 'Kaum KOLs', k.ausstieg ? 'var(--down)' : k.bestaetigt ? 'var(--up)' : '') : '',
+        g ? chip(g + (g === 1 ? ' Grund' : ' Gründe'), 'var(--up)') : '',
+        w ? chip(w + (w === 1 ? ' Warnung' : ' Warnungen'), 'var(--warn)') : '',
+    ].join('') + (w ? `<div class="ts-w1">${icon('triangle-alert')}<span>${esc(x.warnungen[0])}</span></div>` : '');
+}
+
 function karte(x) {
     const [stText, stFarbe] = STUFE[x.stufe] || STUFE.solide, s = x.sicherheit || {}, c = x.chg || {};
     const kz = (k, v) => `<div><div class="eyebrow">${k}</div><div class="num">${v}</div></div>`;
@@ -85,19 +95,23 @@ function karte(x) {
         </div>
         <div class="ts-kz">${kz('Kurs', fUsd(x.preis))}${kz('Marktkap.', fBig(x.mcap))}${kz('Liquidität', fBig(x.liq))}${kz('Volumen 24h', fBig(x.vol24))}${kz('Alter', alter(x.alter_h))}${kz('Käufe 6h', x.kaufanteil6 != null ? de(x.kaufanteil6, 0) + '%' : '?')}</div>
         <div class="row wrap" style="gap:6px">${[['5 Min', c.m5], ['1 Std', c.h1], ['6 Std', c.h6], ['24 Std', c.h24]].map(([k, v]) => chip(k + ' ' + fPct(v), v >= 0 ? 'var(--up)' : 'var(--down)')).join('')}</div>
-        ${smartMoney(x)}
         <div class="card sunk ts-ein"><span class="ico-b">${icon(x.stufe === 'beobachten' ? 'hourglass' : 'crosshair')}</span><div><div class="eyebrow">Einstieg</div><div>${esc(x.einstieg)}</div>${seit}</div></div>
         ${chartAnalyse(x)}
-        ${(x.gruende || []).length ? `<ul class="ts-l up">${x.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
-        ${(x.warnungen || []).length ? `<ul class="ts-l warn">${x.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
-        <details class="ts-d"><summary>${icon('shield-check')}<span>Vertragsprüfung: <b style="color:${URTEIL[s.urteil] || 'var(--ink-2)'}">${esc(s.urteil || 'ungeprüft')}</b> · ${esc(s.quelle || '')}</span>${icon('chevron-down')}</summary>
-            <div class="sub" style="font-size:.82rem;margin:10px 0 0">${esc(s.text || '')}</div>
-            ${(s.punkte || []).map(p => `<div class="ts-p"><span class="chip" style="--c:${p.stufe === 'danger' ? 'var(--down)' : 'var(--warn)'}">${p.stufe === 'danger' ? 'Risiko' : 'Hinweis'}</span><span>${esc(p.name)}${p.wert ? ' · ' + esc(p.wert) : ''}</span></div>`).join('')}
-            <div class="row wrap mono dim" style="gap:14px;font-size:.72rem;margin-top:10px">${s.lp_gesperrt_pct != null ? `<span>LP gesperrt ${de(s.lp_gesperrt_pct, 0)}%</span>` : ''}${s.halter ? `<span>${de(s.halter, 0)} Halter</span>` : ''}${s.top10_pct ? `<span>Top 10 halten ${de(s.top10_pct, 0)}%</span>` : ''}</div></details>
-        <details class="ts-d"><summary>${icon('bar-chart-3')}<span>Score im Detail${x.chart ? ` · Kerzenprüfung ${de(x.chart.score, 0)} von 100` : ' · ohne Kerzenprüfung'}</span>${icon('chevron-down')}</summary>
-            <div class="stack" style="gap:10px;margin-top:12px">${Object.keys(x.teile || {}).map(k => { const max = (x.teile_max || {})[k] || 15, v = x.teile[k];
-                return `<div><div class="row between" style="font-size:.78rem;margin-bottom:5px"><span class="dim">${esc(k)}</span><span class="num">${de(v)} von ${max}</span></div>${bar(v / max * 100, scoreVar(v / max * 100))}</div>`; }).join('')}</div>
-            <div class="sub" style="font-size:.74rem;margin-top:12px">Gefunden über: ${esc((x.quellen || []).join(', '))}${x.chart && x.chart.narrativ ? '. Narrativ: ' + esc(x.chart.narrativ) : ''}</div></details>
+        <div class="row wrap ts-kurz">${kurzChips(x)}</div>
+        <details class="ts-d ts-mehr"><summary>${icon('list')}<span>Alle Details: Smart Money, Gründe, Warnungen, Vertrag, Score</span>${icon('chevron-down')}</summary>
+        <div class="stack" style="gap:14px;margin-top:14px">
+            ${smartMoney(x)}
+            ${(x.gruende || []).length ? `<ul class="ts-l up">${x.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+            ${(x.warnungen || []).length ? `<ul class="ts-l warn">${x.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+            <details class="ts-d"><summary>${icon('shield-check')}<span>Vertragsprüfung: <b style="color:${URTEIL[s.urteil] || 'var(--ink-2)'}">${esc(s.urteil || 'ungeprüft')}</b> · ${esc(s.quelle || '')}</span>${icon('chevron-down')}</summary>
+                <div class="sub" style="font-size:.82rem;margin:10px 0 0">${esc(s.text || '')}</div>
+                ${(s.punkte || []).map(p => `<div class="ts-p"><span class="chip" style="--c:${p.stufe === 'danger' ? 'var(--down)' : 'var(--warn)'}">${p.stufe === 'danger' ? 'Risiko' : 'Hinweis'}</span><span>${esc(p.name)}${p.wert ? ' · ' + esc(p.wert) : ''}</span></div>`).join('')}
+                <div class="row wrap mono dim" style="gap:14px;font-size:.72rem;margin-top:10px">${s.lp_gesperrt_pct != null ? `<span>LP gesperrt ${de(s.lp_gesperrt_pct, 0)}%</span>` : ''}${s.halter ? `<span>${de(s.halter, 0)} Halter</span>` : ''}${s.top10_pct ? `<span>Top 10 halten ${de(s.top10_pct, 0)}%</span>` : ''}</div></details>
+            <details class="ts-d"><summary>${icon('bar-chart-3')}<span>Score im Detail${x.chart ? ` · Kerzenprüfung ${de(x.chart.score, 0)} von 100` : ' · ohne Kerzenprüfung'}</span>${icon('chevron-down')}</summary>
+                <div class="stack" style="gap:10px;margin-top:12px">${Object.keys(x.teile || {}).map(k => { const max = (x.teile_max || {})[k] || 15, v = x.teile[k];
+                    return `<div><div class="row between" style="font-size:.78rem;margin-bottom:5px"><span class="dim">${esc(k)}</span><span class="num">${de(v)} von ${max}</span></div>${bar(v / max * 100, scoreVar(v / max * 100))}</div>`; }).join('')}</div>
+                <div class="sub" style="font-size:.74rem;margin-top:12px">Gefunden über: ${esc((x.quellen || []).join(', '))}${x.chart && x.chart.narrativ ? '. Narrativ: ' + esc(x.chart.narrativ) : ''}</div></details>
+        </div></details>
         <div class="row wrap" style="gap:8px;margin-top:auto">
             <a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">${icon('external-link')}DexScreener</a>
             ${lk.x ? `<a class="btn soft" href="${esc(lk.x)}" target="_blank" rel="noopener">X</a>` : ''}${lk.telegram ? `<a class="btn soft" href="${esc(lk.telegram)}" target="_blank" rel="noopener">Telegram</a>` : ''}${lk.web ? `<a class="btn soft" href="${esc(lk.web)}" target="_blank" rel="noopener">Website</a>` : ''}
@@ -321,9 +335,14 @@ export default {
         .ts-d { border-top: 1px solid var(--line); padding-top: 12px; }
         .ts-d summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; font-size: .82rem; color: var(--ink-2); }
         .ts-d summary::-webkit-details-marker { display: none; } .ts-d summary svg { width: 15px; height: 15px; flex: none; }
-        .ts-d summary span { flex: 1; } .ts-d summary svg:last-child { transition: transform .3s var(--ease); } .ts-d[open] summary svg:last-child { transform: rotate(180deg); }
+        .ts-d summary span { flex: 1; } .ts-d summary svg:last-child { transition: transform .3s var(--ease); } .ts-d[open] > summary svg:last-child { transform: rotate(180deg); }
         .ts-p { display: flex; gap: 10px; align-items: center; font-size: .8rem; margin-top: 8px; }
         .ts-sm { padding: 14px 16px; border-left: 3px solid var(--c); }
+        .ts-kurz { gap: 6px; }
+        .ts-w1 { flex-basis: 100%; display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; font-size: .8rem; color: var(--ink-2); margin-top: 4px; }
+        .ts-w1 svg { width: 14px; height: 14px; color: var(--warn); margin-top: 2px; }
+        .ts-mehr > summary { font-weight: 500; }
+        .ts-mehr .ts-d { border-top: 0; padding-top: 0; }
         .ts-ca { padding: 14px 16px; } .ts-ca .chip, .ts-ca b { white-space: nowrap; }
         .ts-kc { display: block; width: 100%; height: 130px; margin: 12px 0 6px; overflow: visible; }
         .ts-kc .ku { fill: var(--up); stroke: var(--up); stroke-width: 1; vector-effect: non-scaling-stroke; }

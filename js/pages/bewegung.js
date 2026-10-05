@@ -1,6 +1,6 @@
-import { D } from '../core/data.js';
-import { esc, fUsd, fPct } from '../core/fmt.js';
-import { card, pageHead, seg, sparkFor, coinImg, empty, icon, icons } from '../core/ui.js';
+import { D } from '../core/data.js?v=202610052250';
+import { esc, fUsd, fPct } from '../core/fmt.js?v=202610052250';
+import { card, pageHead, seg, sparkFor, coinImg, empty, icon, icons } from '../core/ui.js?v=202610052250';
 
 const st = { tf: '24h', min: 50000000 };
 const FELD = { '24h': 'price_change_percentage_24h', '7d': 'price_change_percentage_7d_in_currency', '30d': 'price_change_percentage_30d' };
@@ -46,7 +46,7 @@ export default {
         root.innerHTML = pageHead('Markt', 'Gewinner und Verlierer',
             'Wer bewegt sich am stärksten. Der Filter nach Marktgröße hält Coins draußen, die zwar prozentual explodieren, aber mangels Handelsvolumen nicht investierbar sind.',
             `<span class="eyebrow">Stand ${esc(D.coinsStand)}</span>`) +
-            card({ body: `<div class="row wrap between bw-filter"><div class="row wrap bw-filter">
+            card({ cls: 'filterleiste', body: `<div class="row wrap between bw-filter"><div class="row wrap bw-filter">
                 ${seg('bwtf', [['24h', '24 Stunden'], ['7d', '7 Tage'], ['30d', '30 Tage']], st.tf)}
                 ${seg('bwmin', [['0', 'Alle'], ['50000000', 'ab 50 Mio'], ['1000000000', 'ab 1 Mrd']], String(st.min))}
                 </div><span class="eyebrow" id="bwCount"></span></div>` }) +

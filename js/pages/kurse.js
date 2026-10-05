@@ -1,6 +1,6 @@
-import { D, coin, watch } from '../core/data.js';
-import { esc, fUsd, fBig, fNum, fPct, cls } from '../core/fmt.js';
-import { card, pageHead, coinImg, pct, seg, chip, icon, icons, empty, sparkline } from '../core/ui.js';
+import { D, coin, watch } from '../core/data.js?v=202610052250';
+import { esc, fUsd, fBig, fNum, fPct, cls } from '../core/fmt.js?v=202610052250';
+import { card, pageHead, coinImg, pct, seg, chip, icon, icons, empty, sparkline } from '../core/ui.js?v=202610052250';
 
 const BATCH = 120;
 const st = { q: '', cat: 'Alle', view: 'mcap', sort: 'market_cap_rank', dir: 1, n: BATCH };
@@ -89,9 +89,9 @@ export default {
         root.innerHTML = pageHead('Markt', 'Alle Kurse', `Alle ${D.coins.length} Coins mit Preis, Momentum und Dominanz. Sortier per Klick auf die Spalte oder such direkt. Stern setzen für deine Watchlist.`,
             `<span class="eyebrow">Stand ${esc(D.coinsStand)}</span>`) +
             card({ body: `<div class="kr-strip" id="krStrip">${leiste()}</div>
-                <div class="row wrap" style="margin-bottom:12px;gap:14px"><div style="flex:1;min-width:220px;max-width:340px"><input class="input" id="krQ" placeholder="Coin suchen (Name oder Symbol)" value="${esc(st.q)}"></div>
+                <div class="filterleiste"><div class="row wrap" style="margin-bottom:12px;gap:14px"><div style="flex:1;min-width:220px;max-width:340px"><input class="input" id="krQ" placeholder="Coin suchen (Name oder Symbol)" value="${esc(st.q)}"></div>
                     ${seg('krview', [['mcap', 'Market Cap'], ['gain', 'Top Gainer'], ['loss', 'Top Loser'], ['watch', '★ Watchlist']], st.view)}<span class="eyebrow" id="krCount"></span></div>
-                <div style="margin-bottom:16px">${seg('krcat', cats.map(c => [c, c]), st.cat)}</div><div id="krTab"></div>` });
+                <div>${seg('krcat', cats.map(c => [c, c]), st.cat)}</div></div><div id="krTab" style="margin-top:16px"></div>` });
         const tab = root.querySelector('#krTab'), strip = root.querySelector('#krStrip'), count = root.querySelector('#krCount');
         let all = [];
         const beobachte = () => {
