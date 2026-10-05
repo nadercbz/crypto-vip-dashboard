@@ -17,7 +17,7 @@ function trichter(d) {
             `<div class="ts-fs ${i === st.length - 1 ? 'ziel' : ''}"><div class="num">${v ?? 0}</div><div class="eyebrow">${k}</div></div>${i < st.length - 1 ? `<span class="ts-fp">${icon('chevron-right')}</span>` : ''}`).join('')}</div>`;
     };
     return card({ eyebrow: 'So wurde geprüft', title: 'Vom Kandidaten zum Signal', right: chip('Stand ' + ago(ts(d.stand)), 'var(--up)'),
-        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal, dem Memecoin-Sammler und bei Solana aus den KOL-Käufen von MadeOnSol. Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen, bei Solana zusätzlich Smart Money (wer kauft, wer steigt aus), und zum Schluss eine Vertragsprüfung: RugCheck für Solana, GoPlus für Base. Ohne bestandene Prüfung gibt es kein Signal, und steigen die KOLs gerade aus, auch nicht.</p>
+        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal, dem Memecoin-Sammler und aus den KOL-Käufen von MadeOnSol (Solana). Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen, zusätzlich Smart Money (wer kauft, wer steigt aus; Solana über MadeOnSol, Base über StalkChain), und zum Schluss eine Vertragsprüfung: RugCheck für Solana, GoPlus für Base. Ohne bestandene Prüfung gibt es kein Signal, und steigen die KOLs gerade aus, auch nicht.</p>
         ${Object.keys(d.chains).map(zeile).join('')}` });
 }
 
@@ -28,8 +28,8 @@ function smartMoney(x) {
     const titel = k.ausstieg ? 'KOLs steigen aus' : k.bestaetigt ? 'Von Smart Money bestätigt' : 'Kaum KOL-Aktivität';
     const z = (l, v) => `<div><div class="eyebrow">${l}</div><div class="num">${v}</div></div>`;
     return `<div class="card sunk ts-sm" style="--c:${farbe}">
-        <div class="row between"><div class="row" style="gap:8px"><span class="ts-sm-ico">${icon(k.ausstieg ? 'log-out' : 'users')}</span><b style="font-weight:500">${titel}</b></div><span class="eyebrow">MadeOnSol</span></div>
-        <div class="ts-sm-kz">${z('Gekauft 24h', k.kauf_24h ?? 0)}${z('Verkauft 24h', k.verkauf_24h ?? 0)}${z('Top-KOLs halten', k.top_halter ?? 0)}${z('Käufer-Qualität', k.kaeufer_score != null ? k.kaeufer_score : '?')}</div>
+        <div class="row between"><div class="row" style="gap:8px"><span class="ts-sm-ico">${icon(k.ausstieg ? 'log-out' : 'users')}</span><b style="font-weight:500">${titel}</b></div><span class="eyebrow">${esc(k.quelle || 'MadeOnSol')}</span></div>
+        <div class="ts-sm-kz">${z('Gekauft 24h', k.kauf_24h ?? 0)}${z('Verkauft 24h', k.verkauf_24h ?? 0)}${z('Top-KOLs halten', k.top_halter ?? 0)}${k.verkauf_anteil != null ? z('Heute verkauft', de(k.verkauf_anteil * 100, 0) + '%') : z('Käufer-Qualität', k.kaeufer_score != null ? k.kaeufer_score : '?')}</div>
         ${(k.namen || []).length ? `<div class="sub" style="font-size:.76rem;margin:10px 0 0">Gekauft zuletzt: ${k.namen.map(esc).join(', ')}</div>` : ''}
     </div>`;
 }
@@ -69,6 +69,13 @@ function karte(x) {
 }
 
 function kolStatus(d) {
+    const sk = d.stalk_status;
+    const stalk = sk && sk.schluessel && sk.fehler
+        ? card({ cls: 'flat', body: `<div class="row" style="gap:10px;color:var(--down);font-size:.86rem">${icon('key-round')}<span>Smart Money für Base aus: ${esc(sk.fehler)}</span></div>` }) : '';
+    return stalk + kolStatusSol(d);
+}
+
+function kolStatusSol(d) {
     const st = d.kol_status;
     if (!st || !st.schluessel) return '';
     if (st.fehler) return card({ cls: 'flat', body: `<div class="row" style="gap:10px;color:var(--down);font-size:.86rem">${icon('key-round')}<span>Smart Money aus: ${esc(st.fehler)}</span></div>` });
