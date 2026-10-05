@@ -169,7 +169,7 @@ function tbZeile(e, d) {
     return `<div class="tb-z ${offen ? 'offen' : ''}" data-tb="${esc(e.id)}">
         <div class="tb-c">${e.img ? `<img class="coin-img" src="${esc(e.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="ico-b">${icon('coins')}</span>`}
             <div style="min-width:0"><div class="nm">${esc(e.symbol)} <span class="dim" style="font-weight:400;font-size:.76rem">${esc(d.chains[e.chain] || e.chain)}</span></div>
-            <div class="sb">${datumZeit(e.ts)} · Score ${de(e.score, 0)}${e.kol && e.kol.bestaetigt ? ' · KOL ✓' : ''}${e.status === 'abgeschlossen' ? ' · abgeschlossen' : ''}</div></div></div>
+            <div class="sb">${datumZeit(e.ts)} · Score ${de(e.score, 0)}${e.kol && e.kol.bestaetigt ? ' · KOL ✓' : ''}${e.status === 'abgeschlossen' ? ' · abgeschlossen' : ''}</div>${kolRaus(e)}</div></div>
         <div class="tb-v">${verlauf(e)}</div>
         <div class="tb-m tb-ein"><div class="eyebrow">Einstieg</div><div class="num">${fUsd(p0)}</div></div>
         <div class="tb-m"><div class="eyebrow">Perfekt raus</div><div class="num ${cls(e.max_pct)}" style="font-weight:600">${fPct(e.max_pct)}</div>${gew(e.max_pct)}<div class="tb-zeit">${e.stunden_bis_hoch != null ? 'nach ' + dauer(e.stunden_bis_hoch) : ''}</div></div>
@@ -182,11 +182,71 @@ function tbZeile(e, d) {
                    ['Regel-Ausstieg', e.regel_preis ? fUsd(e.regel_preis) + ' · ' + datumZeit(e.regel_ts) : 'Stop noch nicht ausgelöst'], ['Kurs jetzt', fUsd(e.preis_jetzt)], ['Marktkap. beim Signal', fBig(e.mcap_signal)], ['Gemessen', (e.kerzen || 0) + (e.kerzen === 1 ? ' Kerze' : ' Kerzen') + (e.stand ? ' · ' + ago(ts(e.stand)) : '')]]
                     .map(([k, v]) => `<div class="card sunk" style="padding:12px 14px"><div class="eyebrow">${k}</div><div style="font-size:.84rem;margin-top:5px">${v}</div></div>`).join('')}
             </div>
+            ${e.kol_ausstieg ? `<div class="card sunk ts-sm" style="--c:var(--down);margin-top:14px"><div class="row" style="gap:8px"><span class="ts-sm-ico">${icon('log-out')}</span><b style="font-weight:500">KOLs steigen aus</b></div>
+                <div class="sub" style="font-size:.8rem;margin:8px 0 0">Am ${datumZeit(e.kol_ausstieg.ts)} hat der KOL-Wächter ${e.kol_ausstieg.verkauf_24h ?? '?'} Verkäufe in 24 Std gezählt${e.kol_ausstieg.top_verkauf_24h ? `, davon ${e.kol_ausstieg.top_verkauf_24h} aus den Top 100` : ''}. Stand seit dem Signal zu dem Zeitpunkt: <b class="${cls(e.kol_ausstieg.seit_signal_pct)}">${fPct(e.kol_ausstieg.seit_signal_pct)}</b>${e.kol_ausstieg.kurs ? ' bei ' + fUsd(e.kol_ausstieg.kurs) : ''}. Wer jetzt noch kauft, ist ihre Ausstiegs-Liquidität.</div></div>` : ''}
             ${(e.gruende || []).length ? `<ul class="ts-l up" style="margin-top:14px">${e.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
             ${(e.warnungen || []).length ? `<ul class="ts-l warn" style="margin-top:8px">${e.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
             <div class="row wrap" style="gap:8px;margin-top:14px">${e.url ? `<a class="btn soft" href="${esc(e.url)}" target="_blank" rel="noopener">${icon('external-link')}DexScreener</a>` : ''}<button class="btn soft" data-kopie="${esc(e.token)}">${icon('copy')}CA</button></div>
         </div>` : ''}
     </div>`;
+}
+
+function kolRaus(e) {
+    const a = e.kol_ausstieg;
+    if (!a) return '';
+    return `<span class="tb-kol" title="${esc(a.verkauf_24h ?? '?')} KOL-Verkäufe in 24 Std">${icon('log-out')}KOLs raus · ${esc(datumZeit(a.ts))} · ${esc(fPct(a.seit_signal_pct))} seit Signal</span>`;
+}
+
+const VERTRAUEN = { keins: ['zu wenig Daten', 'var(--ink-3)'], 'dünn': ['dünne Datenlage', 'var(--warn)'], mittel: ['mittlere Datenlage', 'var(--a2)'], belastbar: ['belastbar', 'var(--up)'] };
+
+function waZeile(x, d) {
+    return `<details class="wa-z"><summary>
+        <div style="min-width:0"><div class="nm">${esc(x.symbol)} <span class="dim" style="font-weight:400;font-size:.74rem">${esc(d.chains[x.chain] || x.chain)}</span></div>
+            <div class="sb">${datumZeit(x.ts)} · Score ${de(x.score, 0)}${x.kol_ausstieg ? ' · KOLs raus' : ''}</div></div>
+        <div class="wa-erg"><div class="num ${cls(x.ergebnis_pct)}">${fPct(x.ergebnis_pct)}</div><div class="wa-art">${x.ergebnis_art === 'jetzt' ? 'Stand jetzt' : 'Regel-Ausstieg'}</div></div>
+        <span class="tb-pf">${icon('chevron-down')}</span></summary>
+        <div class="wa-detail">
+            ${(x.gruende || []).length ? `<ul class="ts-l up">${x.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+            ${(x.warnungen || []).length ? `<ul class="ts-l warn" style="margin-top:8px">${x.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
+            ${!(x.gruende || []).length && !(x.warnungen || []).length ? '<div class="sub" style="font-size:.78rem;margin:0">Für dieses Signal sind keine Gründe oder Warnungen gespeichert.</div>' : ''}
+            <div class="row wrap mono dim" style="gap:14px;font-size:.7rem;margin-top:10px"><span>Hoch ${fPct(x.max_pct)}</span><span>Jetzt ${fPct(x.jetzt_pct)}</span>${x.regel_pct != null ? `<span>Regel ${fPct(x.regel_pct)}</span>` : ''}${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener" style="color:var(--pg)">DexScreener</a>` : ''}</div>
+        </div></details>`;
+}
+
+function waMuster(m) {
+    const verl = m.richtung === 'verlierer', je = m.je_gruppe || 1;
+    const balken = (l, v, farbe) => `<div class="wa-b"><span class="dim">${l}</span>${bar(v / je * 100, farbe)}<span class="num">${v} von ${je}</span></div>`;
+    return `<div class="card sunk wa-m" style="--c:${verl ? 'var(--down)' : 'var(--up)'}">
+        <div class="row between" style="gap:10px;align-items:flex-start"><div class="row" style="gap:8px;min-width:0"><span class="ts-sm-ico">${icon(verl ? 'trending-down' : 'trending-up')}</span><b style="font-weight:500">${esc(m.merkmal)}</b></div>${chip(verl ? 'bei Verlierern' : 'bei Gewinnern', verl ? 'var(--down)' : 'var(--up)')}</div>
+        <div class="stack" style="gap:7px;margin-top:12px">${balken('Verlierer', m.bei_verlierern, 'var(--down)')}${balken('Gewinner', m.bei_gewinnern, 'var(--up)')}</div>
+        ${m.schnitt_mit != null && m.schnitt_ohne != null ? `<div class="sub" style="font-size:.76rem;margin:10px 0 0">Alle gemessenen Signale: mit <b class="${cls(m.schnitt_mit)}">${fPct(m.schnitt_mit)}</b> im Schnitt (${m.n_mit} ${m.n_mit === 1 ? 'Fall' : 'Fälle'}), ohne <b class="${cls(m.schnitt_ohne)}">${fPct(m.schnitt_ohne)}</b> (${m.n_ohne} ${m.n_ohne === 1 ? 'Fall' : 'Fälle'})</div>` : ''}
+    </div>`;
+}
+
+function woche(d) {
+    const w = d.wochen_analyse;
+    if (!w) return card({ eyebrow: 'Wochenanalyse', title: 'Was Gewinner und Verlierer unterscheidet', body: empty('Noch keine Wochenanalyse. Sie entsteht sonntags automatisch oder mit python3 wochen_analyse.py --jetzt.') });
+    const [vText, vFarbe] = VERTRAUEN[w.vertrauen] || VERTRAUEN.keins;
+    const k = (l, v, sub, farbe) => `<div class="card sunk tb-kpi"><div class="eyebrow">${l}</div><div class="num tb-kv" ${farbe ? `style="color:${farbe}"` : ''}>${v}</div>${sub ? `<div class="tb-ks">${sub}</div>` : ''}</div>`;
+    const gruppe = (titel, liste, farbe, ic) => `<div><div class="wa-gk" style="--c:${farbe}">${icon(ic)}<span>${titel}</span><span class="dim">${liste.length}</span></div>
+        ${liste.length ? `<div class="stack" style="gap:8px">${liste.map(x => waZeile(x, d)).join('')}</div>` : empty('Noch keine gemessenen Signale.')}</div>`;
+    const verl = (w.muster || []).filter(m => m.richtung === 'verlierer'), gew = (w.muster || []).filter(m => m.richtung !== 'verlierer');
+    return card({ eyebrow: 'Wochenanalyse', title: 'Was Gewinner und Verlierer unterscheidet',
+        right: `<div class="row wrap" style="gap:6px">${chip(vText, vFarbe)}${chip('Stand ' + ago(ts(w.stand)), 'var(--ink-3)')}</div>`,
+        body: `<p class="sub" style="margin:0 0 18px">Jeden Sonntag werden die Signale der letzten ${w.tage} Tage ausgewertet. Die ${w.je_gruppe || 5} besten und die ${w.je_gruppe || 5} schlechtesten werden verglichen: welche Gründe, Warnungen und Merkmale standen bei den Verlierern gehäuft und bei den Gewinnern selten? Gezählt wird der Regel-Ausstieg, solange der nicht ausgelöst hat der Stand jetzt. Signale unter ${w.min_alter_h} Stunden zählen noch nicht.</p>
+        <div class="grid g4" style="gap:12px">
+            ${k('Signale in ' + w.tage + ' Tagen', w.n_signale, `${w.n_gemessen} gemessen`)}
+            ${k('Im Plus', w.n_gemessen ? w.im_plus + ' von ' + w.n_gemessen : '0', 'nach Regel-Ausstieg oder jetzt', w.n_gemessen && w.im_plus >= w.n_gemessen / 2 ? 'var(--up)' : 'var(--down)')}
+            ${k('Ø je Signal', w.schnitt_pct != null ? fPct(w.schnitt_pct) : '?', w.median_pct != null ? 'Median ' + fPct(w.median_pct) : '', w.schnitt_pct != null ? (w.schnitt_pct >= 0 ? 'var(--up)' : 'var(--down)') : null)}
+            ${k('Muster gefunden', (w.muster || []).length, `${(w.vorschlaege || []).length} ${(w.vorschlaege || []).length === 1 ? 'Vorschlag' : 'Vorschläge'}`)}
+        </div>
+        <div class="grid g2" style="gap:18px;margin-top:22px">${gruppe('Verlierer', w.verlierer || [], 'var(--down)', 'arrow-down-right')}${gruppe('Gewinner', w.gewinner || [], 'var(--up)', 'arrow-up-right')}</div>
+        <div class="eyebrow" style="margin:26px 2px 10px">Muster</div>
+        ${(w.muster || []).length ? `<div class="grid g2" style="gap:12px">${[...verl, ...gew].map(waMuster).join('')}</div>` : `<div class="card sunk" style="padding:16px 18px"><div class="sub" style="margin:0;font-size:.84rem">${w.je_gruppe >= 2 ? 'Kein Merkmal trennt Gewinner und Verlierer um mindestens 40 Prozentpunkte.' : 'Zu wenige gemessene Signale für einen Vergleich.'}</div></div>`}
+        ${(w.vorschlaege || []).length ? `<div class="eyebrow" style="margin:26px 2px 10px">Vorschläge</div><div class="stack" style="gap:10px">${w.vorschlaege.map(v => `<div class="card sunk wa-v"><span class="ico-b">${icon('lightbulb')}</span><div><div>${esc(v.text)}</div><div class="tb-ks">${esc(v.fallzahl)}</div></div></div>`).join('')}</div>` : ''}
+        ${(w.beobachtungen || []).length ? `<div class="eyebrow" style="margin:26px 2px 10px">${w.modus === 'vorschlaege' ? 'Weitere Beobachtungen' : 'Beobachtungen'}</div><ul class="ts-l wa-o">${w.beobachtungen.map(b => `<li>${icon('eye')}<span>${esc(b)}</span></li>`).join('')}</ul>` : ''}
+        ${(w.hinweise || []).length ? `<div class="wa-h">${w.hinweise.map(h => `<div>${icon('info')}<span>${esc(h)}</span></div>`).join('')}</div>` : ''}
+        <p class="sub" style="font-size:.74rem;margin-top:16px">Regelbasiert und ohne KI. Vorschläge gibt es erst ab ${w.min_fuer_vorschlaege} gemessenen Signalen und nur, wenn das Merkmal auch im Schnitt aller Signale schlechter abschneidet. Bei kleinen Fallzahlen ist jedes Muster ein Hinweis, kein Beweis. Nichts davon ändert die Regeln automatisch.</p>` });
 }
 
 function historie(d) {
@@ -249,6 +309,25 @@ export default {
         .tb-detail { grid-column: 1 / -1; padding-top: 8px; cursor: default; }
         @media (max-width: 1180px) { .tb-z { grid-template-columns: minmax(140px, 1fr) repeat(3, minmax(70px, .7fr)) 20px; } .tb-v, .tb-ein { display: none; } }
         @media (max-width: 860px) { .tb-drei { grid-template-columns: minmax(0, 1fr); } .tb-z { grid-template-columns: minmax(0, 1fr) repeat(2, auto) 16px; gap: 10px; } .tb-regel { display: none; } }
+        .tb-kol { display: inline-flex; align-items: center; gap: 5px; margin-top: 5px; padding: 3px 9px 3px 7px; border-radius: 999px; font-size: .66rem; font-weight: 500; line-height: 1.3;
+            color: var(--down); background: color-mix(in srgb, var(--down) 13%, transparent); border: 1px solid color-mix(in srgb, var(--down) 30%, transparent); max-width: 100%; }
+        .tb-kol svg { width: 12px; height: 12px; flex: none; }
+        .wa-gk { display: flex; align-items: center; gap: 8px; margin: 0 2px 10px; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--c); }
+        .wa-gk svg { width: 14px; height: 14px; } .wa-gk .dim { margin-left: auto; }
+        .wa-z { border-radius: var(--r-md); background: var(--bg); box-shadow: var(--sh-in); transition: background .2s; }
+        .wa-z:hover { background: color-mix(in srgb, var(--ink) 3%, var(--bg)); }
+        .wa-z summary { display: grid; grid-template-columns: minmax(0, 1fr) auto 16px; gap: 12px; align-items: center; padding: 11px 14px; cursor: pointer; list-style: none; }
+        .wa-z summary::-webkit-details-marker { display: none; }
+        .wa-z .nm { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .wa-z .sb { font-size: .7rem; color: var(--ink-3); font-family: var(--mono); }
+        .wa-z[open] .tb-pf { transform: rotate(180deg); }
+        .wa-erg { text-align: right; } .wa-erg .num { font-size: .95rem; } .wa-art { font-size: .62rem; color: var(--ink-3); }
+        .wa-detail { padding: 2px 14px 14px; }
+        .wa-m { padding: 14px 16px; border-left: 3px solid var(--c); }
+        .wa-b { display: grid; grid-template-columns: 64px minmax(0, 1fr) 54px; gap: 10px; align-items: center; font-size: .74rem; } .wa-b .num { text-align: right; font-size: .76rem; }
+        .wa-v { display: flex; gap: 12px; padding: 14px 16px; font-size: .88rem; align-items: flex-start; }
+        .wa-o svg { color: var(--a2); }
+        .wa-h { display: grid; gap: 6px; margin-top: 18px; } .wa-h div { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; font-size: .74rem; color: var(--ink-3); }
+        .wa-h svg { width: 13px; height: 13px; margin-top: 2px; }
         @media (max-width: 860px) { .ts-grid { grid-template-columns: minmax(0, 1fr); } .ts-fk { width: 100%; } .ts-fp { display: none; } }`,
     render(root) {
         const d = daten();
@@ -257,7 +336,7 @@ export default {
         root.classList.add('stack');
         if (!d) { root.innerHTML = kopf + card({ body: empty('Noch keine Signale. Sie entstehen beim nächsten Lauf von fetch_tagessignale.py, also beim nächsten Refresh.') }); return; }
         root.innerHTML = kopf + ((d.fehler || []).length ? card({ cls: 'flat', body: `<div class="warn" style="font-size:.86rem">${d.fehler.map(esc).join('. ')}</div>` }) : '') +
-            kolStatus(d) + trichter(d) + `<div class="stack" id="tsListe">${liste(d)}</div><div id="tsHist">${historie(d)}</div>` +
+            kolStatus(d) + trichter(d) + `<div class="stack" id="tsListe">${liste(d)}</div><div id="tsHist">${historie(d)}</div><div id="tsWoche">${woche(d)}</div>` +
             `<p class="sub" style="font-size:.76rem;max-width:none">Mechanisches Raster, keine Anlageberatung und kein Kaufbefehl. Memecoins können in Minuten auf null fallen. Die Vertragsprüfung senkt das Risiko eines Betrugs, sie schließt ihn nicht aus. Nur Geld einsetzen, dessen Verlust du verkraftest.</p>`;
         root.onclick = e => {
             const k = e.target.closest('[data-kopie]');

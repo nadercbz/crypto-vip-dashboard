@@ -34,9 +34,10 @@ export const NAV = [
         { id: 'bestenliste', label: 'Bestenliste',      icon: 'trophy',           alt: 'Ranking' },
     ] },
     { group: 'Wissen', items: [
+        { id: 'labor',      label: 'Signal-Labor',      icon: 'flask-conical',    alt: 'neu in 2.0' },
         { id: 'playbook',   label: 'Playbook',          icon: 'book-open',        alt: 'Playbook' },
         { id: 'werkzeuge',  label: 'Werkzeuge',         icon: 'external-link',    alt: 'Links' },
     ] },
 ];
-export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gems', 'handelszeiten', 'heatmap', 'influencer', 'kurse', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
+export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gems', 'handelszeiten', 'heatmap', 'influencer', 'kurse', 'labor', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
 export const ALL = NAV.flatMap(g => g.items.map(i => ({ ...i, group: g.group })));

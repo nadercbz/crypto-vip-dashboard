@@ -1,6 +1,6 @@
 import { D, coin, signal, store } from '../core/data.js';
 import { esc, fUsd, fBig, fPct, fNum } from '../core/fmt.js';
-import { pageHead, icon, icons, scoreVar } from '../core/ui.js';
+import { pageHead, icon, icons, scoreVar, sparkline } from '../core/ui.js';
 
 const UP = 'var(--up)';                                               // alt #4ecdc4
 const UP2 = 'color-mix(in srgb, var(--up) 70%, var(--warn))';         // alt #6bcf7f
@@ -422,6 +422,55 @@ function liveKacheln() {
     return `<div class="grid g-auto pb-infos">${k.join('')}</div>`;
 }
 
+const MPD = () => (typeof window !== 'undefined' && window.MARKT_PLUS_DATA) || null;
+const fred = id => { const d = MPD(); return (d && d.makro && d.makro[id]) || null; };
+const datumDE = s => { const p = String(s || '').split('-'); return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : esc(s || ''); };
+function fredWert(id, s) {
+    if (!s || s.wert == null) return '—';
+    if (id === 'M2SL') return fBig(s.wert * 1e9);
+    if (id === 'SP500') return fNum(s.wert, 0);
+    if (s.art === 'pp') return fNum(s.wert, 2) + '%';
+    return fNum(s.wert, 2);
+}
+const fredChg = (s, v) => v == null ? '—' : s.art === 'pp' ? (v > 0 ? '+' : '') + fNum(v, 2) + ' Pp' : fPct(v, 1);
+const FRED_KACHELN = [
+    ['DTWEXBGS', 'Dollar-Index (breit)', -1, 'Fed-Index gegen einen breiten Währungskorb, nicht der ICE-DXY.'],
+    ['SP500', 'S&P 500', 1, 'Risikoappetit an der Börse.'],
+    ['T10YIE', 'Inflationserwartung 10 Jahre', -1, 'Aus Anleihen abgeleitet, nicht der CPI.'],
+    ['DFF', 'Leitzins effektiv', -1, 'Fed Funds Rate, tägliches Mittel.'],
+    ['DGS10', '10J-Rendite USA', -1, 'Steigende Renditen ziehen Geld aus Risiko.'],
+    ['M2SL', 'Geldmenge M2', 1, 'Monatlich. Wachsende Liquidität trägt Krypto.'],
+];
+function fredWind(s, wirkung) {
+    const v = s.chg_3m;
+    if (v == null) return [DIM, 'Trend offen'];
+    const schwelle = s.art === 'pp' ? 0.1 : 0.5;
+    if (Math.abs(v) < schwelle) return [WARN, 'seitwärts'];
+    return (v > 0) === (wirkung > 0) ? [UP, 'Rückenwind'] : [DOWN, 'Gegenwind'];
+}
+function fredZeile(id) {
+    const s = fred(id);
+    if (!s || s.wert == null) return '';
+    return `FRED heute: ${esc(s.name)} ${fredWert(id, s)} (${datumDE(s.datum)}), 1 Monat ${fredChg(s, s.chg_1m)}, 3 Monate ${fredChg(s, s.chg_3m)}`;
+}
+function fredKacheln() {
+    const d = MPD();
+    if (!d || !d.makro) return `<div class="empty">Keine FRED-Daten. fetch_markt_plus.py ausführen.</div>`;
+    const k = FRED_KACHELN.map(([id, label, wirkung, hinweis]) => {
+        const s = fred(id); if (!s) return '';
+        const [c, wort] = fredWind(s, wirkung);
+        const verlauf = (s.verlauf || []).map(p => p[1]);
+        const trend = id === 'M2SL' && s.chg_1j != null ? ` · 1 Jahr ${fPct(s.chg_1j, 1)}` : '';
+        return `<div class="card sunk pb-info${s.veraltet ? ' pb-stale' : ''}">
+            <div class="pb-pm-head"><div class="eyebrow">${esc(label)}</div><span class="chip" style="--c:${c}">${wort}</span></div>
+            <div class="pb-val num">${fredWert(id, s)}</div>
+            <div class="pb-small">1 Monat ${fredChg(s, s.chg_1m)} · 3 Monate ${fredChg(s, s.chg_3m)}${trend}</div>
+            <div class="pb-fred-sp">${sparkline(verlauf, 160, 26, c)}</div>
+            <div class="pb-small dim">${esc(hinweis)} Stand ${datumDE(s.datum)}${s.veraltet ? ', alter Stand' : ''}.</div></div>`;
+    }).join('');
+    return `<div class="grid g-auto pb-infos" style="margin-bottom:22px">${k}</div>`;
+}
+
 function makroKarten() {
     const f = fedLage();
     const fed = `<div class="card sunk pb-info${f.live ? '' : ' pb-stale'}">
@@ -431,16 +480,19 @@ function makroKarten() {
         <div class="pb-was">${tag('Q2 2026, Nader')}<div class="pb-small">Lockernd. Zinssenkungszyklus seit Sep 2024. Aktuell 4.00-4.25%.</div></div>
         ${f.wort !== 'Lockernd' ? ueberholt(`Polymarket preist für die Sitzung im ${esc(f.monat)} keine Lockerung ein (Senkung ${p1(f.cut)}).`) : ''}
     </div>`;
-    const meinung = (label, value, c, sub, live = '') => `<div class="card sunk pb-info">
+    const meinung = (label, value, c, sub, live = '', alt = '') => `<div class="card sunk pb-info">
         <div class="pb-pm-head"><div class="eyebrow">${label}</div>${tag('Q2 2026')}</div>
         <div class="pb-val num" style="color:${c}">${value}</div><div class="pb-small">${sub}</div>
-        ${live ? `<div class="pb-livezeile">${icon('radio')}${live}</div>` : ''}</div>`;
+        ${live ? `<div class="pb-livezeile">${icon('radio')}${live}</div>` : ''}${alt}</div>`;
     const rez = pmP('rez'), cla = pmP('clarity');
+    const dx = fred('DTWEXBGS'), sp = fred('SP500');
+    const dxAlt = dx && dx.chg_3m != null && dx.chg_3m > 1 ? ueberholt(`Der breite Dollar-Index ist in 3 Monaten um ${fPct(dx.chg_3m, 1)} gestiegen, also nicht schwächer.`) : '';
+    const spAlt = sp && sp.chg_3m != null && sp.chg_3m > 5 ? ueberholt(`Der S&amp;P 500 liegt 3 Monate ${fPct(sp.chg_3m, 1)} im Plus, von Druck ist nichts zu sehen.`) : '';
     return `<div class="grid g-auto pb-infos" style="margin-bottom:22px">
         ${fed}
-        ${meinung('US Dollar (DXY)', 'Schwächer', UP, 'Schwacher Dollar historisch positiv für BTC.')}
-        ${meinung('Aktienmarkt', 'Volatil', WARN, 'S&amp;P unter Druck durch Zölle. Nasdaq KI Boom als Gegengewicht.')}
-        ${meinung('Inflation (CPI)', '2.4-2.8%', WARN, 'Normalisiert aber über 2% Ziel. Hartnäckige Kerninflation.')}
+        ${meinung('US Dollar (DXY)', 'Schwächer', UP, 'Schwacher Dollar historisch positiv für BTC.', fredZeile('DTWEXBGS'), dxAlt)}
+        ${meinung('Aktienmarkt', 'Volatil', WARN, 'S&amp;P unter Druck durch Zölle. Nasdaq KI Boom als Gegengewicht.', fredZeile('SP500'), spAlt)}
+        ${meinung('Inflation (CPI)', '2.4-2.8%', WARN, 'Normalisiert aber über 2% Ziel. Hartnäckige Kerninflation.', fredZeile('T10YIE'))}
         ${meinung('Handelskrieg', 'Eskaliert', DOWN, 'Trump Zölle 2025. Rezessionsangst steigt.', rez != null ? `Polymarket heute: US Rezession bis Ende 2026 ${p1(rez)}` : '')}
         ${meinung('Krypto Regulierung', 'Pro-Krypto', UP, 'Trump Administration pro-Krypto. Strategic BTC Reserve diskutiert.', cla != null ? `Polymarket heute: Clarity Act wird 2026 Gesetz ${p1(cla)}` : '')}
     </div>`;
@@ -490,8 +542,10 @@ function marktlageInhalt() {
     const st = D.extras && D.extras.updated;
     return `<div class="pb-h4row" style="margin-top:0"><h4 class="pb-h4">Live Lage aus den Dashboard-Daten</h4>${liveChip(true)}<span class="pb-small dim">Kurse live${st ? ', Marktdaten Stand ' + esc(st) : ''}</span></div>
         ${liveKacheln()}
-        <div class="pb-h4row"><h4 class="pb-h4">Makro</h4><span class="pb-small dim">Fed live aus Polymarket, der Rest ist Naders Einschätzung</span></div>
+        <div class="pb-h4row"><h4 class="pb-h4">Makro</h4><span class="pb-small dim">Fed live aus Polymarket, der Rest ist Naders Einschätzung, daneben die FRED-Werte</span></div>
         ${makroKarten()}
+        <div class="pb-h4row"><h4 class="pb-h4">Makro live aus FRED</h4>${liveChip(!!(MPD() && MPD().makro))}<span class="pb-small dim">St. Louis Fed, täglich (M2 monatlich)${MPD() && MPD().updated ? ', abgerufen ' + esc(MPD().updated) : ''}. Rücken- oder Gegenwind für Krypto nach dem 3-Monats-Trend.</span></div>
+        ${fredKacheln()}
         <div class="pb-h4row"><h4 class="pb-h4">Urteil</h4>${tag()}</div>
         ${urteile()}
         <div class="pb-note pb-cycle">
@@ -645,6 +699,8 @@ export default {
         .pb-check-ico svg { width: 13px; height: 13px; }
         .pb-check-k { color: var(--ink); font-weight: 400; }
         .pb-check-v { color: var(--ink-2); }
+        .pb-fred-sp { margin: 8px 0 6px; }
+        .pb-fred-sp svg { display: block; max-width: 100%; }
         @media (max-width: 1180px) { .pb-gap.g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (max-width: 860px) {
             .pb-gap.g2, .pb-gap.g3 { grid-template-columns: minmax(0, 1fr); }

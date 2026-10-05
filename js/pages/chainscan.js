@@ -1,6 +1,6 @@
 import { D, coin, store } from '../core/data.js';
 import { esc } from '../core/fmt.js';
-import { pageHead, ring, empty, icon, icons, hydrate } from '../core/ui.js';
+import { pageHead, ring, empty, icon, icons, hydrate, sparkline } from '../core/ui.js';
 
 const MERK = 'c2_ns_state_v1';
 const SORTEN = [['mc', 'Market Cap'], ['c24', '24 Std'], ['c7', '7 Tage'], ['c30', '30 Tage'], ['v', 'Volumen']];
@@ -54,6 +54,36 @@ function panelSym(c) {
     return best && best.id === c.id ? c.s : null;
 }
 
+const stables = () => { const m = typeof window !== 'undefined' && window.MARKT_PLUS_DATA; return (m && m.stables && m.stables.chains) ? m.stables : null; };
+function stableVon(e) {
+    const s = stables(); if (!s) return null;
+    const zu = s.zuordnung || {}, name = zu[e.key];
+    const nm = String(e.name || '').toLowerCase();
+    return (name && s.chains.find(c => c.name === name)) ||
+        s.chains.find(c => c.key === e.key || String(c.name || '').toLowerCase() === nm) || null;
+}
+const sgnGeld = v => v == null ? '?' : (v > 0 ? '+' : v < 0 ? '-' : '') + geld(Math.abs(v)) + ' $';
+function stableZeile(e) {
+    const c = stableVon(e);
+    if (!c || c.chg_7d == null) return '';
+    return `<div class="cs-stab" title="Stablecoin-Bestand auf ${esc(e.name)}: ${geld(c.usd)} $. Quelle DefiLlama.">
+        <span>Stablecoins 7T</span><b class="${kls(c.chg_7d_pct)}">${sgnGeld(c.chg_7d)}</b></div>`;
+}
+function stableHero(e) {
+    const s = stables(), c = stableVon(e);
+    if (!s || !c) return '';
+    const rang = (s.rangliste_7d || []).indexOf(c.name);
+    const v = c.verlauf_30d || [];
+    return `<div class="cs-stab-hero">
+        <span class="eyebrow">Stablecoins auf ${esc(e.name)}</span>
+        <span><b>${geld(c.usd)} $</b></span>
+        <span>7 Tage ${c.chg_7d == null ? '<span class="dim">?</span>' : `<b class="${kls(c.chg_7d_pct)}">${sgnGeld(c.chg_7d)}</b> ${pctHtml(c.chg_7d_pct)}`}</span>
+        <span>30 Tage ${pctHtml(c.chg_30d_pct)}</span>
+        ${rang >= 0 ? `<span>Zufluss-Rang ${rang + 1} von ${s.rangliste_7d.length} Chains</span>` : ''}
+        ${v.length >= 3 ? `<span class="cs-stab-sp">${sparkline(v, 90, 20, 'var(--eco)')}</span>` : ''}
+    </div>`;
+}
+
 const daten = () => D.narrativ;
 const ecoVon = (d, key) => d.oekosysteme.filter(e => e.key === key)[0] || null;
 function heissKey(d) {
@@ -83,6 +113,7 @@ function renderEcos(d) {
             <div class="row between" style="margin-top:12px"><span class="eyebrow">Puls</span><b class="num cs-puls">${p.wert == null ? '?' : esc(p.wert)}</b></div>
             <div class="bar" style="margin-top:6px"><i data-w="${p.wert || 0}" style="--c:var(--eco)"></i></div>
             <div class="cs-puls-sub">${p.breite_7d == null ? '' : esc(p.breite_7d) + ' % im Plus · '}Basis ${esc(p.n || 0)}</div>
+            ${stableZeile(e)}
             ${e.veraltet ? `<div class="cs-alt">Alter Stand vom ${esc(e.stand)}</div>` : ''}
         </button>`;
     }).join('');
@@ -111,7 +142,7 @@ function renderHero(d, e) {
             <div class="cs-hero-l"><img src="${esc(n.img)}" alt="" onerror="this.style.visibility='hidden'">
                 <div style="min-width:0"><div class="eyebrow">Ökosystem</div><h3 class="h1" style="margin-top:6px">${esc(e.name)}</h3>
                 <div class="cs-hero-kurs"><span>${esc(n.s || '')} <b>${preis(n.p)}</b></span><span>24h ${pctHtml(n.c24)}</span><span>7T ${pctHtml(n.c7)}</span><span>30T ${pctHtml(n.c30)}</span>
-                    <span>Rang #${esc(n.r || '?')} · MC ${geld(n.mc)}</span></div></div></div>
+                    <span>Rang #${esc(n.r || '?')} · MC ${geld(n.mc)}</span></div>${stableHero(e)}</div></div>
             <div title="Puls: 55 % Anteil der Werte im Plus über 7 Tage, 45 % Vorsprung des Medians zum Gesamtmarkt">${ring(p.wert, 'Puls', 124)}</div>
         </div>
         <div class="cs-kpis">
@@ -237,6 +268,13 @@ export default {
         .cs-puls { font-size: 1.3rem; font-weight: 300; }
         .cs-puls-sub { margin-top: 7px; font-family: var(--mono); font-size: .64rem; color: var(--ink-3); }
         .cs-alt { margin-top: 8px; font-size: .7rem; color: var(--warn); }
+        .cs-stab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: .66rem; color: var(--ink-3); }
+        .cs-stab b { font-weight: 500; font-size: .74rem; }
+        .cs-stab-hero { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-top: 10px; padding: 8px 14px; border-radius: var(--r-md); background: var(--bg); box-shadow: var(--sh-in); font-family: var(--mono); font-size: .72rem; color: var(--ink-2); }
+        .cs-stab-hero .eyebrow { letter-spacing: .1em; }
+        .cs-stab-hero b { font-weight: 500; color: var(--ink); }
+        .cs-stab-hero b.up { color: var(--up); } .cs-stab-hero b.down { color: var(--down); }
+        .cs-stab-sp { display: inline-flex; }
         .cs-hero { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
         .cs-hero-l { display: flex; align-items: center; gap: 18px; min-width: 0; flex: 1; }
         .cs-hero-l > img { width: 60px; height: 60px; border-radius: 50%; background: var(--sunk); flex: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--eco) 25%, transparent); }
