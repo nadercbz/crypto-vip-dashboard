@@ -1,7 +1,19 @@
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610060140';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610060140';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610061219';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610061219';
 
 let kette = 'alle';
+let einstieg = 'alle';      // 'alle' = alle Signale wie bisher, 'gut' = nur gute Einstiege
+
+export function einstiegsCheck(x) {
+    const c = x.chg || {}, ch = x.chart || {}, abst = ch.unter_lokalem_hoch_pct, crv = (ch.plan || {}).crv;
+    if (abst != null && abst < 6) return { gut: false, grund: 'Steht fast am lokalen Hoch' };
+    if ((c.h1 || 0) > 8) return { gut: false, grund: 'Läuft gerade senkrecht, plus ' + Math.round(c.h1) + ' Prozent in 1 Stunde' };
+    if ((c.h24 || 0) > 150) return { gut: false, grund: 'Großteil der Bewegung schon gelaufen' };
+    if (crv != null && crv < 1.3) return { gut: false, grund: 'Chance zu Risiko zu knapp' };
+    if (abst != null && abst >= 8) return { gut: true, grund: Math.round(abst) + ' Prozent unter dem lokalen Hoch' + (crv != null ? ', Chance zu Risiko ' + String(crv).replace('.', ',') : '') };
+    if (abst == null && (c.h1 || 0) <= 2 && (c.h6 || 0) <= 25) return { gut: true, grund: 'Kein frischer Anstieg, ruhige letzte Stunde' };
+    return { gut: false, grund: 'Kein klarer Rücksetzer erkennbar' };
+}
 const daten = () => window.TAGESSIGNALE_DATA || null;
 const de = (v, d = 1) => v == null ? '?' : Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
 const ts = s => s ? Date.parse(s) / 1000 : null;
@@ -108,7 +120,7 @@ function karte(x) {
         <div class="row between" style="align-items:flex-start">
             <div class="row" style="min-width:0">${x.img ? `<img class="coin-img" style="width:46px;height:46px" src="${esc(x.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="ico-b" style="width:46px;height:46px">${icon('coins')}</span>`}
                 <div style="min-width:0"><div class="h2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.symbol)}</div><div class="sb dim" style="font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.name)}</div>
-                <div class="row wrap" style="gap:6px;margin-top:8px">${chip(KETTE[x.chain] || x.chain, KETTE_FARBE[x.chain] || 'var(--ink-2)')}${chip(stText, stFarbe)}</div></div></div>
+                <div class="row wrap" style="gap:6px;margin-top:8px">${chip(KETTE[x.chain] || x.chain, KETTE_FARBE[x.chain] || 'var(--ink-2)')}${chip(stText, stFarbe)}${(() => { const e = einstiegsCheck(x); return `<span title="${esc(e.grund)}">${chip(e.gut ? 'Guter Einstieg' : 'Nicht am Top kaufen', e.gut ? 'var(--up)' : 'var(--warn)')}</span>`; })()}</div></div></div>
             ${ring(x.score, 'Score', 92)}
         </div>
         <div class="ts-kz">${kz('Kurs', fUsd(x.preis))}${kz('Marktkap.', fBig(x.mcap))}${kz('Liquidität', fBig(x.liq))}${kz('Volumen 24h', fBig(x.vol24))}${kz('Alter', alter(x.alter_h))}${kz('Käufe 6h', x.kaufanteil6 != null ? de(x.kaufanteil6, 0) + '%' : '?')}</div>
@@ -170,15 +182,16 @@ function kolMarkt(d) {
 
 function liste(d) {
     const ketten = Object.keys(d.chains).filter(c => kette === 'alle' || c === kette);
-    const sig = ketten.flatMap(c => (d.ergebnis[c] || {}).signale || []).sort((a, b) => b.score - a.score);
-    const beo = ketten.flatMap(c => (d.ergebnis[c] || {}).beobachten || []).sort((a, b) => b.score - a.score);
+    const filt = x => einstieg === 'alle' || einstiegsCheck(x).gut;
+    const sig = ketten.flatMap(c => (d.ergebnis[c] || {}).signale || []).filter(filt).sort((a, b) => b.score - a.score);
+    const beo = ketten.flatMap(c => (d.ergebnis[c] || {}).beobachten || []).filter(filt).sort((a, b) => b.score - a.score);
     const abg = ketten.flatMap(c => ((d.ergebnis[c] || {}).abgelehnt || []).map(a => ({ ...a, chain: c })));
     const nae = ketten.flatMap(c => ((d.ergebnis[c] || {}).naechste || []).map(a => ({ ...a, chain: c }))).sort((a, b) => b.score - a.score).slice(0, 10);
     const aus = {};
     ketten.forEach(c => Object.entries((d.stats[c] || {}).ausschluss || {}).forEach(([k, v]) => { aus[k] = (aus[k] || 0) + v; }));
     const ausArr = Object.entries(aus).sort((a, b) => b[1] - a[1]), ausMax = ausArr.length ? ausArr[0][1] : 1;
     return `<div class="ts-sec"><div class="eyebrow">Signale heute</div><span class="eyebrow">${sig.length} ${sig.length === 1 ? 'Coin' : 'Coins'}</span></div>
-        ${sig.length ? `<div class="ts-grid">${sig.map(karte).join('')}</div>` : card({ cls: 'tint', body: empty('Heute hat kein Coin alle 4 Stufen bestanden. Kein Signal ist auch eine Aussage: lieber nichts kaufen als etwas Halbgares.') })}
+        ${sig.length ? `<div class="ts-grid">${sig.map(karte).join('')}</div>` : card({ cls: 'tint', body: empty(einstieg === 'gut' ? 'Gerade kein Signal mit gutem Einstieg. Alle stehen nah am Hoch oder laufen schon. Geduld, der Rücksetzer kommt meistens.' : 'Heute hat kein Coin alle 4 Stufen bestanden. Kein Signal ist auch eine Aussage: lieber nichts kaufen als etwas Halbgares.') })}
         ${beo.length ? `<div class="ts-sec"><div class="eyebrow" style="color:var(--warn)">Geprüft, aber noch kein Einstieg</div><span class="eyebrow">${beo.length}</span></div><div class="ts-grid">${beo.map(karte).join('')}</div>` : ''}
         ${kolMarkt(d)}
         <div class="grid g2">
@@ -422,7 +435,8 @@ export default {
     render(root) {
         const d = daten();
         const kopf = pageHead('Heute', 'Tages-Signale', 'Tägliche Memecoin-Vorschläge für Solana, Base, BNB Chain, Robinhood und Monad aus DexScreener. Jeder Coin ist vorher durch 4 Stufen gelaufen: Marktdaten, harte Filter, Score und Vertragsprüfung. Unten im Signal-Tagebuch steht, was jedes Signal gebracht hätte.',
-            d ? seg('tskette', [['alle', 'Alle'], ...Object.entries(d.chains)], kette) : '');
+            d ? seg('tseinstieg', [['alle', 'Alle Signale'], ['gut', 'Guter Einstieg ' + Object.values(d.ergebnis).flatMap(e => e.signale || []).filter(x => einstiegsCheck(x).gut).length]], einstieg) +
+                seg('tskette', [['alle', 'Alle'], ...Object.entries(d.chains)], kette) : '');
         root.classList.add('stack');
         if (!d) { root.innerHTML = kopf + card({ body: empty('Noch keine Signale. Sie entstehen beim nächsten Lauf von fetch_tagessignale.py, also beim nächsten Refresh.') }); return; }
         root.innerHTML = kopf + ((d.fehler || []).length ? card({ cls: 'flat', body: `<div class="warn" style="font-size:.86rem">${d.fehler.map(esc).join('. ')}</div>` }) : '') +
@@ -435,6 +449,9 @@ export default {
             if (f) { tbFilter = f.dataset.v; const h = root.querySelector('#tsHist'); h.innerHTML = historie(d); hydrate(h); return; }
             const z = e.target.closest('[data-tb]');
             if (z && !e.target.closest('.tb-detail')) { tbOffen = tbOffen === z.dataset.tb ? null : z.dataset.tb; const h = root.querySelector('#tsHist'); h.innerHTML = historie(d); hydrate(h); h.querySelector(`[data-tb="${CSS.escape(z.dataset.tb)}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+            const ei = e.target.closest('[data-seg="tseinstieg"] button');
+            if (ei) { einstieg = ei.dataset.v; root.querySelectorAll('[data-seg="tseinstieg"] button').forEach(x => x.classList.toggle('on', x === ei));
+                const l = root.querySelector('#tsListe'); l.innerHTML = liste(d); hydrate(l); return; }
             const b = e.target.closest('[data-seg="tskette"] button');
             if (b) { kette = b.dataset.v; root.querySelectorAll('[data-seg="tskette"] button').forEach(x => x.classList.toggle('on', x === b));
                 const l = root.querySelector('#tsListe'), h = root.querySelector('#tsHist'); l.innerHTML = liste(d); h.innerHTML = historie(d); hydrate(l); hydrate(h); }

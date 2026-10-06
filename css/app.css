@@ -329,3 +329,37 @@ img { max-width: 100%; }
     background: color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); }
 .card.filterleiste { margin: 0; padding: 16px 20px; top: 0; background: color-mix(in srgb, var(--surface) 90%, transparent); }
 @media (max-width: 860px) { .filterleiste { top: -6px; } .card.filterleiste { top: 0; padding: 12px 14px; } }
+
+/* ── Jarvis ───────────────────────────────────────────────────────────────── */
+.ibtn.jv-knopf { color: var(--a2); }
+.ibtn.jv-knopf.on { box-shadow: var(--sh-in); }
+.jv-panel { position: fixed; top: 72px; right: 22px; bottom: 22px; z-index: 92; width: min(420px, calc(100vw - 32px)); display: flex; flex-direction: column;
+    border-radius: var(--r-xl); background: var(--surface); box-shadow: var(--sh-float), inset 0 0 0 1px var(--line);
+    opacity: 0; transform: translateX(16px) scale(.98); pointer-events: none; transition: opacity .25s var(--ease), transform .35s var(--ease-spring); }
+.jv-panel.on { opacity: 1; transform: none; pointer-events: auto; }
+.jv-kopf { display: flex; align-items: center; gap: 10px; padding: 16px 16px 12px; border-bottom: 1px solid var(--line); }
+.jv-kopf .ibtn { width: 36px; height: 36px; } .jv-kopf .ibtn svg { width: 15px; height: 15px; }
+.jv-kopf b { font-weight: 500; }
+.jv-st { display: flex; gap: 8px; align-items: center; font-family: var(--mono); font-size: .6rem; letter-spacing: .08em; color: var(--ink-3); }
+.jv-st em { font-style: normal; } .jv-st span:empty { display: none; } .jv-st span { color: var(--a2); text-transform: uppercase; }
+.jv-orb { position: relative; width: 38px; height: 38px; border-radius: 50%; flex: none; background: var(--grad-conic, var(--grad)); box-shadow: 0 0 18px color-mix(in srgb, var(--a2) 45%, transparent); animation: spin 8s linear infinite; }
+.jv-orb i { position: absolute; inset: 5px; border-radius: 50%; background: var(--surface); }
+.jv-panel:has(.jv-st.aktiv) .jv-orb, .jv-st.aktiv ~ * { animation-duration: 1.6s; }
+.jv-liste { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.jv-m { max-width: 88%; padding: 10px 14px; border-radius: 16px; font-size: .88rem; line-height: 1.5; }
+.jv-m.du { align-self: flex-end; background: var(--btn); color: var(--btn-ink); border-bottom-right-radius: 6px; }
+.jv-m.er { align-self: flex-start; background: var(--bg); box-shadow: var(--sh-in); border-bottom-left-radius: 6px; }
+.jv-m.er:empty::before { content: '…'; color: var(--ink-3); }
+.jv-leer { margin: auto 0; display: grid; justify-items: center; gap: 8px; text-align: center; color: var(--ink-3); font-size: .82rem; padding: 0 10px; }
+.jv-leer svg { width: 22px; height: 22px; color: var(--a2); } .jv-leer b { color: var(--ink); font-weight: 500; font-size: .92rem; }
+.jv-ein { display: flex; gap: 8px; padding: 12px 14px 14px; border-top: 1px solid var(--line); }
+.jv-ein .input { flex: 1; }
+.jv-mic, .jv-send { width: 42px; height: 42px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface); box-shadow: var(--sh-sm); color: var(--ink-2); transition: transform .2s var(--ease-spring), color .2s; }
+.jv-send { background: var(--btn); color: var(--btn-ink); box-shadow: none; }
+.jv-mic svg, .jv-send svg { width: 17px; height: 17px; }
+.jv-mic.an { color: #fff; background: var(--down); animation: jvPuls 1.2s ease-in-out infinite; }
+@keyframes jvPuls { 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--down) 20%, transparent); } }
+@media (max-width: 860px) {
+    .jv-panel { top: calc(10px + env(safe-area-inset-top)); right: 10px; left: 10px; bottom: calc(86px + env(safe-area-inset-bottom)); width: auto; transform: translateY(16px); }
+    .ibtn.jv-knopf { order: 3; }
+}
