@@ -1,5 +1,5 @@
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610060114';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610060114';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610060140';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610060140';
 
 let kette = 'alle';
 const daten = () => window.TAGESSIGNALE_DATA || null;
@@ -19,13 +19,26 @@ function trichter(d) {
             `<div class="ts-fs ${i === st.length - 1 ? 'ziel' : ''}"><div class="num">${v ?? 0}</div><div class="eyebrow">${k}</div></div>${i < st.length - 1 ? `<span class="ts-fp">${icon('chevron-right')}</span>` : ''}`).join('')}</div>`;
     };
     return card({ eyebrow: 'So wurde geprüft', title: 'Vom Kandidaten zum Signal', right: chip('Stand ' + ago(ts(d.stand)), 'var(--up)'),
-        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal, dem Memecoin-Sammler und aus den KOL-Käufen von MadeOnSol (Solana). Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen und eine eigene Kerzenprüfung. Dazu kommt die Käuferbreite: wie viele verschiedene Wallets kaufen gegen wie viele verkaufen, mit Bot-Verdacht, wenn wenige Wallets sehr oft kaufen. Für Solana zählt zusätzlich Smart Money über MadeOnSol (wer kauft, wer steigt aus). Zum Schluss die Vertragsprüfung, RugCheck für Solana und GoPlus für die anderen Chains, inklusive Halter-Fluss: wächst die Zahl der Halter oder laufen sie weg. Ohne bestandene Prüfung gibt es kein Signal, und steigen die KOLs gerade aus, auch nicht.</p>
+        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal, dem Memecoin-Sammler und aus den KOL-Käufen von MadeOnSol (Solana). Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen und eine eigene Kerzenprüfung. Dazu kommt die Käuferbreite: wie viele verschiedene Wallets kaufen gegen wie viele verkaufen, mit Bot-Verdacht, wenn wenige Wallets sehr oft kaufen. Smart Money: für Solana über MadeOnSol (wer kauft, wer steigt aus), für alle Chains zusätzlich StalkChain (welche getrackten Trader halten, mit wie viel Geld und Followern, verkaufen sie gerade). Zum Schluss die Vertragsprüfung, RugCheck für Solana und GoPlus für die anderen Chains, inklusive Halter-Fluss: wächst die Zahl der Halter oder laufen sie weg. Ohne bestandene Prüfung gibt es kein Signal, und steigen die KOLs gerade aus, auch nicht.</p>
         ${Object.keys(d.chains).map(zeile).join('')}` });
+}
+
+function stalkKarte(x) {
+    const k = x.stalk;
+    if (!k || !k.halter) return '';
+    const n = v => v == null ? '?' : Number(v).toLocaleString('de-DE');
+    const farbe = (k.verkauf_anteil || 0) >= 0.5 ? 'var(--down)' : 'var(--up)';
+    const z = (l, v) => `<div><div class="eyebrow">${l}</div><div class="num">${v}</div></div>`;
+    return `<div class="card sunk ts-sm" style="--c:${farbe}">
+        <div class="row between"><div class="row" style="gap:8px"><span class="ts-sm-ico">${icon('radar')}</span><b style="font-weight:500">${(k.verkauf_anteil || 0) >= 0.5 ? 'Getrackte Trader verkaufen' : 'Getrackte Trader halten'}</b></div><span class="eyebrow">StalkChain</span></div>
+        <div class="ts-sm-kz">${z('Trader', n(k.halter))}${z('Halten zusammen', '$' + n(k.smart_wert_usd))}${z('Follower', n(k.follower_gesamt))}${z('Im Plus', k.winrate_kaeufer != null ? k.winrate_kaeufer + '%' : '?')}</div>
+        ${(k.namen || []).length ? `<div class="sub" style="font-size:.76rem;margin:10px 0 0">Größte Namen: ${k.namen.map(esc).join(', ')}</div>` : ''}
+    </div>`;
 }
 
 function smartMoney(x) {
     const k = x.kol;
-    if (!k) return '';
+    if (!k) return stalkKarte(x);
     const farbe = k.ausstieg ? 'var(--down)' : k.bestaetigt ? 'var(--up)' : 'var(--ink-3)';
     const titel = k.ausstieg ? 'KOLs steigen aus' : k.bestaetigt ? 'Von Smart Money bestätigt' : 'Kaum KOL-Aktivität';
     const z = (l, v) => `<div><div class="eyebrow">${l}</div><div class="num">${v}</div></div>`;
@@ -77,6 +90,7 @@ function kurzChips(x) {
     return [
         s.urteil ? chip('Vertrag ' + s.urteil, URTEIL[s.urteil]) : '',
         k ? chip(k.ausstieg ? 'KOLs steigen aus' : k.bestaetigt ? 'Smart Money kauft' : 'Kaum KOLs', k.ausstieg ? 'var(--down)' : k.bestaetigt ? 'var(--up)' : '') : '',
+        x.stalk && x.stalk.halter ? chip(x.stalk.halter + ' Trader halten', (x.stalk.verkauf_anteil || 0) >= 0.5 ? 'var(--down)' : 'var(--up)') : '',
         x.kaeufer && x.kaeufer.h6 && (x.kaeufer.h6.buyers + x.kaeufer.h6.sellers) >= 20 ? chip(x.kaeufer.h6.buyers + ' Käufer · ' + x.kaeufer.h6.sellers + ' Verkäufer 6h', x.kaeufer.h6.buyers >= x.kaeufer.h6.sellers ? 'var(--up)' : 'var(--down)') : '',
         x.halter_fluss ? chip('Halter ' + (x.halter_fluss.pct > 0 ? '+' : '') + de(x.halter_fluss.pct, 0) + '% in ' + x.halter_fluss.stunden + 'h', x.halter_fluss.pct >= 0 ? 'var(--up)' : 'var(--down)') : '',
         g ? chip(g + (g === 1 ? ' Grund' : ' Gründe'), 'var(--up)') : '',
@@ -104,7 +118,7 @@ function karte(x) {
         <div class="row wrap ts-kurz">${kurzChips(x)}</div>
         <details class="ts-d ts-mehr"><summary>${icon('list')}<span>Alle Details: Smart Money, Gründe, Warnungen, Vertrag, Score</span>${icon('chevron-down')}</summary>
         <div class="stack" style="gap:14px;margin-top:14px">
-            ${smartMoney(x)}
+            ${smartMoney(x)}${x.kol ? stalkKarte(x) : ''}
             ${(x.gruende || []).length ? `<ul class="ts-l up">${x.gruende.map(g => `<li>${icon('check')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
             ${(x.warnungen || []).length ? `<ul class="ts-l warn">${x.warnungen.map(g => `<li>${icon('triangle-alert')}<span>${esc(g)}</span></li>`).join('')}</ul>` : ''}
             <details class="ts-d"><summary>${icon('shield-check')}<span>Vertragsprüfung: <b style="color:${URTEIL[s.urteil] || 'var(--ink-2)'}">${esc(s.urteil || 'ungeprüft')}</b> · ${esc(s.quelle || '')}</span>${icon('chevron-down')}</summary>
