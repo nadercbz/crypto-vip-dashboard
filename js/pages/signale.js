@@ -1,5 +1,5 @@
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610052250';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610052250';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610060114';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610060114';
 
 let kette = 'alle';
 const daten = () => window.TAGESSIGNALE_DATA || null;
@@ -7,6 +7,8 @@ const de = (v, d = 1) => v == null ? '?' : Number(v).toLocaleString('de-DE', { m
 const ts = s => s ? Date.parse(s) / 1000 : null;
 const alter = h => h == null ? 'unbekannt' : h < 48 ? de(h, 0) + ' Std' : de(h / 24, 0) + ' Tage';
 const STUFE = { stark: ['Starkes Signal', 'var(--up)'], solide: ['Solides Signal', 'var(--a2)'], beobachten: ['Beobachten', 'var(--warn)'] };
+const KETTE = { solana: 'Solana', base: 'Base', bsc: 'BNB Chain', robinhood: 'Robinhood', monad: 'Monad' };
+const KETTE_FARBE = { solana: 'var(--a2)', base: 'var(--a1)', bsc: 'var(--warn)', robinhood: 'var(--up)', monad: 'var(--a4)' };
 const URTEIL = { 'bestanden': 'var(--up)', 'mit Vorbehalt': 'var(--warn)', 'durchgefallen': 'var(--down)', 'ungeprüft': 'var(--ink-3)' };
 
 function trichter(d) {
@@ -17,7 +19,7 @@ function trichter(d) {
             `<div class="ts-fs ${i === st.length - 1 ? 'ziel' : ''}"><div class="num">${v ?? 0}</div><div class="eyebrow">${k}</div></div>${i < st.length - 1 ? `<span class="ts-fp">${icon('chevron-right')}</span>` : ''}`).join('')}</div>`;
     };
     return card({ eyebrow: 'So wurde geprüft', title: 'Vom Kandidaten zum Signal', right: chip('Stand ' + ago(ts(d.stand)), 'var(--up)'),
-        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal, dem Memecoin-Sammler und aus den KOL-Käufen von MadeOnSol (Solana). Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen, zusätzlich Smart Money (wer kauft, wer steigt aus; Solana über MadeOnSol, Base über StalkChain), und zum Schluss eine Vertragsprüfung: RugCheck für Solana, GoPlus für Base. Ohne bestandene Prüfung gibt es kein Signal, und steigen die KOLs gerade aus, auch nicht.</p>
+        body: `<p class="sub" style="margin:0 0 18px">Kandidaten kommen aus DexScreener, GeckoTerminal, dem Memecoin-Sammler und aus den KOL-Käufen von MadeOnSol (Solana). Jeder Coin durchläuft Marktdaten, harte Filter, einen Score aus 8 Bausteinen und eine eigene Kerzenprüfung. Dazu kommt die Käuferbreite: wie viele verschiedene Wallets kaufen gegen wie viele verkaufen, mit Bot-Verdacht, wenn wenige Wallets sehr oft kaufen. Für Solana zählt zusätzlich Smart Money über MadeOnSol (wer kauft, wer steigt aus). Zum Schluss die Vertragsprüfung, RugCheck für Solana und GoPlus für die anderen Chains, inklusive Halter-Fluss: wächst die Zahl der Halter oder laufen sie weg. Ohne bestandene Prüfung gibt es kein Signal, und steigen die KOLs gerade aus, auch nicht.</p>
         ${Object.keys(d.chains).map(zeile).join('')}` });
 }
 
@@ -75,6 +77,8 @@ function kurzChips(x) {
     return [
         s.urteil ? chip('Vertrag ' + s.urteil, URTEIL[s.urteil]) : '',
         k ? chip(k.ausstieg ? 'KOLs steigen aus' : k.bestaetigt ? 'Smart Money kauft' : 'Kaum KOLs', k.ausstieg ? 'var(--down)' : k.bestaetigt ? 'var(--up)' : '') : '',
+        x.kaeufer && x.kaeufer.h6 && (x.kaeufer.h6.buyers + x.kaeufer.h6.sellers) >= 20 ? chip(x.kaeufer.h6.buyers + ' Käufer · ' + x.kaeufer.h6.sellers + ' Verkäufer 6h', x.kaeufer.h6.buyers >= x.kaeufer.h6.sellers ? 'var(--up)' : 'var(--down)') : '',
+        x.halter_fluss ? chip('Halter ' + (x.halter_fluss.pct > 0 ? '+' : '') + de(x.halter_fluss.pct, 0) + '% in ' + x.halter_fluss.stunden + 'h', x.halter_fluss.pct >= 0 ? 'var(--up)' : 'var(--down)') : '',
         g ? chip(g + (g === 1 ? ' Grund' : ' Gründe'), 'var(--up)') : '',
         w ? chip(w + (w === 1 ? ' Warnung' : ' Warnungen'), 'var(--warn)') : '',
     ].join('') + (w ? `<div class="ts-w1">${icon('triangle-alert')}<span>${esc(x.warnungen[0])}</span></div>` : '');
@@ -90,7 +94,7 @@ function karte(x) {
         <div class="row between" style="align-items:flex-start">
             <div class="row" style="min-width:0">${x.img ? `<img class="coin-img" style="width:46px;height:46px" src="${esc(x.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="ico-b" style="width:46px;height:46px">${icon('coins')}</span>`}
                 <div style="min-width:0"><div class="h2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.symbol)}</div><div class="sb dim" style="font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.name)}</div>
-                <div class="row wrap" style="gap:6px;margin-top:8px">${chip(x.chain === 'solana' ? 'Solana' : 'Base', x.chain === 'solana' ? 'var(--a2)' : 'var(--a1)')}${chip(stText, stFarbe)}</div></div></div>
+                <div class="row wrap" style="gap:6px;margin-top:8px">${chip(KETTE[x.chain] || x.chain, KETTE_FARBE[x.chain] || 'var(--ink-2)')}${chip(stText, stFarbe)}</div></div></div>
             ${ring(x.score, 'Score', 92)}
         </div>
         <div class="ts-kz">${kz('Kurs', fUsd(x.preis))}${kz('Marktkap.', fBig(x.mcap))}${kz('Liquidität', fBig(x.liq))}${kz('Volumen 24h', fBig(x.vol24))}${kz('Alter', alter(x.alter_h))}${kz('Käufe 6h', x.kaufanteil6 != null ? de(x.kaufanteil6, 0) + '%' : '?')}</div>
@@ -121,8 +125,13 @@ function karte(x) {
 
 function kolStatus(d) {
     const sk = d.stalk_status;
-    const stalk = sk && sk.schluessel && sk.fehler
-        ? card({ cls: 'flat', body: `<div class="row" style="gap:10px;color:var(--down);font-size:.86rem">${icon('key-round')}<span>Smart Money für Base aus: ${esc(sk.fehler)}</span></div>` }) : '';
+    const n = v => v == null ? '?' : Number(v).toLocaleString('de-DE');
+    const stalk = !sk || !sk.schluessel ? ''
+        : sk.fehler ? card({ cls: 'flat', body: `<div class="row" style="gap:10px;color:var(--down);font-size:.86rem">${icon('key-round')}<span>StalkChain aus: ${esc(sk.fehler)}</span></div>` })
+        : card({ cls: 'flat', body: `<div class="row wrap" style="gap:10px 16px;font-size:.84rem">${icon('wallet')}<b style="font-weight:500">StalkChain</b>
+            <span class="dim">Automatik diesen Monat ${n(sk.monat_verbraucht)} von ${n(sk.monats_budget)} Credits</span>
+            ${sk.credits_rest != null ? `<span class="dim">Guthaben ${n(sk.credits_rest)}, Reserve ${n(sk.reserve)} bleibt für dich</span>` : ''}
+            ${sk.hinweis ? `<span style="color:var(--warn)">${esc(sk.hinweis)}</span>` : ''}</div>` });
     return stalk + kolStatusSol(d);
 }
 
@@ -398,7 +407,7 @@ export default {
         @media (max-width: 860px) { .ts-grid { grid-template-columns: minmax(0, 1fr); } .ts-fk { width: 100%; } .ts-fp { display: none; } }`,
     render(root) {
         const d = daten();
-        const kopf = pageHead('Heute', 'Tages-Signale', 'Tägliche Memecoin-Vorschläge für Solana und Base aus DexScreener. Jeder Coin ist vorher durch 4 Stufen gelaufen: Marktdaten, harte Filter, Score und Vertragsprüfung. Unten im Signal-Tagebuch steht, was jedes Signal gebracht hätte.',
+        const kopf = pageHead('Heute', 'Tages-Signale', 'Tägliche Memecoin-Vorschläge für Solana, Base, BNB Chain, Robinhood und Monad aus DexScreener. Jeder Coin ist vorher durch 4 Stufen gelaufen: Marktdaten, harte Filter, Score und Vertragsprüfung. Unten im Signal-Tagebuch steht, was jedes Signal gebracht hätte.',
             d ? seg('tskette', [['alle', 'Alle'], ...Object.entries(d.chains)], kette) : '');
         root.classList.add('stack');
         if (!d) { root.innerHTML = kopf + card({ body: empty('Noch keine Signale. Sie entstehen beim nächsten Lauf von fetch_tagessignale.py, also beim nächsten Refresh.') }); return; }

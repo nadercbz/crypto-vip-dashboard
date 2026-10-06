@@ -1,5 +1,5 @@
-import { esc, fPct, cls } from './fmt.js?v=202610052250';
-import { D, signal } from './data.js?v=202610052250';
+import { esc, fPct, cls } from './fmt.js?v=202610060114';
+import { D, signal } from './data.js?v=202610060114';
 
 export const icon = (name, extra = '') => `<i data-lucide="${name}" ${extra}></i>`;
 export function icons(root = document) { if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.7 }, nameAttr: 'data-lucide', root }); }

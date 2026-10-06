@@ -1,6 +1,6 @@
-import { D, coin, watch, store } from '../core/data.js?v=202610052250';
-import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610052250';
-import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js?v=202610052250';
+import { D, coin, watch, store } from '../core/data.js?v=202610060114';
+import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610060114';
+import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js?v=202610060114';
 
 
 function ampel() {
@@ -259,7 +259,7 @@ const W = [
     { id: 'sektoren',  titel: 'Sektoren',          icon: 'pie-chart',      info: 'Welche Narrative in 7 Tagen laufen.',         groessen: ['M', 'L'], std: 'M', html: sektoren },
     { id: 'watchlist', titel: 'Watchlist',         icon: 'star',           info: 'Deine markierten Coins, live.',               groessen: ['M', 'L'], std: 'M', html: meineListe, live: true },
     { id: 'leitwerte', titel: 'Leitwährungen',     icon: 'activity',       info: 'BTC, ETH, SOL, BNB und XRP live.',            groessen: ['M', 'L'], std: 'M', html: leitwerte, live: true },
-    { id: 'tagessig',  titel: 'Tages-Signale',     icon: 'crosshair',      info: 'Geprüfte Memecoins auf Solana und Base.',     groessen: ['M', 'L'], std: 'M', html: tagessignale },
+    { id: 'tagessig',  titel: 'Tages-Signale',     icon: 'crosshair',      info: 'Geprüfte Memecoins auf Solana, Base, BNB, Robinhood und Monad.',     groessen: ['M', 'L'], std: 'M', html: tagessignale },
     { id: 'bilanz',    titel: 'Signal-Bilanz',     icon: 'trophy',         info: 'Was die Tages-Signale wirklich gebracht hätten.', groessen: ['M', 'L'], std: 'M', html: bilanz },
     { id: 'optionen',  titel: 'Optionen',          icon: 'scale',          info: 'Put/Call, Max Pain und Vola für BTC und ETH.', groessen: ['M', 'L'], std: 'M', html: optionen },
     { id: 'etf',       titel: 'ETF-Zuflüsse',      icon: 'landmark',       info: 'Nettozuflüsse der Spot-ETFs.',                groessen: ['M', 'L'], std: 'M', html: etf },

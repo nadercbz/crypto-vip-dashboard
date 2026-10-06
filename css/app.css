@@ -300,6 +300,8 @@ img { max-width: 100%; }
     .palette { top: calc(10px + env(safe-area-inset-top)); }
     .page-head { margin: 4px 2px 16px; } .h1 { font-size: 1.7rem; }
     .seg { max-width: 100%; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; } .seg::-webkit-scrollbar { display: none; }
+    /* Schalter im Seitenkopf (z. B. Chain-Auswahl) scrollen statt über den Rand zu wachsen */
+    .page-head > .row { max-width: 100%; min-width: 0; } .page-head > .row > * { max-width: 100%; }
     .seg button { white-space: nowrap; flex: none; }
     input, select, textarea { font-size: 16px !important; } /* iOS zoomt sonst beim Antippen */
     /* Kartenköpfe mit Schaltern umbrechen statt über die Karte hinauszuwachsen */
