@@ -1,5 +1,5 @@
-import { esc } from '../core/fmt.js?v=202610071831';
-import { card, pageHead, chip, seg, empty, icon, hydrate } from '../core/ui.js?v=202610071831';
+import { esc } from '../core/fmt.js?v=202610071933';
+import { card, pageHead, chip, seg, empty, icon, hydrate } from '../core/ui.js?v=202610071933';
 
 let horizont = '7';
 let verlaufB = 'momentum';

@@ -1,10 +1,10 @@
-import { NAV, ALL, READY } from './nav.js?v=202610071831';
-import { D, coin, watch } from './core/data.js?v=202610071831';
-import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js?v=202610071831';
-import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js?v=202610071831';
-import * as glocke from './core/meldungen.js?v=202610071831';
-import { openCoin, closeCoin } from './core/coin.js?v=202610071831';
-import { kbInit } from './core/kaufbalken.js?v=202610071831';
+import { NAV, ALL, READY } from './nav.js?v=202610071933';
+import { D, coin, watch } from './core/data.js?v=202610071933';
+import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js?v=202610071933';
+import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js?v=202610071933';
+import * as glocke from './core/meldungen.js?v=202610071933';
+import { openCoin, closeCoin } from './core/coin.js?v=202610071933';
+import { kbInit } from './core/kaufbalken.js?v=202610071933';
 
 const $ = id => document.getElementById(id);
 const main = $('main');
@@ -41,7 +41,7 @@ async function go(id) {
     const paint = async () => {
         if (READY.has(active)) {
             try {
-                const mod = (await import(`./pages/${active}.js?v=202610071831`)).default;
+                const mod = (await import(`./pages/${active}.js?v=202610071933`)).default;
                 if (mod.styles && !styled.has(active)) { const s = document.createElement('style'); s.textContent = mod.styles; document.head.appendChild(s); styled.add(active); }
                 activeMod = mod;
                 await mod.render(root, { go, openCoin, rerender: () => go(active) });

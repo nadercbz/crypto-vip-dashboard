@@ -1,8 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610071831';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610071831';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610071831';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610071831';
-import { berechneTA, mystik } from './auto_ta.js?v=202610071831';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610071933';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610071933';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610071933';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610071933';
+import { berechneTA, mystik } from './auto_ta.js?v=202610071933';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -422,11 +422,11 @@ async function webseiteLaden(c, S) {
 }
 
 const zoneCache = new Map();
-try { Object.entries(JSON.parse(localStorage.getItem('c2_kb_cache') || '{}')).forEach(([k, v]) => zoneCache.set(k, v)); } catch (e) {}
+try { Object.entries(JSON.parse(localStorage.getItem('c2_kb_cache2') || '{}')).forEach(([k, v]) => zoneCache.set(k, v)); } catch (e) {}
 let kbSpeichern = null;
 const kbMerken = () => { clearTimeout(kbSpeichern); kbSpeichern = setTimeout(() => {
     const o = {}, alt = Date.now() - 30 * 60 * 1000; zoneCache.forEach((v, k) => { if (v.t > alt) o[k] = v; });
-    try { localStorage.setItem('c2_kb_cache', JSON.stringify(o)); } catch (e) {}
+    try { localStorage.setItem('c2_kb_cache2', JSON.stringify(o)); } catch (e) {}
 }, 1500); };
 export async function aufbereich(c) {
     if (!c || !c.binance) return null;

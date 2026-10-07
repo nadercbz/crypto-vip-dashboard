@@ -79,11 +79,11 @@ function trendlinie(bars, idx, art, tol) {
     };
 }
 
-function cluster(bars, punkte, band) {
+function cluster(bars, punkte, band, maxSpan = Infinity) {
     const sortiert = punkte.slice().sort((a, b) => a.p - b.p), out = [];
     sortiert.forEach(pt => {
         const g = out[out.length - 1];
-        if (g && pt.p - g.bis <= band) { g.bis = Math.max(g.bis, pt.p); g.pts.push(pt); }
+        if (g && pt.p - g.bis <= band && pt.p - g.von <= maxSpan) { g.bis = Math.max(g.bis, pt.p); g.pts.push(pt); }
         else out.push({ von: pt.p, bis: pt.p, pts: [pt] });
     });
     return out;
@@ -122,7 +122,7 @@ export function berechneTA({ bars, lang, vol, athDb, fng }) {
 
     const punkte = [...pv.hoch.map(i => ({ p: h(bars[i]), i })), ...pv.tief.map(i => ({ p: l(bars[i]), i }))];
     const volMed = vol && vol.length ? vol.slice().sort((a, b) => a - b)[Math.floor(vol.length / 2)] : null;
-    const zonen = cluster(bars, punkte, A * 0.9).map(z => {
+    const zonen = cluster(bars, punkte, A * 0.9, Math.max(A * 2.2, jetzt * 0.05)).map(z => {
         let von = z.von, bis = z.bis;
         if (bis - von < A * 0.5) { const m = (von + bis) / 2; von = m - A * 0.25; bis = m + A * 0.25; }
         const gruende = [];
@@ -134,7 +134,7 @@ export function berechneTA({ bars, lang, vol, athDb, fng }) {
         const unten = bis < jetzt;
         if (htf && ((unten && htf === 'auf') || (!unten && htf === 'ab'))) gruende.push('Weekly-Trend');
         const start = Math.min(...z.pts.map(pt => pt.i));
-        return { von, bis, mitte: (von + bis) / 2, score: gruende.length, gruende, n: z.pts.length, start: bars[start].time, letzte: Math.max(...z.pts.map(pt => pt.i)) };
+        return { von, bis, mitte: (von + bis) / 2, stark: gruende.length >= 2 && z.pts.length >= 2, score: gruende.length, gruende, n: z.pts.length, start: bars[start].time, letzte: Math.max(...z.pts.map(pt => pt.i)) };
     }).filter(z => z.n >= 2 || z.score >= 2);
 
     const wertung = z => z.score * 2 + z.n + (z.letzte / n) * 2;
@@ -157,10 +157,13 @@ export function berechneTA({ bars, lang, vol, athDb, fng }) {
         z.einstieg = z.rr != null && z.rr >= 2;
     });
 
-    const imZone = zonen.filter(z => jetzt >= z.von - A * 0.15 && jetzt <= z.bis + A * 0.15).sort((a, b) => wertung(b) - wertung(a))[0] || null;
-    const naechste = kauf[0] || null;
-    const zone = imZone ? { im: true, von: imZone.von, bis: imZone.bis, abstandPct: 0, gruende: imZone.gruende }
-        : naechste ? { im: false, von: naechste.von, bis: naechste.bis, abstandPct: (jetzt - naechste.bis) / jetzt * 100, gruende: naechste.gruende } : null;
+    const starke = zonen.filter(z => z.stark);
+    const imZone = starke.filter(z => jetzt >= z.von - A * 0.15 && jetzt <= z.bis + A * 0.15).sort((a, b) => wertung(b) - wertung(a))[0] || null;
+    const unter = starke.filter(z => z.bis < jetzt - A * 0.15).sort((a, b) => b.bis - a.bis)[0] || null;
+    const naechste = unter || kauf[0] || null;
+    const zone = imZone ? { im: true, von: imZone.von, bis: imZone.bis, abstandPct: 0, gruende: imZone.gruende, score: imZone.score,
+            tiefe: imZone.bis > imZone.von ? Math.min(1, Math.max(0, (jetzt - imZone.von) / (imZone.bis - imZone.von))) : 0 }
+        : naechste ? { im: false, von: naechste.von, bis: naechste.bis, abstandPct: (jetzt - naechste.bis) / jetzt * 100, gruende: naechste.gruende, score: naechste.score } : null;
 
     const r = rsi(closes);
     const heiss = r != null && r > 70 && (fng == null || fng > 75);

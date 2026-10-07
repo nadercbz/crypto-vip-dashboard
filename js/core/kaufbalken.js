@@ -1,6 +1,6 @@
-import { coin } from './data.js?v=202610071831';
-import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610071831';
-import { aufbereich } from './coin.js?v=202610071831';
+import { coin } from './data.js?v=202610071933';
+import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610071933';
+import { aufbereich } from './coin.js?v=202610071933';
 
 const ZB = 36;   // Breite der Zone auf der Leiste in Prozent
 export function zoneHtml(z) {
@@ -9,7 +9,7 @@ export function zoneHtml(z) {
     if (z.im) {
         z.tiefe = z.bis > z.von ? Math.min(1, Math.max(0, (z.kurs - z.von) / (z.bis - z.von))) : 0;
         pos = Math.min(ZB - 2.5, Math.max(2.5, z.tiefe * ZB));
-        lage = z.tiefe <= 0.5 ? 'best' : 'zone';
+        lage = (z.tiefe <= 1 / 3 && (z.score || 0) >= 3) ? 'best' : 'zone';
     } else {
         pos = ZB + 3 + Math.min(1, z.abstandPct / 40) * (100 - ZB - 6);
         lage = 'warten';
@@ -19,19 +19,19 @@ export function zoneHtml(z) {
         zone: `<span class="wl-st zone"><i></i>Im Kaufbereich</span>`,
         warten: `<span class="wl-st warten"><i></i>Abwarten, ${fPct((z.bis / z.kurs - 1) * 100)} bis Kaufbereich</span>`,
     }[lage];
-    const tipKurs = `Aktueller Kurs ${fUsd(z.kurs)}\n` + (lage === 'best' ? 'Er steht im besten Kaufbereich.' : lage === 'zone' ? 'Er steht im Kaufbereich, aber in der oberen Hälfte.' : `Er muss noch ${fPct((z.bis / z.kurs - 1) * 100)} fallen, bis der Kaufbereich erreicht ist.`);
+    const tipKurs = `Aktueller Kurs ${fUsd(z.kurs)}\n` + (lage === 'best' ? 'Er steht im besten Kaufbereich.' : lage === 'zone' ? 'Er steht im Kaufbereich, aber in der oberen Zone oder die Zone ist weniger stark.' : `Er muss noch ${fPct((z.bis / z.kurs - 1) * 100)} fallen, bis der Kaufbereich erreicht ist.`);
     const info = `<span class="wl-iw"><button type="button" class="wl-i" aria-label="So liest du die Leiste">i</button><span class="wl-tip" role="tooltip">
         <b>So liest du die Leiste</b>
-        <span><i class="k g1"></i><u>Dunkelgrün, Bester Kaufbereich:</u> untere Hälfte der Kaufzone. Hier ist das Verhältnis von Chance zu Risiko am besten.</span>
-        <span><i class="k g2"></i><u>Hellgrün, Kaufbereich:</u> obere Hälfte der Zone. Einstieg möglich, aber etwas teurer.</span>
+        <span><i class="k g1"></i><u>Dunkelgrün, Bester Kaufbereich:</u> unteres Drittel einer starken Zone mit mindestens 3 Gründen (Wendepunkte, Fibonacci, EMA 200, Volumen). Hier ist Chance zu Risiko am besten.</span>
+        <span><i class="k g2"></i><u>Hellgrün, Kaufbereich:</u> restliche Zone. Einstieg möglich, aber etwas teurer oder die Zone ist weniger stark.</span>
         <span><i class="k y"></i><u>Gelb gestrichelt, Abwarten:</u> so weit muss der Kurs noch fallen. Je länger, desto weiter weg.</span>
         <span><i class="k p"></i><u>Der Punkt</u> ist der aktuelle Kurs. Je weiter links, desto besser für den Einstieg.</span>
         <span class="n">Die Zone kommt aus der Auto-TA: Wendepunkte im Chart, Fibonacci, EMA 200, Volumen. Regelbasiert, keine Anlageberatung.</span></span></span>`;
     const weg = lage === 'warten' ? `<i class="wl-weg" tabindex="0" style="left:${ZB}%;width:${(pos - ZB).toFixed(1)}%" data-tip="Abwarten&#10;Der Kurs liegt noch ${fNum(z.abstandPct, 1)} % über dem Kaufbereich. Diese Strecke muss er noch fallen."></i>` : '';
     return `<div class="wl-zk">${status}${info}</div>
         <div class="wl-leiste wl-l-${lage}" style="--zb:${ZB}%">
-            <i class="wl-g1" tabindex="0" data-tip="Bester Kaufbereich&#10;${fUsd(z.von)} bis ${fUsd(mitte)}, untere Hälfte der Zone. Vom Kurs aus ${p(mitte)} bis ${p(z.von)}. Hier ist Chance zu Risiko am besten."></i>
-            <i class="wl-g2" tabindex="0" data-tip="Kaufbereich&#10;${fUsd(mitte)} bis ${fUsd(z.bis)}, obere Hälfte der Zone. Einstieg möglich, aber etwas teurer."></i>
+            <i class="wl-g1" tabindex="0" data-tip="Bester Kaufbereich&#10;${fUsd(z.von)} bis ${fUsd(z.von + (z.bis - z.von) / 3)}, unteres Drittel der Zone. Vom Kurs aus ${p(z.von + (z.bis - z.von) / 3)} bis ${p(z.von)}. Hier ist Chance zu Risiko am besten."></i>
+            <i class="wl-g2" tabindex="0" data-tip="Kaufbereich&#10;${fUsd(mitte)} bis ${fUsd(z.bis)}, restliche Zone. Einstieg möglich, aber etwas teurer oder die Zone ist weniger stark."></i>
             <i class="wl-rest" tabindex="0" data-tip="Abwarten&#10;Über ${fUsd(z.bis)} ist der Coin für einen Einstieg zu teuer."></i>
             ${weg}
             <b class="wl-m${pos < 30 ? ' tl' : pos > 70 ? ' tr' : ''}" tabindex="0" style="left:${pos.toFixed(1)}%" data-tip="${esc(tipKurs)}"><span>Jetzt</span></b>
@@ -47,13 +47,13 @@ export function kompakt(z) {
     let pos, lage, txt;
     if (z.im) {
         const t = z.bis > z.von ? Math.min(1, Math.max(0, (z.kurs - z.von) / (z.bis - z.von))) : 0;
-        pos = Math.min(ZB - 3, Math.max(3, t * ZB)); lage = t <= 0.5 ? 'best' : 'zone';
+        pos = Math.min(ZB - 3, Math.max(3, t * ZB)); lage = (t <= 1 / 3 && (z.score || 0) >= 3) ? 'best' : 'zone';
         txt = lage === 'best' ? 'Bester Kaufbereich' : 'Im Kaufbereich';
     } else {
         pos = ZB + 3 + Math.min(1, z.abstandPct / 40) * (100 - ZB - 6); lage = 'warten';
         txt = 'Abwarten ' + fPct((z.bis / z.kurs - 1) * 100);
     }
-    const tip = `${txt}. Kaufzone ${fUsd(z.von)} bis ${fUsd(z.bis)}, bester Bereich bis ${fUsd(mitte)}. Kurs ${fUsd(z.kurs)}. Je weiter links der Punkt, desto besser der Einstieg. Regelbasiert, keine Anlageberatung.`;
+    const tip = `${txt}. Kaufzone ${fUsd(z.von)} bis ${fUsd(z.bis)}, bester Bereich bis ${fUsd(z.von + (z.bis - z.von) / 3)}. Kurs ${fUsd(z.kurs)}. Je weiter links der Punkt, desto besser der Einstieg. Regelbasiert, keine Anlageberatung.`;
     return `<div class="kbk wl-l-${lage}" title="${esc(tip)}" style="--zb:${ZB}%"><div class="kbk-bar"><i class="kg1"></i><i class="kg2"></i>${lage === 'warten' ? `<i class="kw" style="left:${ZB}%;width:${(pos - ZB).toFixed(1)}%"></i>` : ''}<b style="left:${pos.toFixed(1)}%"></b></div><span class="kbk-t ${lage}">${esc(txt)}</span></div>`;
 }
 
@@ -78,8 +78,8 @@ const STIL = `
         .wl-tip .k.y { background: repeating-linear-gradient(90deg, var(--warn) 0 4px, transparent 4px 8px); }
         .wl-leiste { position: relative; height: 14px; margin: 18px 0 2px; border-radius: 99px; background: var(--bg); box-shadow: var(--sh-in); }
         .wl-leiste > i { position: absolute; top: 0; bottom: 0; cursor: help; outline: 0; transition: filter .2s, transform .25s var(--ease-spring); }
-        .wl-g1 { left: 0; width: calc(var(--zb) / 2); border-radius: 99px 0 0 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--up) 95%, #000), var(--up)); transform-origin: left; animation: wlWachsen .7s var(--ease) both; }
-        .wl-g2 { left: calc(var(--zb) / 2); width: calc(var(--zb) / 2); border-radius: 0 99px 99px 0; background: linear-gradient(90deg, color-mix(in srgb, var(--up) 60%, transparent), color-mix(in srgb, var(--up) 28%, transparent)); transform-origin: left; animation: wlWachsen .7s .15s var(--ease) both; }
+        .wl-g1 { left: 0; width: calc(var(--zb) / 3); border-radius: 99px 0 0 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--up) 95%, #000), var(--up)); transform-origin: left; animation: wlWachsen .7s var(--ease) both; }
+        .wl-g2 { left: calc(var(--zb) / 3); width: calc(var(--zb) * 2 / 3); border-radius: 0 99px 99px 0; background: linear-gradient(90deg, color-mix(in srgb, var(--up) 60%, transparent), color-mix(in srgb, var(--up) 28%, transparent)); transform-origin: left; animation: wlWachsen .7s .15s var(--ease) both; }
         .wl-g1::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); background-size: 220% 100%; animation: wlGlanz 3.2s 1s ease-in-out infinite; }
         .wl-rest { left: var(--zb); right: 0; border-radius: 0 99px 99px 0; }
         .wl-weg { top: 4px !important; bottom: 4px !important; background: repeating-linear-gradient(90deg, var(--warn) 0 5px, transparent 5px 10px); opacity: .85; animation: wlLaufen 1s linear infinite, wlBlende .6s .5s both; }
@@ -111,8 +111,8 @@ const STIL = `
         .kbk { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 168px; margin-top: 5px; cursor: help; }
         .kbk-bar { position: relative; height: 7px; border-radius: 99px; background: var(--bg); box-shadow: var(--sh-in); }
         .kbk-bar i { position: absolute; top: 0; bottom: 0; }
-        .kbk-bar .kg1 { left: 0; width: calc(var(--zb) / 2); border-radius: 99px 0 0 99px; background: var(--up); transform-origin: left; animation: wlWachsen .6s var(--ease) both; }
-        .kbk-bar .kg2 { left: calc(var(--zb) / 2); width: calc(var(--zb) / 2); border-radius: 0 99px 99px 0; background: color-mix(in srgb, var(--up) 35%, transparent); transform-origin: left; animation: wlWachsen .6s .1s var(--ease) both; }
+        .kbk-bar .kg1 { left: 0; width: calc(var(--zb) / 3); border-radius: 99px 0 0 99px; background: var(--up); transform-origin: left; animation: wlWachsen .6s var(--ease) both; }
+        .kbk-bar .kg2 { left: calc(var(--zb) / 3); width: calc(var(--zb) * 2 / 3); border-radius: 0 99px 99px 0; background: color-mix(in srgb, var(--up) 35%, transparent); transform-origin: left; animation: wlWachsen .6s .1s var(--ease) both; }
         .kbk-bar .kw { top: 2px; bottom: 2px; background: repeating-linear-gradient(90deg, var(--warn) 0 4px, transparent 4px 8px); animation: wlLaufen 1s linear infinite; }
         .kbk-bar b { position: absolute; top: 50%; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--surface), 0 2px 6px rgba(0,0,0,.3); animation: wlRein .9s .15s var(--ease) both; }
         .kbk-t { font-family: var(--mono); font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
@@ -148,7 +148,7 @@ function zFuer(sym) {
 }
 export function rang(z) {
     if (!z || z.keine) return null;
-    if (z.im) { const t = z.bis > z.von ? (z.kurs - z.von) / (z.bis - z.von) : 0; return -100 + Math.min(1, Math.max(0, t)) * 50; }
+    if (z.im) { const t = z.bis > z.von ? Math.min(1, Math.max(0, (z.kurs - z.von) / (z.bis - z.von))) : 0; return ((t <= 1 / 3 && (z.score || 0) >= 3) ? -100 : -50) + t * 40; }
     return z.abstandPct;
 }
 const raenge = new Map();
