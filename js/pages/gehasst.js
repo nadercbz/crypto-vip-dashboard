@@ -1,5 +1,5 @@
-import { esc, fUsd, fBig, fPct, ago, utcTs } from '../core/fmt.js?v=202610061219';
-import { card, pageHead, chip, seg, icon, empty, bar, coinImg, hydrate } from '../core/ui.js?v=202610061219';
+import { esc, fUsd, fBig, fPct, ago, utcTs } from '../core/fmt.js?v=202610070601';
+import { card, pageHead, chip, seg, icon, empty, bar, coinImg, hydrate } from '../core/ui.js?v=202610070601';
 
 const H = () => window.HASS_DATA || null;
 const de = (v, d = 0) => v == null ? '?' : Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });

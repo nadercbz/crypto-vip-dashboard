@@ -1,6 +1,6 @@
-import { D, coin, watch, store } from '../core/data.js?v=202610061219';
-import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610061219';
-import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610061219';
+import { D, coin, watch, store } from '../core/data.js?v=202610070601';
+import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610070601';
+import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610070601';
 
 const NOTE = 'c2_watch_notes';
 let onLive = null;
