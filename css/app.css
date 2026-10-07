@@ -211,6 +211,11 @@ img { max-width: 100%; }
 .bar i { display: block; height: 100%; border-radius: 6px; background: var(--c, var(--grad)); width: 0; transition: width 1s var(--ease); }
 .score { display: inline-grid; place-items: center; min-width: 36px; height: 24px; padding: 0 8px; border-radius: 9px; font-family: var(--mono); font-size: .74rem; font-weight: 600; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); }
 .spark { display: block; overflow: visible; }
+.tbl.kompakt th, .tbl.kompakt td { padding-left: 8px; padding-right: 8px; }
+.vk { display: block; overflow: visible; }
+.vk .l { fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.vk .a { stroke: none; opacity: .13; }
+.vk .b { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 2 3; opacity: .6; }
 .spark path { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Ring-Anzeige mit Verlaufs-Glow */
@@ -226,7 +231,7 @@ img { max-width: 100%; }
 .tbl-wrap { overflow-x: auto; margin: 0 -8px; }
 .tbl { width: 100%; border-collapse: collapse; font-size: .86rem; }
 .tbl th { font-family: var(--mono); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; text-align: left; padding: 10px 12px; white-space: nowrap; cursor: default; position: sticky; top: 0; background: var(--surface); }
-.tbl th[data-sort] { cursor: pointer; } .tbl th[data-sort]:hover { color: var(--ink); }
+.tbl th[data-sort] { cursor: pointer; user-select: none; } .tbl th[data-sort]:hover { color: var(--ink); }
 .tbl td { padding: 11px 12px; border-top: 1px solid var(--line); white-space: nowrap; }
 .tbl tr[data-coin] { cursor: pointer; transition: background .15s; }
 .tbl tr[data-coin]:hover td { background: color-mix(in srgb, var(--ink) 3.5%, transparent); }

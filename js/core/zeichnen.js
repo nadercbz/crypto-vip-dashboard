@@ -1,18 +1,19 @@
-import { store } from './data.js?v=202610070601';
-import { fUsd } from './fmt.js?v=202610070601';
+import { store } from './data.js?v=202610071831';
+import { fUsd } from './fmt.js?v=202610071831';
 
 const KEY = 'cb2_zeichnungen_v1';
 const FIB = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 const FARBE = { trend: '--a2', strahl: '--a2', hlinie: '--warn', rechteck: '--a1', fib: '--a4' };
 export const WERKZEUGE = [
     ['zeiger', 'mouse-pointer-2', 'Auswählen und verschieben (V)'],
+    ['hand', 'hand', 'Hand: den Chart greifen und frei verschieben, auch nach oben und unten (G)'],
     ['trend', 'trending-up', 'Trendlinie (T)'],
     ['strahl', 'move-up-right', 'Strahl, läuft nach rechts weiter (R)'],
     ['hlinie', 'minus', 'Preislevel, mit der Maus verschiebbar (H)'],
     ['rechteck', 'square', 'Zone (Z)'],
     ['fib', 'percent', 'Fibonacci-Retracement (F)'],
 ];
-const TASTE = { v: 'zeiger', t: 'trend', r: 'strahl', h: 'hlinie', z: 'rechteck', f: 'fib' };
+const TASTE = { v: 'zeiger', g: 'hand', t: 'trend', r: 'strahl', h: 'hlinie', z: 'rechteck', f: 'fib' };
 const STAND = 'cb2_zeichnungen_stand';       // je Coin der Zeitpunkt der letzten Änderung
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const alle = () => store.get(KEY, {}) || {};
@@ -131,6 +132,102 @@ export function zeichner({ chart, series, box, bars, sym, magnet = true, onTool 
         }
         return '';
     }
+    let auto = null, myst = [], autoAn = true, mystAn = true;
+    const X = t => { const l = zuLogisch(t); return l == null ? null : ts.logicalToCoordinate(l); };
+    const Y = p => series.priceToCoordinate(p);
+    const dollar = p => fUsd(p);
+    function autoForm(w, h) {
+        if (!auto || !autoAn) return '';
+        const ta = auto, gross = w >= 640;
+        const cu = css('--up'), cd = css('--down'), cw = css('--warn'), c2 = css('--a2'), c3 = css('--a3'), ci = css('--ink-3');
+        const xl = X(ta.letzteZeit);
+        let o = '';
+        if (ta.fib) {
+            const L = f => ta.fib.levels.find(x => x.f === f && !x.ext);
+            const y5 = L(0.5) && Y(L(0.5).p), y6 = L(0.618) && Y(L(0.618).p);
+            if (y5 != null && y6 != null) o += `<rect x="0" y="${Math.min(y5, y6)}" width="${w}" height="${Math.abs(y6 - y5)}" fill="${cw}" fill-opacity=".08"/>`;
+            ta.fib.levels.forEach(lv => {
+                const y = Y(lv.p);
+                if (y == null || y < -6 || y > h + 6) return;
+                const rand = !lv.ext && (lv.f === 0 || lv.f === 1), gold = lv.f === 0.5 || lv.f === 0.618;
+                const c = rand ? ci : gold ? cw : lv.ext ? c3 : c2;
+                o += `<line x1="0" x2="${w}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="${rand || gold ? 1.2 : 1}" stroke-opacity="${rand ? .8 : gold ? .85 : .45}"${rand ? '' : ' stroke-dasharray="2 4"'}/>`;
+                if (gross) {
+                    const f = de(lv.f, 3).replace(/0+$/, '').replace(/,$/, '');
+                    const t = lv.ext ? `Fib Ext ${f} · ${dollar(lv.p)}` : lv.f === 0 ? `Allzeithoch · ${dollar(lv.p)}` : lv.f === 1 ? `Allzeittief · ${dollar(lv.p)}` : `Fib ${f} · ${dollar(lv.p)}`;
+                    o += `<text class="zc-t" x="${w - 6}" y="${y - 4}" text-anchor="end" fill="${c}">${t}</text>`;
+                }
+            });
+        }
+        const zone = (z, farbe, titel) => {
+            const ya = Y(z.bis), yb = Y(z.von);
+            if (ya == null || yb == null || Math.max(ya, yb) < 0 || Math.min(ya, yb) > h) return '';
+            const x0 = Math.max(0, z.ext ? 0 : (X(z.start) ?? 0));
+            let s = `<rect x="${x0}" y="${Math.min(ya, yb)}" width="${Math.max(0, w - x0)}" height="${Math.max(3, Math.abs(yb - ya))}" fill="${farbe}" fill-opacity=".11" stroke="${farbe}" stroke-opacity=".6"${z.einstieg === false ? ' stroke-dasharray="5 4"' : ''} rx="2"/>`;
+            if (gross) s += `<text class="zc-t" x="${Math.max(6, Math.min(x0 + 6, w - 12 - titel.length * 6.1))}" y="${Math.min(ya, yb) + 13}" fill="${farbe}">${titel}</text>`;
+            return s;
+        };
+        ta.kauf.forEach(z => {
+            const rr = z.rr != null ? 'R:R 1:' + (z.rr > 10 ? '10+' : de(z.rr, 1)) : '';
+            const titel = z.einstieg ? `EINSTIEG ${dollar(z.von)} bis ${dollar(z.bis)} · Stopp ${dollar(z.stopp)} · ${rr} · ${z.gruende.join(' + ') || 'Struktur'}`
+                : `BEOBACHTEN ${dollar(z.von)} bis ${dollar(z.bis)} · ${rr ? rr + ' zu klein' : 'kein Ziel'}${z.gruende.length ? ' · ' + z.gruende.join(' + ') : ''}`;
+            o += zone(z, cu, titel);
+        });
+        ta.verkauf.forEach(z => { o += zone(z, cd, `VERKAUF, Gewinne mitnehmen ${dollar(z.von)} bis ${dollar(z.bis)} · ${z.gruende.join(' + ') || 'Struktur'}`); });
+        ta.linien.forEach(L => {
+            const a = xy(L.p1), b = xy(L.p2);
+            if (!a || !b || Math.abs(b.x - a.x) < 1) return;
+            const m = (b.y - a.y) / (b.x - a.x), c = L.art === 'widerstand' ? cd : cu, y2 = a.y + m * (w - a.x);
+            o += `<line x1="${a.x}" y1="${a.y}" x2="${w}" y2="${y2}" stroke="${c}" stroke-width="1.5" stroke-dasharray="7 4" stroke-opacity=".9"/>`
+                + `<circle cx="${a.x}" cy="${a.y}" r="3" fill="${c}"/><circle cx="${b.x}" cy="${b.y}" r="3" fill="${c}"/>`;
+            if (gross && xl != null) o += `<text class="zc-t" x="${xl - 8}" y="${a.y + m * (xl - a.x) + (L.art === 'widerstand' ? -6 : 14)}" text-anchor="end" fill="${c}">${L.name} · ${L.beruehrungen} Berührungen</text>`;
+        });
+        const P = ta.prognose, pk = P.pfad.map(q => ({ x: X(q.t), m: Y(q.mitte), o: Y(q.oben), u: Y(q.unten) }));
+        if (xl != null && pk.every(q => q.x != null && q.m != null && q.o != null && q.u != null)) {
+            const oben = pk.map(q => `${q.x},${q.o}`).join(' L'), unten = pk.slice().reverse().map(q => `${q.x},${q.u}`).join(' L');
+            o += `<line x1="${xl}" x2="${xl}" y1="0" y2="${h}" stroke="${ci}" stroke-opacity=".5" stroke-dasharray="3 4"/>`;
+            o += `<path d="M${oben} L${unten} Z" fill="${c2}" fill-opacity=".13" stroke="${c2}" stroke-opacity=".5" stroke-width="1"/>`;
+            o += `<path d="M${pk.map(q => `${q.x},${q.m}`).join(' L')}" fill="none" stroke="${c2}" stroke-width="1.8" stroke-dasharray="6 4"/>`;
+            if (gross) {
+                const x0 = w - 8;
+                o += `<text class="zc-t zc-tf" x="${x0}" y="18" text-anchor="end" fill="${c2}">PROGNOSE · nächste ${P.H} Kerzen</text>`
+                    + `<text class="zc-t" x="${x0}" y="32" text-anchor="end" fill="${c2}">Basis ${dollar(P.basis)} · Spanne ${dollar(P.unten)} bis ${dollar(P.oben)}</text>`
+                    + (P.bull || P.baer ? `<text class="zc-t" x="${x0}" y="46" text-anchor="end" fill="${c2}">${P.bull ? 'Bullisch bis ' + dollar(P.bull) : ''}${P.bull && P.baer ? ' · ' : ''}${P.baer ? 'Bärisch unter ' + dollar(P.baer) : ''}</text>` : '');
+            }
+        }
+        if (mystAn) myst.forEach(m => {
+            const x = X(m.t);
+            if (x == null || x < 0 || x > w) return;
+            const c = m.art === 'mond' ? ci : m.art === 'fibzeit' ? c2 : c3;
+            o += `<line x1="${x}" x2="${x}" y1="0" y2="${h}" stroke="${c}" stroke-opacity=".5" stroke-dasharray="1 5" stroke-width="1.2"/>`;
+            if (gross) o += `<text class="zc-t" transform="translate(${x - 4},${h - 8}) rotate(-90)" fill="${c}">${m.art === 'mond' ? (m.text === 'Vollmond' ? '○ ' : '● ') : '✦ '}${m.text}</text>`;
+        });
+        if (gross) {
+            const htf = ta.htf === 'auf' ? 'aufwärts' : ta.htf === 'ab' ? 'abwärts' : 'offen';
+            o += `<text class="zc-t zc-tf" x="10" y="16" fill="${ci}">AUTO-TA · Weekly ${htf} · Struktur ${ta.struktur}${ta.rsi != null ? ' · RSI ' + de(ta.rsi, 0) : ''}</text>`;
+            let y = 30;
+            if (ta.heiss) { o += `<text class="zc-t zc-tf" x="10" y="${y}" fill="${cd}">ÜBERHITZT: RSI über 70 und Angst und Gier über 75. Nicht jagen.</text>`; y += 14; }
+            o += `<text class="zc-t" x="10" y="${y}" fill="${ci}" fill-opacity=".8">Regelbasiert nach Playbook, keine Anlageberatung</text>`;
+        }
+        return o;
+    }
+    function autoskala() {
+        series.applyOptions({ autoscaleInfoProvider: orig => {
+            const r = orig();
+            if (!auto || !autoAn || !r || !r.priceRange) return r;
+            let lo = r.priceRange.minValue, hi = r.priceRange.maxValue;
+            const P = auto.prognose, j = auto.jetzt;
+            hi = Math.max(hi, P.oben); lo = Math.min(lo, P.unten);
+            auto.kauf.forEach(z => { if (z.mitte > j * 0.6) lo = Math.min(lo, z.von); });
+            auto.verkauf.forEach(z => { if (z.mitte < j * 1.7) hi = Math.max(hi, z.bis); });
+            return { ...r, priceRange: { minValue: lo, maxValue: hi } };
+        } });
+    }
+    function zukunftZeigen() {
+        if (!auto || !autoAn) { ts.fitContent(); return; }
+        ts.setVisibleLogicalRange({ from: -1, to: zeiten.length - 1 + auto.prognose.H * 1.3 });
+    }
+
     function zeichne() {
         raf = 0;
         if (!box.isConnected) return;
@@ -139,7 +236,7 @@ export function zeichner({ chart, series, box, bars, sym, magnet = true, onTool 
         const w = Math.max(0, ts.width()), h = Math.max(0, box.clientHeight - pt - pb - ts.height());
         svg.style.cssText = `left:${pl}px;top:${pt}px;width:${w}px;height:${h}px`;
         svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-        svg.innerHTML = aus ? '' : [...liste, ...(entwurf ? [entwurf] : [])].map(d => form(d, w, h)).join('');
+        svg.innerHTML = autoForm(w, h) + (aus ? '' : [...liste, ...(entwurf ? [entwurf] : [])].map(d => form(d, w, h)).join(''));
         levelsSync();
     }
     const plan = () => { if (!raf) raf = requestAnimationFrame(zeichne); };
@@ -147,7 +244,10 @@ export function zeichner({ chart, series, box, bars, sym, magnet = true, onTool 
     const lokal = e => { const r = svg.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     function setTool(t) {
         tool = t; entwurf = null;
-        svg.classList.toggle('aktiv', t !== 'zeiger');
+        svg.classList.toggle('aktiv', t !== 'zeiger' && t !== 'hand');
+        svg.classList.toggle('hand', t === 'hand');
+        box.classList.toggle('hand', t === 'hand');
+        if (t === 'hand') chart.priceScale('right').applyOptions({ autoScale: false });
         if (t !== 'zeiger') sel = null;
         if (onTool) onTool(t);
         plan();
@@ -234,6 +334,10 @@ export function zeichner({ chart, series, box, bars, sym, magnet = true, onTool 
         const t = TASTE[(e.key || '').toLowerCase()];
         if (t) { e.preventDefault(); setTool(t); }
     };
+    const greifen = () => { if (tool === 'hand') box.classList.add('greift'); };
+    const loslassenHand = () => box.classList.remove('greift');
+    box.addEventListener('pointerdown', greifen, true);
+    window.addEventListener('pointerup', loslassenHand);
     window.addEventListener('pointermove', bewegen);
     window.addEventListener('pointerup', loslassen);
     window.addEventListener('keydown', taste, true);
@@ -253,12 +357,20 @@ export function zeichner({ chart, series, box, bars, sym, magnet = true, onTool 
     return {
         setTool, get tool() { return tool; },
         setMagnet(v) { magnet = v; },
+        ansichtAuto() { chart.priceScale('right').applyOptions({ autoScale: true }); zukunftZeigen(); plan(); },
+        setAuto(ta, mst, ansicht = true) { auto = ta; myst = mst || []; autoskala(); if (ansicht && ta && autoAn) zukunftZeigen(); plan(); },
+        setAutoAn(v, ansicht = true) { autoAn = v; if (ansicht) { chart.priceScale('right').applyOptions({ autoScale: true }); zukunftZeigen(); } plan(); },
+        setMystikAn(v) { mystAn = v; plan(); },
+        get autoDa() { return !!auto; },
         get anzahl() { return liste.length; },
         get auswahl() { return sel; },
         loeschen,
         alleLoeschen() { liste = []; sel = null; entwurf = null; speichern(); plan(); },
         ausblenden(v) { aus = v; sel = null; plan(); },
         destroy() {
+            box.removeEventListener('pointerdown', greifen, true);
+            window.removeEventListener('pointerup', loslassenHand);
+            box.classList.remove('hand', 'greift');
             window.removeEventListener('pointermove', bewegen);
             window.removeEventListener('pointerup', loslassen);
             window.removeEventListener('keydown', taste, true);

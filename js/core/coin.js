@@ -1,7 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610070601';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610070601';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610070601';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610070601';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610071831';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610071831';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610071831';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610071831';
+import { berechneTA, mystik } from './auto_ta.js?v=202610071831';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -27,6 +28,7 @@ const CMP_DAYS = [[7, '7T'], [30, '30T'], [90, '90T'], [365, '1J']];
 /* ── Zustand ── */
 let current = null;                 // Symbol des offenen Coins, groß
 let curTf = '1d', showEma = false, showVol = true;
+let taAn = store.get('cb2_ta_an', true) !== false, mystAn = store.get('cb2_ta_mystik', true) !== false;
 let chart = null, chartRO = null, mainSer = null, mainKind = '', areaVar = '';
 let volSer = null, volKey = '', emaSers = [];
 let loadSeq = 0, shownPrice = null, liveTimer = null;
@@ -86,10 +88,14 @@ const STYLE = `
 .cd-tsep { flex: none; height: 1px; background: var(--line); margin: 4px 6px; }
 .zc-svg { position: absolute; z-index: 3; pointer-events: none; overflow: hidden; }
 .zc-svg.aktiv { pointer-events: all; cursor: crosshair; touch-action: none; }
+.zc-svg.hand, .zc-svg.hand * { pointer-events: none !important; }
+.cd-chart.hand, .cd-chart.hand * { cursor: grab !important; }
+.cd-chart.hand.greift, .cd-chart.hand.greift * { cursor: grabbing !important; }
 .zc-hit { stroke: transparent; stroke-width: 14; fill: none; pointer-events: stroke; cursor: move; }
 .zc-hitf { pointer-events: all; cursor: move; }
 .zc-h { fill: var(--surface); stroke-width: 2; pointer-events: all; cursor: grab; }
-.zc-t { font-family: var(--mono); font-size: 10px; pointer-events: none; }
+.zc-t { font-family: var(--mono); font-size: 10px; pointer-events: none; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.zc-tf { font-weight: 600; letter-spacing: .02em; }
 .zc-svg.aktiv .zc-hit, .zc-svg.aktiv .zc-hitf, .zc-svg.aktiv .zc-h { cursor: crosshair; }
 .cd-chart .skel { height: 100%; }
 .cd-msg { display: grid; place-content: center; justify-items: center; gap: 12px; height: 100%; padding: 20px; text-align: center; color: var(--ink-3); font-size: .8rem; }
@@ -381,6 +387,8 @@ function areaChart(box, pts, v) {
     mainSer.setData(pts);
     ch.timeScale().fitContent();
     zeichnenAn(box, pts);
+    const cc = coin(current);
+    if (cc) taStarten(cc, curTf, pts, null, loadSeq);
 }
 /* ── Zeichnen: Trendlinien, Preislevel, Zonen, Fibonacci, je Coin gespeichert ── */
 function zeichnenAn(box, bars) {
@@ -388,11 +396,77 @@ function zeichnenAn(box, bars) {
     if (!chart || !mainSer || !current || bars.length < 2) { syncTools(); return; }
     zc = zeichner({ chart, series: mainSer, box, bars, sym: current, magnet: zcMagnet, onTool: syncTools });
     if (zcAus) zc.ausblenden(true);
+    zc.setAutoAn(taAn, false); zc.setMystikAn(mystAn);
     syncTools();
+}
+const WEB_KEY = 'c2_web_links';
+async function webseiteFuer(c) {
+    if (!c || !c.id) return null;
+    let cache = {};
+    try { cache = JSON.parse(localStorage.getItem(WEB_KEY) || '{}'); } catch (e) {}
+    const hit = cache[c.id];
+    if (hit && Date.now() - hit.t < 30 * 86400000) return hit.u || null;
+    let u = null;
+    try {
+        const r = await proxy('https://api.coingecko.com/api/v3/coins/' + encodeURIComponent(c.id) + '?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false');
+        const h = r && r.links && (r.links.homepage || []).find(x => /^https?:\/\//.test(x));
+        u = h || null;
+        if (r && r.links) { cache[c.id] = { t: Date.now(), u }; try { localStorage.setItem(WEB_KEY, JSON.stringify(cache)); } catch (e) {} }
+    } catch (e) { return null; }
+    return u;
+}
+async function webseiteLaden(c, S) {
+    const u = await webseiteFuer(c), a = $('cdWeb');
+    if (!a || current !== S || !u) return;
+    a.href = u; a.hidden = false; a.title = u.replace(/^https?:\/\//, '');
+}
+
+const zoneCache = new Map();
+try { Object.entries(JSON.parse(localStorage.getItem('c2_kb_cache') || '{}')).forEach(([k, v]) => zoneCache.set(k, v)); } catch (e) {}
+let kbSpeichern = null;
+const kbMerken = () => { clearTimeout(kbSpeichern); kbSpeichern = setTimeout(() => {
+    const o = {}, alt = Date.now() - 30 * 60 * 1000; zoneCache.forEach((v, k) => { if (v.t > alt) o[k] = v; });
+    try { localStorage.setItem('c2_kb_cache', JSON.stringify(o)); } catch (e) {}
+}, 1500); };
+export async function aufbereich(c) {
+    if (!c || !c.binance) return null;
+    const k = upper(c.symbol), hit = zoneCache.get(k);
+    if (hit && Date.now() - hit.t < 30 * 60 * 1000) return hit.v;
+    let v = null;
+    try {
+        const kd = await fetchKlines(c.binance, '1d'), bars = klineCache[kd];
+        let lang = bars;
+        try { lang = klineCache[await fetchKlines(c.binance, 'all')] || bars; } catch (e) {}
+        const fh = D.extras && D.extras.fng_history, fng = fh && fh.length ? fh[fh.length - 1].value : null;
+        const vol = klineVol[kd] && klineVol[kd].length === bars.length ? klineVol[kd].map(x => x.value) : null;
+        const ta = berechneTA({ bars, lang, vol, athDb: c.ath, fng });
+        v = ta && ta.zone ? { ...ta.zone, kurs: ta.jetzt } : { im: false, keine: true };
+    } catch (e) { v = null; }
+    zoneCache.set(k, { t: Date.now(), v });
+    if (v) kbMerken();
+    return v;
+}
+async function taStarten(c, tf, bars, volKey2, token) {
+    if (!zc) return;
+    const norm = a => a.map(b => typeof b.time === 'number' ? b : { ...b, time: Date.parse(b.time) / 1000 });
+    const fb = norm(bars);
+    let lang = fb;
+    if (c.binance && tf !== 'all') {
+        try { const k2 = await fetchKlines(c.binance, 'all'); lang = klineCache[k2] || fb; } catch (e) {}
+    }
+    if (!zc || current !== upper(c.symbol) || token !== loadSeq) return;
+    const fh = D.extras && D.extras.fng_history, fng = fh && fh.length ? fh[fh.length - 1].value : null;
+    const vol = volKey2 && klineVol[volKey2] && klineVol[volKey2].length === fb.length ? klineVol[volKey2].map(v => v.value) : null;
+    let ta = null;
+    try { ta = berechneTA({ bars: fb, lang, vol, athDb: c.ath, fng }); } catch (e) { ta = null; }
+    zc.setAuto(ta, ta ? mystik(ta, fb) : []);
 }
 function toolsHtml() {
     return WERKZEUGE.map(([id, ic, t]) => `<button class="cd-tb" data-tool="${id}" title="${esc(t)}">${icon(ic)}</button>`).join('') +
         `<span class="cd-tsep"></span>
+        <button class="cd-tb" id="cdTA" title="Automatische Analyse ein oder aus: Fibonacci vom Allzeithoch bis zum Allzeittief, Trendlinien, Einstiegs- und Verkaufszonen, Prognose. Regelbasiert nach unserem Playbook, keine Anlageberatung.">${icon('sparkles')}</button>
+        <button class="cd-tb" id="cdMyst" title="Mystik ein oder aus: Mondphasen, Fibonacci-Zeiten und Portale in der Zukunft. Verändert keine Zone und keine Prognose.">${icon('moon')}</button>
+        <button class="cd-tb" id="cdAuto" title="Ansicht zurücksetzen: Preisachse wieder automatisch anpassen und alle Kerzen ins Bild holen (Doppelklick auf die Preisachse geht auch)">${icon('scan')}</button>
         <button class="cd-tb" id="cdMagnet" title="Magnet: rastet auf Hoch, Tief, Eröffnung und Schluss der Kerzen ein">${icon('magnet')}</button>
         <button class="cd-tb" id="cdZcAus" title="Zeichnungen aus- und einblenden">${icon('eye-off')}</button>
         <button class="cd-tb weg" id="cdZcDel" title="Ausgewählte Zeichnung löschen (Entf)">${icon('trash-2')}</button>
@@ -403,6 +477,9 @@ function syncTools() {
     if (!t) return;
     const tool = zc ? zc.tool : 'zeiger';
     t.querySelectorAll('[data-tool]').forEach(b => { b.classList.toggle('on', b.dataset.tool === tool); b.disabled = !zc; });
+    const ta = $('cdTA'), my = $('cdMyst');
+    if (ta) ta.classList.toggle('on', taAn);
+    if (my) my.classList.toggle('on', mystAn);
     const m = $('cdMagnet'), a = $('cdZcAus'), d = $('cdZcDel'), all = $('cdZcAll');
     if (m) m.classList.toggle('on', zcMagnet);
     if (a) a.classList.toggle('on', zcAus);
@@ -449,6 +526,7 @@ async function loadChart(c, tf) {
             }
             ch.timeScale().fitContent();
             zeichnenAn(box, bars);
+            taStarten(c, tf, bars, key, token);
             const ema = showEma ? ' · EMA 50/200' : '';
             if (tf === 'all' && bars.length) {
                 const ab = new Date(bars[0].time * 1000);
@@ -491,6 +569,7 @@ function zoomOff() {
     if (zoomPh && zoomPh.isConnected) zoomPh.replaceWith(w); else w.remove();
     zoomPh = null;
     if (zoomBd) { zoomBd.remove(); zoomBd = null; }
+    neuEinpassen();
 }
 function zoomOn() {
     const w = $('cdWrap');
@@ -504,6 +583,10 @@ function zoomOn() {
     document.body.appendChild(zoomBd);
     document.body.appendChild(w);
     w.classList.add('zoom');
+    neuEinpassen();
+}
+function neuEinpassen() {
+    setTimeout(() => { if (zc) zc.ansichtAuto(); else if (chart) chart.timeScale().fitContent(); }, 120);
 }
 const zoomed = () => { const w = $('cdWrap'); return !!(w && w.classList.contains('zoom')); };
 function zoomToggle() { zoomed() ? zoomOff() : zoomOn(); }
@@ -613,6 +696,7 @@ export function openCoin(sym) {
             <div><span class="big num cd-price" id="cdPrice">${fUsd(c.current_price)}</span><span class="cd-live ${c.binance ? '' : 'off'}" title="${c.binance ? 'Kurs kommt live von Binance' : 'Kein Binance-Paar, Kurs aus dem letzten Datenlauf'}"><i></i>LIVE</span></div>
             ${s ? `<div style="text-align:right"><div class="eyebrow" style="margin-bottom:6px">Signal-Score</div>${scoreBadge(s.score)}</div>` : ''}
         </div>
+        ${c.binance ? `<div class="kb-voll" data-kbvoll="${esc(S)}"></div>` : ''}
         <div class="cd-badges" id="cdBadges"></div>
         <div class="cd-wrap" id="cdWrap">
             <div class="cd-tabs" id="cdTabs">
@@ -640,8 +724,11 @@ export function openCoin(sym) {
         <div class="cd-links">
             <a class="btn soft" target="_blank" rel="noopener" href="https://www.coingecko.com/en/coins/${esc(encodeURIComponent(c.id || ''))}">${icon('external-link')}CoinGecko</a>
             ${c.binance ? `<a class="btn soft" target="_blank" rel="noopener" href="https://www.tradingview.com/chart/?symbol=BINANCE:${esc(encodeURIComponent(c.binance))}">${icon('line-chart')}TradingView</a>` : ''}
+            <a class="btn soft" target="_blank" rel="noopener" href="https://dexscreener.com/search?q=${esc(encodeURIComponent(S))}">${icon('activity')}DexScreener</a>
+            <a class="btn soft" id="cdWeb" target="_blank" rel="noopener" href="#" hidden>${icon('globe')}Website</a>
         </div>`;
     hydrate(d);
+    webseiteLaden(c, S);
     d.classList.add('on'); d.setAttribute('aria-hidden', 'false'); d.scrollTop = 0;
     $('scrim').classList.add('on');
 
@@ -667,6 +754,9 @@ export function openCoin(sym) {
         const b = e.target.closest('button');
         if (!b || !zc) return;
         if (b.dataset.tool) { zc.setTool(b.dataset.tool === zc.tool && b.dataset.tool !== 'zeiger' ? 'zeiger' : b.dataset.tool); }
+        else if (b.id === 'cdAuto') zc.ansichtAuto();
+        else if (b.id === 'cdTA') { taAn = !taAn; store.set('cb2_ta_an', taAn); zc.setAutoAn(taAn); }
+        else if (b.id === 'cdMyst') { mystAn = !mystAn; store.set('cb2_ta_mystik', mystAn); zc.setMystikAn(mystAn); }
         else if (b.id === 'cdMagnet') { zcMagnet = !zcMagnet; zc.setMagnet(zcMagnet); }
         else if (b.id === 'cdZcAus') { zcAus = !zcAus; zc.ausblenden(zcAus); }
         else if (b.id === 'cdZcDel') zc.loeschen();

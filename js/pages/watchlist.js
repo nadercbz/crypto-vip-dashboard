@@ -1,6 +1,8 @@
-import { D, coin, watch, store } from '../core/data.js?v=202610070601';
-import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610070601';
-import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610070601';
+import { D, coin, watch, store } from '../core/data.js?v=202610071831';
+import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610071831';
+import { aufbereich } from '../core/coin.js?v=202610071831';
+import { zoneHtml } from '../core/kaufbalken.js?v=202610071831';
+import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610071831';
 
 const NOTE = 'c2_watch_notes';
 let onLive = null;
@@ -16,7 +18,8 @@ export default {
         .wl-kzs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
         .wl-kz { padding: 10px 12px; border-radius: 14px; background: var(--bg); box-shadow: var(--sh-in); }
         .wl-kz .num { font-size: 1.05rem; margin-top: 4px; }
-        .wl-kopf [data-coin] { cursor: pointer; }`,
+        .wl-kopf [data-coin] { cursor: pointer; }
+`,
     render(root, ctx) {
         const list = watch.list(), notes = store.get(NOTE, {}) || {};
         const sigBy = {};
@@ -24,7 +27,7 @@ export default {
         root.classList.add('stack');
         root.innerHTML = pageHead('Portfolio', 'Watchlist', 'Die Coins, die du mit dem Stern markiert hast. Mit Kennzahlen aus dem Radar und Platz für eine eigene Notiz je Coin. Notizen bleiben in diesem Browser gespeichert.',
             `<a class="btn soft" data-go="kurse">${icon('plus')}Coins hinzufügen</a>`) +
-            (list.length ? `<div class="grid g-auto" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${list.map(sym => {
+            (list.length ? `<div class="grid g-auto" id="wlGrid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${list.map(sym => {
                 const c = coin(sym), r = sigBy[sym] || {};
                 const chg7 = r.chg7 != null ? r.chg7 : (c ? c.price_change_percentage_7d_in_currency : null);
                 return card({ attr: `data-wl="${esc(sym)}"`, body: `
@@ -32,6 +35,7 @@ export default {
                         <div class="eyebrow">${esc(sym)}${r.cat && r.cat !== 'Other' ? ' · ' + esc(r.cat) : ''}${c ? ' · Rang ' + (c.market_cap_rank || '—') : ' · nicht in den Daten'}</div></div></div>
                         <button class="ibtn" data-rm="${esc(sym)}" title="Entfernen" style="width:34px;height:34px">${icon('x')}</button></div>
                     <div class="num wl-preis">${preis(c)}</div>
+                    <div class="wl-zone" data-zone="${esc(sym)}">Aufbereich wird berechnet …</div>
                     ${r.spark && r.spark.length >= 3 ? `<div class="wl-spark" data-coin="${esc(sym)}">${sparkline(r.spark, 250, 44)}</div>` : ''}
                     <div class="wl-kzs">
                         ${kz('Score', r.score != null ? r.score.toFixed(0) : '—', 'color:' + scoreVar(r.score))}
@@ -48,6 +52,22 @@ export default {
             root.querySelectorAll('[data-wl]').forEach(k => { const c = coin(k.dataset.wl), p = k.querySelector('.wl-preis'); if (c && p) p.innerHTML = preis(c); });
         };
         document.addEventListener('cb2:live', onLive);
+        const ergebnis = {};
+        const sortiere = () => {
+            const rang = sym => { const z = ergebnis[sym]; return !z ? 1e9 : z.keine ? 1e8 : z.im ? -1000 + (z.tiefe || 0) : z.abstandPct; };
+            [...list].sort((a, b) => rang(a) - rang(b)).forEach((sym, i) => { const k = root.querySelector(`[data-wl="${CSS.escape(sym)}"]`); if (k) k.style.order = i; });
+        };
+        list.forEach(sym => {
+            const ziel = root.querySelector(`[data-zone="${CSS.escape(sym)}"]`);
+            aufbereich(coin(sym)).then(z => {
+                if (!root.isConnected || !ziel) return;
+                ergebnis[sym] = z;
+                if (!z) ziel.textContent = 'Keine Analyse möglich (kein Binance-Chart)';
+                else if (z.keine) ziel.textContent = 'Noch keine klare Kaufzone';
+                else ziel.innerHTML = zoneHtml(z);
+                sortiere();
+            });
+        });
     },
     destroy() { if (onLive) { document.removeEventListener('cb2:live', onLive); onLive = null; } },
 };
