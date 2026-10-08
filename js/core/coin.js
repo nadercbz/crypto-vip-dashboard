@@ -1,8 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610071933';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610071933';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610071933';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610071933';
-import { berechneTA, mystik } from './auto_ta.js?v=202610071933';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610080950';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610080950';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610080950';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610080950';
+import { berechneTA, mystik } from './auto_ta.js?v=202610080950';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -807,17 +807,26 @@ if (typeof document !== 'undefined') {
         zoomOff();
     }, true);
 
+    const LISTE = 'tr[data-coin], .li[data-coin], .gm-row[data-coin], .bz-row[data-coin], .cs-row[data-coin], .card[data-coin], article[data-coin]';
+    function blaettere(delta) {
+        const alle = [...document.querySelectorAll('#main ' + LISTE.split(', ').join(', #main '))].filter(r => r.offsetParent !== null || r.getClientRects().length);
+        const meine = alle.find(r => upper(r.dataset.coin) === current);
+        let zeilen = meine ? alle.filter(r => r.parentNode === meine.parentNode) : alle;
+        if (zeilen.length < 2) zeilen = alle;
+        const syms = zeilen.map(r => ({ r, s: upper(r.dataset.coin) })).filter((x, i, a) => x.s && coin(x.s) && a.findIndex(y => y.s === x.s) === i);
+        if (syms.length < 2) return false;
+        let i = syms.findIndex(x => x.s === current); if (i < 0) i = delta > 0 ? -1 : 0;
+        const ziel = syms[(i + delta + syms.length) % syms.length];
+        openCoin(ziel.s);
+        try { ziel.r.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+        return true;
+    }
     document.addEventListener('keydown', e => {
-        if (!current || e.metaKey || e.ctrlKey || e.altKey) return;
-        if (/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '')) return;
-        const key = (e.key || '').toLowerCase();
-        if (key !== 'j' && key !== 'k') return;
-        const rows = [...document.querySelectorAll('#main [data-coin]')]
-            .map(r => upper(r.dataset.coin)).filter((v, i, a) => v && a.indexOf(v) === i && coin(v));
-        if (!rows.length) return;
-        let i = rows.indexOf(current);
-        if (i < 0) i = 0;
-        const next = rows[(i + (key === 'j' ? 1 : -1) + rows.length) % rows.length];
-        if (next) { e.preventDefault(); openCoin(next); }
+        if (!current || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey || zoomed()) return;
+        const t = document.activeElement || {};
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName || '') || t.isContentEditable) return;
+        const k = e.key, runter = k === 'ArrowDown' || k.toLowerCase() === 'j', hoch = k === 'ArrowUp' || k.toLowerCase() === 'k';
+        if (!runter && !hoch) return;
+        if (blaettere(runter ? 1 : -1)) { e.preventDefault(); e.stopPropagation(); }
     });
 }

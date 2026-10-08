@@ -1,6 +1,6 @@
-import { D, store } from '../core/data.js?v=202610071933';
-import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202610071933';
-import { card, pageHead, seg, empty, icon, icons } from '../core/ui.js?v=202610071933';
+import { D, store } from '../core/data.js?v=202610080950';
+import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202610080950';
+import { card, pageHead, seg, empty, icon, icons } from '../core/ui.js?v=202610080950';
 
 const ARENA_KEY = 'c2_arena_elo_v1';
 const DEFAULT_ELO = 1200;
