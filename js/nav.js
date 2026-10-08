@@ -20,6 +20,7 @@ export const NAV = [
     ] },
     { group: 'Entdecken', items: [
         { id: 'narrative',  label: 'Narrative',         icon: 'layers',           alt: 'Narratives' },
+        { id: 'icoipo',     label: 'ICOs und IPOs',     icon: 'ticket',           alt: 'neu in 2.0' },
         { id: 'chainscan',  label: 'Chain-Scan',        icon: 'scan-search',      alt: 'Narrativ Scan' },
         { id: 'gems',       label: 'Hidden Gems',       icon: 'gem',              alt: 'Hidden Gems' },
         { id: 'buzz',       label: 'Social Buzz',       icon: 'flame',            alt: 'Social Buzz' },
@@ -40,5 +41,5 @@ export const NAV = [
         { id: 'werkzeuge',  label: 'Werkzeuge',         icon: 'external-link',    alt: 'Links' },
     ] },
 ];
-export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gehasst', 'gems', 'handelszeiten', 'heatmap', 'influencer', 'kurse', 'labor', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
+export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gehasst', 'gems', 'handelszeiten', 'heatmap', 'icoipo', 'influencer', 'kurse', 'labor', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
 export const ALL = NAV.flatMap(g => g.items.map(i => ({ ...i, group: g.group })));

@@ -18,6 +18,7 @@ export const D = {
     get paper()      { return window.PAPER_DATA || null; },
     get tagebuch()   { return window.TAGEBUCH_DATA || null; },
     get fluencer()   { return window.FLUENCER_DATA || null; },
+    get icoipo()     { return window.ICOIPO_DATA || null; },
     get narrativ()   { return window.NARRATIV_DATA || null; },
     get milestoneProjects() { return []; },
     get milestones() { return []; },
