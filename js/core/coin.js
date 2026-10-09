@@ -1,8 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610090840';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610090840';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610090840';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610090840';
-import { berechneTA, mystik } from './auto_ta.js?v=202610090840';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610091357';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610091357';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610091357';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610091357';
+import { berechneTA, mystik } from './auto_ta.js?v=202610091357';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -428,8 +428,17 @@ const kbMerken = () => { clearTimeout(kbSpeichern); kbSpeichern = setTimeout(() 
     const o = {}, alt = Date.now() - 30 * 60 * 1000; zoneCache.forEach((v, k) => { if (v.t > alt) o[k] = v; });
     try { localStorage.setItem('c2_kb_cache2', JSON.stringify(o)); } catch (e) {}
 }, 1500); };
+function zoneOhneBinance(c) {
+    const kz = D.kaufzonen, e = kz && kz.coins && c.id ? kz.coins[c.id] : null, kurs = c.current_price;
+    if (!e || !kurs) return { keine: true, grund: 'wenig' };
+    if (e.status !== 'zone') return { keine: true, grund: e.status };
+    if (kurs < e.von * 0.97) return { keine: true, grund: 'unter' };
+    const im = kurs <= e.bis;
+    return { im, von: e.von, bis: e.bis, kurs, score: e.score, gruende: e.gruende, abstandPct: im ? 0 : (kurs - e.bis) / kurs * 100, quelle: 'tage' };
+}
 export async function aufbereich(c) {
-    if (!c || !c.binance) return null;
+    if (!c) return null;
+    if (!c.binance) return zoneOhneBinance(c);
     const k = upper(c.symbol), hit = zoneCache.get(k);
     if (hit && Date.now() - hit.t < 30 * 60 * 1000) return hit.v;
     let v = null;
@@ -696,7 +705,7 @@ export function openCoin(sym) {
             <div><span class="big num cd-price" id="cdPrice">${fUsd(c.current_price)}</span><span class="cd-live ${c.binance ? '' : 'off'}" title="${c.binance ? 'Kurs kommt live von Binance' : 'Kein Binance-Paar, Kurs aus dem letzten Datenlauf'}"><i></i>LIVE</span></div>
             ${s ? `<div style="text-align:right"><div class="eyebrow" style="margin-bottom:6px">Signal-Score</div>${scoreBadge(s.score)}</div>` : ''}
         </div>
-        ${c.binance ? `<div class="kb-voll" data-kbvoll="${esc(S)}"></div>` : ''}
+        <div class="kb-voll" data-kbvoll="${esc(S)}"></div>
         <div class="cd-badges" id="cdBadges"></div>
         <div class="cd-wrap" id="cdWrap">
             <div class="cd-tabs" id="cdTabs">

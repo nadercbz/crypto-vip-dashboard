@@ -1,7 +1,7 @@
-import { D } from '../core/data.js?v=202610090840';
-import { esc, fUsd, fNum, fPct } from '../core/fmt.js?v=202610090840';
-import { card, pageHead, seg, coinImg, pct, empty } from '../core/ui.js?v=202610090840';
-import { SECTORS, computeTopNarratives } from '../core/sektoren.js?v=202610090840';
+import { D } from '../core/data.js?v=202610091357';
+import { esc, fUsd, fNum, fPct } from '../core/fmt.js?v=202610091357';
+import { card, pageHead, seg, coinImg, pct, empty } from '../core/ui.js?v=202610091357';
+import { SECTORS, computeTopNarratives } from '../core/sektoren.js?v=202610091357';
 
 const FELD = { '24h': 'price_change_percentage_24h', '7d': 'price_change_percentage_7d_in_currency', '30d': 'price_change_percentage_30d' };
 const st = { tf: '24h', sektor: null };

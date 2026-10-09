@@ -1,6 +1,6 @@
-import { coin } from './data.js?v=202610090840';
-import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610090840';
-import { aufbereich } from './coin.js?v=202610090840';
+import { coin } from './data.js?v=202610091357';
+import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610091357';
+import { aufbereich } from './coin.js?v=202610091357';
 
 const ZB = 36;   // Breite der Zone auf der Leiste in Prozent
 export function zoneHtml(z) {
@@ -26,7 +26,7 @@ export function zoneHtml(z) {
         <span><i class="k g2"></i><u>Hellgrün, Kaufbereich:</u> restliche Zone. Einstieg möglich, aber etwas teurer oder die Zone ist weniger stark.</span>
         <span><i class="k y"></i><u>Gelb gestrichelt, Abwarten:</u> so weit muss der Kurs noch fallen. Je länger, desto weiter weg.</span>
         <span><i class="k p"></i><u>Der Punkt</u> ist der aktuelle Kurs. Je weiter links, desto besser für den Einstieg.</span>
-        <span class="n">Die Zone kommt aus der Auto-TA: Wendepunkte im Chart, Fibonacci, EMA 200, Volumen. Regelbasiert, keine Anlageberatung.</span></span></span>`;
+        <span class="n">Die Zone kommt aus der Auto-TA: Wendepunkte im Chart, Fibonacci, EMA 200, Volumen. Regelbasiert, keine Anlageberatung.${z.quelle === 'tage' ? ' Bei diesem Coin aus Tageskursen berechnet (kein Binance-Paar), daher gröber als mit Kerzen.' : ''}</span></span></span>`;
     const weg = lage === 'warten' ? `<i class="wl-weg" tabindex="0" style="left:${ZB}%;width:${(pos - ZB).toFixed(1)}%" data-tip="Abwarten&#10;Der Kurs liegt noch ${fNum(z.abstandPct, 1)} % über dem Kaufbereich. Diese Strecke muss er noch fallen."></i>` : '';
     return `<div class="wl-zk">${status}${info}</div>
         <div class="wl-leiste wl-l-${lage}" style="--zb:${ZB}%">
@@ -41,8 +41,22 @@ export function zoneHtml(z) {
 }
 
 
+const LEER = {
+    wenig: ['Kein Kursverlauf', 'Für diesen Coin liefern die Datenquellen keinen Kursverlauf mit mindestens 30 Tagen (typisch bei Wrapped- und Staking-Token, die dem Kurs eines anderen Coins folgen, und bei sehr neuen Coins). Deshalb ist kein Kaufbereich berechenbar.'],
+    stabil: ['Kurs stabil', 'Der Kurs bewegt sich kaum (zum Beispiel Stablecoin oder an einen Wert gekoppelt). Ein Kaufbereich ist hier nicht sinnvoll.'],
+    keine: ['Keine klare Zone', 'Im Chart gibt es unter dem Kurs gerade keine starke Zone mit mehreren Gründen.'],
+    unter: ['Unter der Zone', 'Der Kurs ist unter die letzte Kaufzone gefallen. Eine neue Zone muss sich erst bilden.'],
+};
+function leerGrund(z) { return LEER[(z && z.grund) || 'keine'] || LEER.keine; }
+function leerHtml(z) {
+    const [t, tip] = leerGrund(z);
+    return `<div class="wl-zk"><span class="wl-st leer"><i></i>${esc(t)}</span></div><div class="wl-leiste wl-l-leer" title="${esc(tip)}"><i class="wl-rest" style="left:0;right:0"></i></div><div class="wl-zz"><span>${esc(tip)}</span></div>`;
+}
 export function kompakt(z) {
-    if (!z || z.keine) return '';
+    if (!z || z.keine) {
+        const [t, tip] = leerGrund(z || { grund: 'wenig' });
+        return `<div class="kbk kbk-leer" title="${esc(tip + ' Regelbasiert, keine Anlageberatung.')}"><div class="kbk-bar"></div><span class="kbk-t leer">${esc(t)}</span></div>`;
+    }
     const mitte = (z.von + z.bis) / 2, ZB = 36;
     let pos, lage, txt;
     if (z.im) {
@@ -53,7 +67,7 @@ export function kompakt(z) {
         pos = ZB + 3 + Math.min(1, z.abstandPct / 40) * (100 - ZB - 6); lage = 'warten';
         txt = 'Abwarten ' + fPct((z.bis / z.kurs - 1) * 100);
     }
-    const tip = `${txt}. Kaufzone ${fUsd(z.von)} bis ${fUsd(z.bis)}, bester Bereich bis ${fUsd(z.von + (z.bis - z.von) / 3)}. Kurs ${fUsd(z.kurs)}. Je weiter links der Punkt, desto besser der Einstieg. Regelbasiert, keine Anlageberatung.`;
+    const tip = `${txt}. Kaufzone ${fUsd(z.von)} bis ${fUsd(z.bis)}, bester Bereich bis ${fUsd(z.von + (z.bis - z.von) / 3)}. Kurs ${fUsd(z.kurs)}. Je weiter links der Punkt, desto besser der Einstieg. Regelbasiert, keine Anlageberatung.${z.quelle === 'tage' ? ' Zone aus Tageskursen berechnet (kein Binance-Paar).' : ''}`;
     return `<div class="kbk wl-l-${lage}" title="${esc(tip)}" style="--zb:${ZB}%"><div class="kbk-bar"><i class="kg1"></i><i class="kg2"></i>${lage === 'warten' ? `<i class="kw" style="left:${ZB}%;width:${(pos - ZB).toFixed(1)}%"></i>` : ''}<b style="left:${pos.toFixed(1)}%"></b></div><span class="kbk-t ${lage}">${esc(txt)}</span></div>`;
 }
 
@@ -118,6 +132,9 @@ const STIL = `
         .kbk-t { font-family: var(--mono); font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
         .kbk-t.best { color: var(--up); } .kbk-t.zone { color: color-mix(in srgb, var(--up) 70%, var(--ink-2)); } .kbk-t.warten { color: var(--warn); }
         .kbk-t:empty { display: none; }
+        .kbk-t.leer { color: var(--ink-3); }
+        .kbk-leer .kbk-bar { background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--ink-3) 35%, transparent) 0 5px, transparent 5px 10px), var(--bg); }
+        .wl-st.leer { --c: var(--ink-3); } .wl-l-leer { opacity: .55; }
         .kb-voll { margin: 4px 0 14px; }
         th.kb-th { cursor: pointer; user-select: none; }
         th.kb-th:hover, th.kb-th.kb-an { color: var(--up); }
@@ -143,7 +160,7 @@ function slotFuer(el) {
 
 const zonen = new Map();
 function zFuer(sym) {
-    if (!zonen.has(sym)) { const c = coin(sym); zonen.set(sym, c && c.binance ? aufbereich(c).catch(() => null) : Promise.resolve(null)); }
+    if (!zonen.has(sym)) { const c = coin(sym); zonen.set(sym, c ? aufbereich(c).catch(() => null) : Promise.resolve(null)); }
     return zonen.get(sym);
 }
 export function rang(z) {
@@ -158,7 +175,7 @@ async function fuelle(el) {
     const z = await zFuer(sym);
     raenge.set(sym, rang(z));
     if (!el.isConnected) return;
-    const html = z && !z.keine ? (el.dataset.kbvoll ? zoneHtml(z) : kompakt(z)) : '';
+    const html = z && !z.keine ? (el.dataset.kbvoll ? zoneHtml(z) : kompakt(z)) : (el.dataset.kbvoll ? leerHtml(z) : kompakt(z));
     el.innerHTML = html;
     if (!html) el.remove();
 }
@@ -261,7 +278,7 @@ function scan(root) {
         if (el.dataset.kbDone || el.closest('[data-wl], #drawer')) return;
         const sym = (el.dataset.coin || '').toUpperCase(), c = sym && coin(sym);
         el.dataset.kbDone = '1';
-        if (!c || !c.binance) return;
+        if (!c) return;
         const slot = slotFuer(el); if (!slot) return;
         const k = document.createElement('span'); k.className = 'kb-slot'; k.dataset.kb = sym;
         slot.appendChild(k); sichtbar(k);
