@@ -1,6 +1,6 @@
-import { coin } from './data.js?v=202610082050';
-import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610082050';
-import { aufbereich } from './coin.js?v=202610082050';
+import { coin } from './data.js?v=202610090840';
+import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610090840';
+import { aufbereich } from './coin.js?v=202610090840';
 
 const ZB = 36;   // Breite der Zone auf der Leiste in Prozent
 export function zoneHtml(z) {
