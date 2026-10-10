@@ -1,6 +1,6 @@
-import { D, watch } from '../core/data.js?v=202610102114';
-import { esc, fUsd, fBig } from '../core/fmt.js?v=202610102114';
-import { card, pageHead, coinImg, pct, chip, empty, icon, icons } from '../core/ui.js?v=202610102114';
+import { D, watch } from '../core/data.js?v=202610102147';
+import { esc, fUsd, fBig } from '../core/fmt.js?v=202610102147';
+import { card, pageHead, coinImg, pct, chip, empty, icon, icons } from '../core/ui.js?v=202610102147';
 
 const CAT_NARR = { L1: 90, AI: 85, DeFi: 82, RWA: 85, Oracle: 88, L2: 80, DePIN: 70, Payments: 72, Privacy: 65, Gaming: 55, Other: 40, Meme: 20 };
 const CAT_COLOR = { AI: 'var(--a2)', L1: 'var(--warn)', L2: 'color-mix(in srgb, var(--a2) 55%, var(--a1))', DeFi: 'var(--a1)', RWA: 'var(--up)', DePIN: 'var(--a4)',
