@@ -1,7 +1,7 @@
 /* Service Worker der VIP-Seite (Dashboard 2.0). Zuerst das Netz, bei Erfolg
    in den Cache. Ohne Verbindung kommt der letzte Stand statt einer Fehlerseite.
    Live-Kurse und fremde Server gehoeren nie in den Cache. */
-const CACHE = 'cryptobiz2-202610102046';
+const CACHE = 'cryptobiz2-202610102047';
 const KERN = ['./', './index.html', './manifest.webmanifest', './assets/icon-192.png', './css/app.css', './js/app.js', './js/nav.js'];
 
 self.addEventListener('install', e => {

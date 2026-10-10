@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202610102046';
-import { esc, fBig, fPct, cls } from '../core/fmt.js?v=202610102046';
-import { card, pageHead, seg, chip, empty, icon, bar, coinImg, hydrate } from '../core/ui.js?v=202610102046';
+import { D } from '../core/data.js?v=202610102047';
+import { esc, fBig, fPct, cls } from '../core/fmt.js?v=202610102047';
+import { card, pageHead, seg, chip, empty, icon, bar, coinImg, hydrate } from '../core/ui.js?v=202610102047';
 
 const st = { tier: 'low', offen: new Set(), sort: 'score' };
 const STATUS = {

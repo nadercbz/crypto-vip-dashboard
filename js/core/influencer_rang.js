@@ -1,6 +1,6 @@
-import { D, coin, signal } from './data.js?v=202610102046';
-import { esc, fPct, cls } from './fmt.js?v=202610102046';
-import { card, chip, coinImg, icon, bar, hydrate } from './ui.js?v=202610102046';
+import { D, coin, signal } from './data.js?v=202610102047';
+import { esc, fPct, cls } from './fmt.js?v=202610102047';
+import { card, chip, coinImg, icon, bar, hydrate } from './ui.js?v=202610102047';
 
 const clamp = (v, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, v));
 const tageSeit = d => d ? Math.max(0, (Date.now() - new Date(d + 'T12:00:00').getTime()) / 86400000) : 99;
@@ -101,7 +101,7 @@ function zeile(r, i) {
         <button class="ir-row" data-ir="${esc(r.sym)}" aria-expanded="${on}">
             <span class="ir-rank mono">${i + 1}</span>
             <span class="ir-coin">${coinImg(r.c.image)}<span><b>${esc(r.sym)}</b> <span class="dim">${esc(r.c.name)}</span><span class="ir-chips">${chips.join('')}</span></span></span>
-            <span class="ir-sa">${saeule('Influencer', r.inf.score, 'Quellen, Häufigkeit und Frische')}${saeule('Markt', r.m.score, r.m.quelle)}${r.eig !== undefined && r.eig !== null ? saeule('Eigene', r.eig.score, 'Dein Analyse-Tagebuch, Portfolio, eigene Calls') : ''}</span>
+            <span class="ir-sa">${saeule('Influencer', r.inf.score, 'Quellen, Häufigkeit und Frische')}${saeule('Markt', r.m.score, r.m.quelle)}${r.eig !== undefined && r.eig !== null ? saeule('Eigene', r.eig.score, 'Eigene Analyse') : ''}</span>
             <span class="ir-score num" style="color:${farbe(r.gesamt)}">${z(r.gesamt)}</span>
             <span class="ir-chev">${icon('chevron-down')}</span>
         </button>

@@ -1,5 +1,5 @@
-import { esc, fBig } from '../core/fmt.js?v=202610102046';
-import { card, pageHead, chip, empty } from '../core/ui.js?v=202610102046';
+import { esc, fBig } from '../core/fmt.js?v=202610102047';
+import { card, pageHead, chip, empty } from '../core/ui.js?v=202610102047';
 
 const ZONES = [
     { name: 'Asia Session',   time: '02:00 bis 09:00', start: 2 * 60,       end: 9 * 60 },
