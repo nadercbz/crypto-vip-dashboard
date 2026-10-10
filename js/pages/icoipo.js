@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202610102047';
-import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610102047';
-import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610102047';
+import { D } from '../core/data.js?v=202610102114';
+import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610102114';
+import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610102114';
 
 const TABS = [['heute', 'Heute'], ['30', 'Nächste 30 Tage'], ['6m', '3 bis 6 Monate'], ['3j', '1 bis 3 Jahre'], ['offen', 'Ohne Termin'], ['abgeschlossen', 'Abgeschlossen'], ['alle', 'Alle']];
 const STATUS_FARBE = { 'durchgeführt': 'var(--up)', 'aktiv': 'var(--a1)', 'angekündigt': 'var(--a2)', 'geplant': 'var(--ink-2)', 'verschoben': 'var(--warn)', 'abgesagt': 'var(--down)' };

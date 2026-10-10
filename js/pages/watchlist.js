@@ -1,8 +1,8 @@
-import { D, coin, watch, store } from '../core/data.js?v=202610102047';
-import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610102047';
-import { aufbereich } from '../core/coin.js?v=202610102047';
-import { zoneHtml } from '../core/kaufbalken.js?v=202610102047';
-import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610102047';
+import { D, coin, watch, store } from '../core/data.js?v=202610102114';
+import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610102114';
+import { aufbereich } from '../core/coin.js?v=202610102114';
+import { zoneHtml } from '../core/kaufbalken.js?v=202610102114';
+import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610102114';
 
 const NOTE = 'c2_watch_notes';
 let onLive = null;
