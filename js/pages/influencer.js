@@ -1,6 +1,7 @@
-import { D, coin } from '../core/data.js?v=202610102000';
-import { esc } from '../core/fmt.js?v=202610102000';
-import { card, pageHead, chip, empty, icon, pct } from '../core/ui.js?v=202610102000';
+import { D, coin } from '../core/data.js?v=202610102046';
+import { esc } from '../core/fmt.js?v=202610102046';
+import { card, pageHead, chip, empty, icon, pct } from '../core/ui.js?v=202610102046';
+import { rangKarte, bindRang, RANG_CSS } from '../core/influencer_rang.js?v=202610102046';
 
 const datumDE = d => { const t = String(d || '').split('-'); return t.length === 3 ? t[2] + '.' + t[1] + '.' : (d || ''); };
 function zahl(n) {
@@ -64,7 +65,7 @@ function quelleHtml(q) {
 const SUB = 'Naders Influencer-Liste, dauerhaft verfolgt. Gelesen wird der öffentliche YouTube-Feed: Titel, Beschreibung und, wo YouTube es zulässt, das Transkript. Daraus wird gezählt, über welche Coins gerade gesprochen wird. <strong>X lässt sich seit 2023 nicht mehr automatisiert lesen</strong>, die API kostet Geld, deshalb steht dort nur der direkte Link. Ein Coin im Titel wiegt dreifach, ein Coin im Transkript einfach. <strong>Kampagnen werden getrennt ausgewiesen:</strong> wenn ein Thema die Titel beherrscht und in der Beschreibung eine Contract-Adresse steht, ist das bezahlte Werbung und kein Call.';
 
 export default {
-    styles: `
+    styles: RANG_CSS + `
         .fl-abschnitt { margin: 22px 0 10px; }
         .fl-link { padding: 7px 14px; font-size: .78rem; }
         .fl-link svg { width: 14px; height: 14px; }
@@ -111,7 +112,8 @@ export default {
         }
         root.innerHTML = pageHead('Entdecken', 'Influencer', SUB, `<span class="eyebrow">Stand ${esc(d.updated)}</span>`) +
             `<div class="row wrap" style="gap:8px">${chip(n + ' Quelle' + (n === 1 ? '' : 'n'))}${chip('Fenster ' + d.fenster_tage + ' Tage')}</div>` +
-            kons + d.quellen.map(quelleHtml).join('') +
+            rangKarte(d) + kons + d.quellen.map(quelleHtml).join('') +
             `<p class="sub fl-note" style="margin:0;font-size:.84rem">${window.CB2_PUBLIC ? '' : 'Neue Quelle: Eintrag in <code>cryptofluencer.json</code>, danach <code>python3 fetch_cryptofluencer.py</code>. Läuft bei jedem vollen Refresh automatisch mit. '}${esc(d.hinweis_x || '')}</p>`;
+        bindRang(root, d);
     },
 };
