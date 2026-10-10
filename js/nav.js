@@ -2,6 +2,7 @@ export const NAV = [
     { group: 'Heute', items: [
         { id: 'cockpit',    label: 'Cockpit',           icon: 'layout-dashboard', alt: 'Überblick' },
         { id: 'signale',    label: 'Tages-Signale',     icon: 'crosshair',        alt: 'neu in 2.0' },
+        { id: 'kaufsignale', label: 'Kaufsignale',      icon: 'target',           alt: 'neu in 2.0' },
         { id: 'radar',      label: 'Signal-Radar',      icon: 'radar',            alt: 'Radar' },
         { id: 'tagebuch',   label: 'Analyse-Tagebuch',  icon: 'notebook-pen',     alt: 'Tagebuch' },
     ] },
@@ -41,5 +42,5 @@ export const NAV = [
         { id: 'werkzeuge',  label: 'Werkzeuge',         icon: 'external-link',    alt: 'Links' },
     ] },
 ];
-export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gehasst', 'gems', 'handelszeiten', 'heatmap', 'icoipo', 'influencer', 'kurse', 'labor', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
+export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gehasst', 'gems', 'handelszeiten', 'heatmap', 'icoipo', 'influencer', 'kaufsignale', 'kurse', 'labor', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
 export const ALL = NAV.flatMap(g => g.items.map(i => ({ ...i, group: g.group })));

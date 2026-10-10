@@ -20,6 +20,7 @@ export const D = {
     get fluencer()   { return window.FLUENCER_DATA || null; },
     get kaufzonen()  { return window.KB_ZONEN || null; },
     get icoipo()     { return window.ICOIPO_DATA || null; },
+    get kaufsignale() { return window.KAUFSIGNALE_DATA || null; },
     get narrativ()   { return window.NARRATIV_DATA || null; },
     get milestoneProjects() { return []; },
     get milestones() { return []; },

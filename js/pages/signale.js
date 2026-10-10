@@ -1,5 +1,5 @@
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610101938';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610101938';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610102000';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610102000';
 
 let kette = 'alle';
 let einstieg = 'alle';      // 'alle' = alle Signale wie bisher, 'gut' = nur gute Einstiege
