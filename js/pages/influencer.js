@@ -1,7 +1,7 @@
-import { D, coin } from '../core/data.js?v=202610102147';
-import { esc } from '../core/fmt.js?v=202610102147';
-import { card, pageHead, chip, empty, icon, pct } from '../core/ui.js?v=202610102147';
-import { rangKarte, bindRang, RANG_CSS } from '../core/influencer_rang.js?v=202610102147';
+import { D, coin } from '../core/data.js?v=202610102228';
+import { esc } from '../core/fmt.js?v=202610102228';
+import { card, pageHead, chip, empty, icon, pct } from '../core/ui.js?v=202610102228';
+import { rangKarte, bindRang, RANG_CSS } from '../core/influencer_rang.js?v=202610102228';
 
 const datumDE = d => { const t = String(d || '').split('-'); return t.length === 3 ? t[2] + '.' + t[1] + '.' : (d || ''); };
 function zahl(n) {

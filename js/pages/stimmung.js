@@ -1,6 +1,6 @@
-import { D, proxy } from '../core/data.js?v=202610102147';
-import { esc, fNum, fBig, fUsd } from '../core/fmt.js?v=202610102147';
-import { card, pageHead, ring, empty, hydrate, seg, sparkline, icons } from '../core/ui.js?v=202610102147';
+import { D, proxy } from '../core/data.js?v=202610102228';
+import { esc, fNum, fBig, fUsd } from '../core/fmt.js?v=202610102228';
+import { card, pageHead, ring, empty, hydrate, seg, sparkline, icons } from '../core/ui.js?v=202610102228';
 
 let FNG = null;        // { history: [{t, v}], current, quelle }
 let BTC_HIST = null;   // [{t, p}]
