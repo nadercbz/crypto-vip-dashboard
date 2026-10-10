@@ -1,6 +1,6 @@
-import { D, coin } from '../core/data.js?v=202610101132';
-import { esc } from '../core/fmt.js?v=202610101132';
-import { card, pageHead, chip, empty, icon, pct } from '../core/ui.js?v=202610101132';
+import { D, coin } from '../core/data.js?v=202610101938';
+import { esc } from '../core/fmt.js?v=202610101938';
+import { card, pageHead, chip, empty, icon, pct } from '../core/ui.js?v=202610101938';
 
 const datumDE = d => { const t = String(d || '').split('-'); return t.length === 3 ? t[2] + '.' + t[1] + '.' : (d || ''); };
 function zahl(n) {
