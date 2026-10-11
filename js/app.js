@@ -1,10 +1,10 @@
-import { NAV, ALL, READY } from './nav.js?v=202610111226';
-import { D, coin, watch } from './core/data.js?v=202610111226';
-import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js?v=202610111226';
-import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js?v=202610111226';
-import * as glocke from './core/meldungen.js?v=202610111226';
-import { openCoin, closeCoin } from './core/coin.js?v=202610111226';
-import { kbInit } from './core/kaufbalken.js?v=202610111226';
+import { NAV, ALL, READY } from './nav.js?v=202610111230';
+import { D, coin, watch } from './core/data.js?v=202610111230';
+import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js?v=202610111230';
+import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js?v=202610111230';
+import * as glocke from './core/meldungen.js?v=202610111230';
+import { openCoin, closeCoin } from './core/coin.js?v=202610111230';
+import { kbInit } from './core/kaufbalken.js?v=202610111230';
 
 const $ = id => document.getElementById(id);
 const main = $('main');
@@ -121,7 +121,7 @@ async function go(id) {
     const paint = async () => {
         if (READY.has(active)) {
             try {
-                const mod = (await import(`./pages/${active}.js?v=202610111226`)).default;
+                const mod = (await import(`./pages/${active}.js?v=202610111230`)).default;
                 if (mod.styles && !styled.has(active)) { const s = document.createElement('style'); s.textContent = mod.styles; document.head.appendChild(s); styled.add(active); }
                 activeMod = mod;
                 await mod.render(root, { go, openCoin, rerender: () => go(active) });
@@ -165,7 +165,7 @@ document.addEventListener('click', e => {
     const c = e.target.closest('[data-coin]');
     if (c && !e.target.closest('[data-stop]')) { closePalette(); lastCoin = c.dataset.coin; openCoin(lastCoin); return; }
     const tk = e.target.closest('[data-tk]');
-    if (tk && !e.target.closest('a, details, [data-stop]')) { const [ch, tok] = tk.dataset.tk.split('|'); import('./pages/signale.js?v=202610111226').then(m => m.openToken(ch, tok)); return; }
+    if (tk && !e.target.closest('a, details, [data-stop]')) { const [ch, tok] = tk.dataset.tk.split('|'); import('./pages/signale.js?v=202610111230').then(m => m.openToken(ch, tok)); return; }
     const g = e.target.closest('[data-go]');
     if (g) { closePalette(); location.hash = '#/' + g.dataset.go; }
 });
