@@ -1,6 +1,6 @@
-import { D, coin, watch, store } from './data.js?v=202610111426';
-import { esc, fPct, ago } from './fmt.js?v=202610111426';
-import { icon, icons } from './ui.js?v=202610111426';
+import { D, coin, watch, store } from './data.js?v=202610111958';
+import { esc, fPct, ago } from './fmt.js?v=202610111958';
+import { icon, icons } from './ui.js?v=202610111958';
 
 const GELESEN = 'cb2_meldungen_gelesen';
 const $ = id => document.getElementById(id);
