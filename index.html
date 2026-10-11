@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crypto Biz">
+<title>Crypto Biz Dashboard</title>
+<meta name="theme-color" content="#E7E9F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14161B" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Crypto Biz Dashboard. Live-Marktdaten, Signal-Radar, Narrative, Hidden Gems, Tages-Signale und Trading-Werkzeuge.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/icon-64.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Crypto Biz Dashboard">
+<meta property="og:description" content="Live-Marktdaten, Signal-Radar, Narrative, Hidden Gems und Trading-Werkzeuge.">
+<meta property="og:url" content="https://nadercbz.github.io/crypto-vip-dashboard/">
+<meta property="og:image" content="https://nadercbz.github.io/crypto-vip-dashboard/assets/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crypto Biz Dashboard">
+<meta name="twitter:description" content="Live-Marktdaten, Signal-Radar, Narrative und Hidden Gems.">
+<meta name="twitter:image" content="https://nadercbz.github.io/crypto-vip-dashboard/assets/social-card.png">
+<link rel="preconnect" href="https://api.binance.com">
+<script>window.CB2_PUBLIC = true;</script>
+<script>
+// Theme vor dem ersten Bild setzen, sonst blitzt die falsche Fassung auf.
+(function () {
+    var t = null;
+    try { t = localStorage.getItem('cb2_theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css?v=202610111116">
+
+<!-- Oeffentliche Marktdaten, gefiltert von build_vip_v2.py -->
+<script src="data/crypto_data.js?v=202610111116"></script>
+<script src="data/signals_data.js?v=202610111116"></script>
+<script src="data/onchain_data.js?v=202610111116"></script>
+<script src="data/briefing_data.js?v=202610111116"></script>
+<script src="data/extras_data.js?v=202610111116"></script>
+<script src="data/series_data.js?v=202610111116"></script>
+<script src="data/social_data.js?v=202610111116"></script>
+<script src="data/gems_data.js?v=202610111116"></script>
+<script src="data/memecoin_data.js?v=202610111116"></script>
+<script src="data/paper_data.js?v=202610111116"></script>
+<script src="data/tagebuch_data.js?v=202610111116"></script>
+<script src="data/cryptofluencer_data.js?v=202610111116"></script>
+<script src="data/narrativ_data.js?v=202610111116"></script>
+<script src="data/tagessignale_data.js?v=202610111116"></script>
+<script src="data/labor_data.js?v=202610111116"></script>
+<script src="data/markt_plus_data.js?v=202610111116"></script>
+<script src="data/hass_data.js?v=202610111116"></script>
+<script src="data/icoipo_data.js?v=202610111116"></script>
+<script src="data/kaufzonen_data.js?v=202610111116"></script>
+<script src="data/kaufsignale_data.js?v=202610111116"></script>
+<script src="data/herdenradar_data.js?v=202610111116"></script>
+<script src="data/cmc_data.js?v=202610111116"></script>
+<script src="data/media_data.js?v=202610111116"></script>
+<script src="data/marktupdate_data.js?v=202610111116"></script>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+<div class="app">
+    <aside class="side" id="side">
+        <div class="brand">
+            <div class="brand-orb"><img src="assets/icon-180.png" alt=""></div>
+            <div><b>Crypto Biz</b><span>VIP Dashboard</span></div>
+        </div>
+        <nav class="nav" id="nav"></nav>
+        <div class="side-foot">
+            <button class="ibtn" id="themeBtn" title="Hell und Dunkel wechseln"><i data-lucide="moon"></i></button>
+            <span class="eyebrow" id="clock" style="margin-left:auto"></span>
+        </div>
+    </aside>
+
+    <div class="stage">
+        <header class="top">
+            <button class="ibtn only-m" id="menuBtn" title="Menü"><i data-lucide="menu"></i></button>
+            <div class="pills" id="pills"></div>
+            <button class="search-btn" id="searchBtn"><i data-lucide="search"></i><span>Suchen</span><kbd>⌘K</kbd></button>
+            <button class="ibtn bell" id="bellBtn" title="Meldungen"><i data-lucide="bell"></i></button>
+            <span class="fresh" id="fresh" title="Datenfrische"></span>
+        </header>
+        <main class="main" id="main"></main>
+    </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Coin-Detail"></aside>
+<div class="palette" id="palette">
+    <input class="input" id="paletteInput" placeholder="Coin, Seite, Signal, Notiz oder Tagebuch" autocomplete="off" spellcheck="false">
+    <div class="res list" id="paletteRes"></div>
+</div>
+<div class="bell-panel" id="bellPanel" aria-label="Meldungen"></div>
+<nav class="tabbar" id="tabbar" aria-label="Schnellwahl"></nav>
+<div class="toasts" id="toasts"></div>
+
+<script type="module" src="js/app.js?v=202610111116"></script>
+<script>
+/* Offline-Faehigkeit wie auf der alten VIP-Seite, nur unter https (GitHub Pages).
+   Kommt eine neue Fassung an, einmal neu laden. */
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').then(function (reg) {
+            reg.addEventListener('updatefound', function () {
+                var neu = reg.installing;
+                if (!neu) return;
+                neu.addEventListener('statechange', function () {
+                    if (neu.state === 'installed' && navigator.serviceWorker.controller) location.reload();
+                });
+            });
+        }).catch(function () {});
+    });
+}
+</script>
+</body>
+</html>

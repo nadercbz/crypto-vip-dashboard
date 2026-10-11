@@ -1,0 +1,45 @@
+name: Daten aktualisieren
+
+# Die Seite soll auch dann frisch bleiben, wenn der Rechner zu Hause aus ist.
+# Dieser Lauf holt die Marktdaten direkt bei den Quellen und schreibt sie
+# zurueck ins Repo. GitHub Pages veroeffentlicht den neuen Stand von selbst.
+on:
+  schedule:
+    # Viermal taeglich, versetzt zu den lokalen Laeufen (UTC).
+    - cron: '15 6,11,16,20 * * *'
+  workflow_dispatch:        # Knopf im Actions-Tab fuer einen Lauf von Hand
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daten-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Daten holen
+        env:
+          COINGECKO_KEY: ${{ secrets.COINGECKO_KEY }}
+        run: python3 tools/update_data.py
+
+      - name: Aenderungen zurueckschreiben
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "Keine neuen Daten, nichts zu committen."
+          else
+            git commit -m "Daten aktualisiert $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
