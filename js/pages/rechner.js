@@ -1,6 +1,6 @@
-import { coin, signal } from '../core/data.js?v=202610111116';
-import { esc, fUsd, fBig, fNum } from '../core/fmt.js?v=202610111116';
-import { card, pageHead, seg } from '../core/ui.js?v=202610111116';
+import { coin, signal } from '../core/data.js?v=202610111226';
+import { esc, fUsd, fBig, fNum } from '../core/fmt.js?v=202610111226';
+import { card, pageHead, seg } from '../core/ui.js?v=202610111226';
 
 const st = { coin: '', atr: 1.5, cap: '10000', risk: '1', entry: '100', stop: '95' };
 
