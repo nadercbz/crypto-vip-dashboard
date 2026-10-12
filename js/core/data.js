@@ -41,7 +41,46 @@ export function coin(sym) {
             if (!alt || (c.market_cap_rank || 1e9) < (alt.market_cap_rank || 1e9)) bySym.set(k, c);
         }
     }
-    return bySym.get(String(sym || '').toUpperCase()) || null;
+    const k = String(sym || '').toUpperCase();
+    return bySym.get(k) || extras().bySym.get(k) || null;
+}
+
+let _ex = null, _exStand = null;
+function extras() {
+    const nd = typeof window !== 'undefined' && window.NARRATIV_DATA;
+    if (_ex && _exStand === nd) return _ex;
+    _ex = { bySym: new Map(), byId: new Map(), key: new Map() }; _exStand = nd;
+    if (!nd || !nd.oekosysteme) return _ex;
+    const haupt = new Set(D.coins.map(c => c.id).filter(Boolean));
+    const dbId = new Map(); D.coins.forEach(c => { if (c.id && !dbId.has(c.id)) dbId.set(c.id, c); });
+    const symbole = new Set(D.coins.map(c => (c.symbol || '').toUpperCase()));
+    for (const e of nd.oekosysteme) for (const c of (e.coins || [])) {
+        if (!c.id || _ex.byId.has(c.id)) continue;
+        if (haupt.has(c.id)) {
+            const db = dbId.get(c.id), k0 = String(c.s || '').toUpperCase(), win = coin(c.s);
+            if (db && k0 && win && win.id !== c.id) {
+                const k = k0 + '.' + String(e.key || 'X').toUpperCase();
+                _ex.bySym.set(k, db); _ex.byId.set(c.id, db); _ex.key.set(c.id, k);
+            }
+            continue;
+        }
+        let k = String(c.s || '').toUpperCase() || String(c.id).toUpperCase();
+        if (symbole.has(k) || _ex.bySym.has(k)) k = k + '.' + String(e.key || 'X').toUpperCase();
+        const o = {
+            id: c.id, symbol: k, name: c.n, image: c.img, current_price: c.p, market_cap: c.mc, market_cap_rank: c.r, total_volume: c.v,
+            fully_diluted_valuation: c.fdv, price_change_percentage_24h: c.c24, price_change_percentage_7d_in_currency: c.c7,
+            price_change_percentage_30d_in_currency: c.c30, ath_change_percentage: c.ath, binance: null, extra: true,
+            sparkline_in_7d: c.sp ? { price: c.sp } : undefined,
+        };
+        _ex.bySym.set(k, o); _ex.byId.set(c.id, o); _ex.key.set(c.id, k);
+    }
+    return _ex;
+}
+export function coinKey(c) {
+    if (!c || !c.id) return null;
+    const best = coin(c.s);
+    if (best && best.id === c.id) return String(c.s).toUpperCase();
+    return extras().key.get(c.id) || null;
 }
 export function signal(sym) {
     const s = D.signals, k = String(sym || '').toLowerCase();
@@ -54,7 +93,7 @@ export function signal(sym) {
 let byId = null;
 export function coinById(id) {
     if (!byId) { byId = new Map(); D.coins.forEach(c => { if (c.id && !byId.has(c.id)) byId.set(c.id, c); }); }
-    return byId.get(String(id || '')) || null;
+    return byId.get(String(id || '')) || extras().byId.get(String(id || '')) || null;
 }
 
 export const store = {

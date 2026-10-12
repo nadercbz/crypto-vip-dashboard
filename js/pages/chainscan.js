@@ -1,6 +1,6 @@
-import { D, coin, store } from '../core/data.js?v=202610121013';
-import { esc } from '../core/fmt.js?v=202610121013';
-import { pageHead, ring, empty, icon, icons, hydrate, sparkline } from '../core/ui.js?v=202610121013';
+import { D, coin, coinKey, store } from '../core/data.js?v=202610122058';
+import { esc } from '../core/fmt.js?v=202610122058';
+import { pageHead, ring, empty, icon, icons, hydrate, sparkline } from '../core/ui.js?v=202610122058';
 
 const MERK = 'c2_ns_state_v1';
 const SORTEN = [['mc', 'Market Cap'], ['c24', '24 Std'], ['c7', '7 Tage'], ['c30', '30 Tage'], ['v', 'Volumen']];
@@ -50,8 +50,7 @@ function spark(werte, farbe, w, h) {
 }
 
 function panelSym(c) {
-    const best = coin(c.s);
-    return best && best.id === c.id ? c.s : null;
+    return coinKey(c);
 }
 
 const stables = () => { const m = typeof window !== 'undefined' && window.MARKT_PLUS_DATA; return (m && m.stables && m.stables.chains) ? m.stables : null; };
