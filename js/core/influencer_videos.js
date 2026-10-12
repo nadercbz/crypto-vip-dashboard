@@ -1,6 +1,6 @@
-import { D } from './data.js?v=202610111958';
-import { esc } from './fmt.js?v=202610111958';
-import { card, icon, seg } from './ui.js?v=202610111958';
+import { D } from './data.js?v=202610121013';
+import { esc } from './fmt.js?v=202610121013';
+import { card, icon, seg } from './ui.js?v=202610121013';
 
 let tab = 'alle', anzahl = 8;
 const tage = d => d ? Math.max(0, (Date.now() - new Date(d + 'T12:00:00').getTime()) / 86400000) : 99;
