@@ -1,16 +1,16 @@
-import { esc, fBig } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, chip, empty } from '../core/ui.js?v=202610122058';
+import { esc, fBig } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, chip, empty } from '../core/ui.js?v=202610151130';
 
 const ZONES = [
-    { name: 'Asia Session',   time: '02:00 bis 09:00', start: 2 * 60,       end: 9 * 60 },
-    { name: 'London Open',    time: '08:00 bis 11:00', start: 8 * 60,       end: 11 * 60 },
-    { name: 'NY Open',        time: '14:30 bis 17:00', start: 14 * 60 + 30, end: 17 * 60 },
-    { name: 'NY Close / Vol', time: '21:00 bis 23:00', start: 21 * 60,      end: 23 * 60 },
+    { name: 'Asia Session',   start: 2 * 60,       end: 9 * 60 },
+    { name: 'London Open',    start: 8 * 60,       end: 11 * 60 },
+    { name: 'NY Open',        start: 14 * 60 + 30, end: 17 * 60, ny: true },
+    { name: 'NY Close / Vol', start: 21 * 60,      end: 23 * 60, ny: true },
 ];
 const BAND = [
     { von: 1, bis: 9, name: 'Asien', farbe: 'var(--a2)' },
     { von: 9, bis: 17, name: 'London', farbe: 'var(--up)' },
-    { von: 15, bis: 22, name: 'New York', farbe: 'var(--warn)' },
+    { von: 15, bis: 22, name: 'New York', farbe: 'var(--warn)', ny: true },
 ];
 
 let fmtBerlin = null;
@@ -25,12 +25,25 @@ function berlin(d) {
 }
 function berlinNowMinutes() { const t = berlin(new Date()); return t.h * 60 + t.m; }
 
+let fmtNY = null;
+function nyVersatz() {
+    try {
+        if (!fmtNY) fmtNY = new Intl.DateTimeFormat('de-DE', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: false });
+        const p = fmtNY.formatToParts(new Date());
+        const ny = (+p.find(x => x.type === 'hour').value % 24) * 60 + +p.find(x => x.type === 'minute').value;
+        const diff = ((berlinNowMinutes() - ny) % 1440 + 1440) % 1440;
+        return diff - 360;
+    } catch (e) { return 0; }
+}
+const hhmm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+
 function zonen() {
-    const nowM = berlinNowMinutes();
+    const nowM = berlinNowMinutes(), v = nyVersatz();
     return ZONES.map(z => {
-        const active = nowM >= z.start && nowM < z.end;
+        const start = z.start + (z.ny ? v : 0), end = z.end + (z.ny ? v : 0);
+        const active = nowM >= start && nowM < end;
         return `<div class="hz-zone ${active ? 'on' : ''}"><span class="hz-dot"></span>
-            <div style="min-width:0"><div class="hz-name">${esc(z.name)}</div><div class="hz-time">${esc(z.time)}</div></div>
+            <div style="min-width:0"><div class="hz-name">${esc(z.name)}</div><div class="hz-time">${hhmm(start)} bis ${hhmm(end)}</div></div>
             ${active ? chip('Läuft gerade', 'var(--up)') : ''}</div>`;
     }).join('');
 }
@@ -72,10 +85,10 @@ function chart(d) {
     const B = 960, H = 240, links = 8, unten = 26;
     const max = Math.max(...d.volumen) || 1;
     const breite = (B - links * 2) / 24;
-    const jetzt = berlin(new Date()).h;
+    const jetzt = berlin(new Date()).h, nyV = nyVersatz() / 60;
     let svg = `<svg viewBox="0 0 ${B} ${H}" role="img" aria-label="Bitcoin-Volumen je Stunde">`;
     BAND.forEach(se => {
-        const x = links + se.von * breite;
+        const x = links + (se.von + (se.ny ? nyV : 0)) * breite;
         svg += `<rect x="${x.toFixed(1)}" y="0" width="${((se.bis - se.von) * breite).toFixed(1)}" height="${H - unten}" rx="10" style="fill:color-mix(in srgb, ${se.farbe} 10%, transparent)"/>` +
             `<text x="${(x + 8).toFixed(1)}" y="16" class="hz-label">${se.name}</text>`;
     });

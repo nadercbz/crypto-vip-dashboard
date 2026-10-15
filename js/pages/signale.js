@@ -1,7 +1,7 @@
-import { externChart } from '../core/coin.js?v=202610122058';
-import { kompakt, zoneAusKerzen } from '../core/kaufbalken.js?v=202610122058';
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610122058';
+import { externChart } from '../core/coin.js?v=202610151130';
+import { kompakt, zoneAusKerzen } from '../core/kaufbalken.js?v=202610151130';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610151130';
 
 let kette = 'alle';
 let einstieg = 'alle';      // 'alle' = alle Signale wie bisher, 'gut' = nur gute Einstiege
@@ -147,10 +147,11 @@ function karteKurz(x) {
     </article>`;
 }
 
+const sicher = u => /^https?:\/\//i.test(String(u || '').trim()) ? u : '';
 const EXPLORER = { solana: ['Solscan', t => 'https://solscan.io/token/' + t], base: ['Basescan', t => 'https://basescan.org/token/' + t], bsc: ['BscScan', t => 'https://bscscan.com/token/' + t] };
 const GECKO = { solana: 'solana', base: 'base', bsc: 'bsc' };
-let tkOv = null, tkKey = null, tkChart = null;
-function tokenSchliessen() { if (tkChart) { tkChart.destroy(); tkChart = null; } if (tkOv) { tkOv.classList.remove('on'); const o = tkOv; setTimeout(() => o.remove(), 400); tkOv = null; } document.removeEventListener('keydown', tkEsc); }
+let tkOv = null, tkKey = null, tkChart = null, tkLauf = 0;   // tkLauf: verwirft verzögerte Chart-Aufbauten nach Schließen oder Umschalten
+function tokenSchliessen() { tkLauf++; if (tkChart) { tkChart.destroy(); tkChart = null; } if (tkOv) { tkOv.classList.remove('on'); const o = tkOv; setTimeout(() => o.remove(), 400); tkOv = null; } document.removeEventListener('keydown', tkEsc); }
 const tkEsc = e => { if (e.key === 'Escape') tokenSchliessen(); };
 export function openToken(chain, token) {
     const T = window.TAGESSIGNALE_DATA;
@@ -175,7 +176,7 @@ function tokenDetail(x, d) {
             <button class="ibtn" data-tkclose title="Schließen (Esc)">${icon('x')}</button>
         </div>
         <div style="max-width:520px">${kompakt(zoneAusKerzen((x.chart || {}).reihe, (x.chart || {}).plan))}</div>
-        <div class="row wrap ts-ov-l">${btn(x.url, 'DexScreener', 'activity')}${btn(GECKO[x.chain] && x.pair ? 'https://www.geckoterminal.com/' + GECKO[x.chain] + '/pools/' + x.pair : '', 'GeckoTerminal', 'external-link')}${ex ? btn(ex[1](x.token), ex[0], 'search') : ''}${x.chain === 'solana' ? btn('https://rugcheck.xyz/tokens/' + x.token, 'RugCheck', 'shield-check') : ''}${btn(lk.x, 'X', 'at-sign')}${btn(lk.telegram, 'Telegram', 'send')}${btn(lk.web, 'Website', 'globe')}</div>
+        <div class="row wrap ts-ov-l">${btn(x.url, 'DexScreener', 'activity')}${btn(GECKO[x.chain] && x.pair ? 'https://www.geckoterminal.com/' + GECKO[x.chain] + '/pools/' + x.pair : '', 'GeckoTerminal', 'external-link')}${ex ? btn(ex[1](x.token), ex[0], 'search') : ''}${x.chain === 'solana' ? btn('https://rugcheck.xyz/tokens/' + x.token, 'RugCheck', 'shield-check') : ''}${btn(sicher(lk.x), 'X', 'at-sign')}${btn(sicher(lk.telegram), 'Telegram', 'send')}${btn(sicher(lk.web), 'Website', 'globe')}</div>
         <div class="row between wrap" style="gap:10px"><div class="seg" data-seg="tkchart"><button data-v="ta" class="on">Analyse-Chart</button>${embed ? '<button data-v="dex">DexScreener</button>' : ''}</div><span class="dim" style="font-size:.72rem">Trendlinien, Kaufzonen (grün), Widerstandszonen (rot), Stopp und Ziele sind eingezeichnet. Kerzen: ${esc(((x.chart || {}).tf_text) || 'Stundenkerzen')}, ${esc(((x.chart || {}).zeitraum) || '')}</span></div>
         <div class="ts-ov-chart" id="tkBox"><div class="skel"></div></div>
         <div class="row" style="gap:8px;align-items:center;font-size:.78rem"><span class="dim">Vertrag</span><code class="mono" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${esc(x.token || '')}</code><button class="btn soft" style="padding:4px 12px;font-size:.72rem" data-kopie="${esc(x.token || '')}">Kopieren</button></div>
@@ -186,14 +187,16 @@ function tokenDetail(x, d) {
     const zeigeTA = () => {
         const box = o.querySelector('#tkBox'); if (!box) return;
         if (tkChart) { tkChart.destroy(); tkChart = null; }
-        const reihe = (x.chart || {}).reihe;
+        const reihe = (x.chart || {}).reihe, nr = ++tkLauf;
         setTimeout(() => {
+            if (nr !== tkLauf || tkOv !== o || !box.isConnected) return;   // inzwischen geschlossen oder auf DexScreener umgeschaltet
             tkChart = reihe ? externChart(box, reihe, { sym: (x.chain + ':' + (x.token || '')).slice(0, 60) }) : null;
             if (!tkChart) box.innerHTML = `<div class="empty" style="padding:30px">Für diesen Coin gibt es noch zu wenige Kerzen für eine Chartanalyse (mindestens 30 nötig). Unten steht die Chart-Analyse in Worten, oder wechsle auf DexScreener.</div>`;
         }, 380);   // erst nach dem Einfahren messen, sonst stimmt die Breite nicht
     };
     const zeigeDex = () => {
         const box = o.querySelector('#tkBox'); if (!box) return;
+        tkLauf++;
         if (tkChart) { tkChart.destroy(); tkChart = null; }
         box.innerHTML = `<iframe src="${esc(embed)}" title="${esc(x.symbol)} Chart" loading="lazy" referrerpolicy="no-referrer"></iframe>`;
     };
@@ -217,7 +220,7 @@ function karte(x) {
     const kz = (k, v) => `<div><div class="eyebrow">${k}</div><div class="num">${v}</div></div>`;
     const seit = x.preis_signal && x.signal_seit && Math.abs(x.preis / x.preis_signal - 1) > 0.002
         ? `<div class="ts-seit">Signal ${ago(ts(x.signal_seit))} bei ${fUsd(x.preis_signal)}, seitdem <b class="${cls(x.preis / x.preis_signal - 1)}">${fPct((x.preis / x.preis_signal - 1) * 100)}</b></div>` : '';
-    const lk = x.links || {};
+    const lk0 = x.links || {}, lk = { x: sicher(lk0.x), telegram: sicher(lk0.telegram), web: sicher(lk0.web) };
     return `<article class="card ts-k ${x.stufe === 'beobachten' ? 'ts-warten' : ''}">
         <div class="row between" style="align-items:flex-start">
             <div class="row ts-tkhead" style="min-width:0">${x.img ? `<img class="coin-img" style="width:46px;height:46px" src="${esc(x.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : `<span class="ico-b" style="width:46px;height:46px">${icon('coins')}</span>`}
@@ -556,7 +559,7 @@ export default {
         .wa-h svg { width: 13px; height: 13px; margin-top: 2px; }
         @media (max-width: 860px) { .ts-grid { grid-template-columns: minmax(0, 1fr); } .ts-fk { width: 100%; } .ts-fp { display: none; } }`,
     render(root) {
-        const d = daten();
+        const roh = daten(), d = roh && roh.ergebnis ? { ...roh, chains: roh.chains || {}, stats: roh.stats || {} } : null;
         const kopf = pageHead('Signale', 'Tages-Signale', 'Tägliche Memecoin-Vorschläge für Solana, Base, BNB Chain, Robinhood und Monad aus DexScreener. Jeder Coin ist vorher durch 4 Stufen gelaufen: Marktdaten, harte Filter, Score und Vertragsprüfung. Unten im Signal-Tagebuch steht, was jedes Signal gebracht hätte.',
             d ? seg('tseinstieg', [['alle', 'Alle Signale'], ['gut', 'Guter Einstieg ' + Object.values(d.ergebnis).flatMap(e => e.signale || []).filter(x => einstiegsCheck(x).gut).length]], einstieg) +
                 seg('tskette', [['alle', 'Alle'], ...Object.entries(d.chains)], kette) : '');
@@ -565,6 +568,7 @@ export default {
         root.innerHTML = kopf + ((d.fehler || []).length ? card({ cls: 'flat', body: `<div class="warn" style="font-size:.86rem">${d.fehler.map(esc).join('. ')}</div>` }) : '') +
             kolStatus(d) + trichter(d) + `<div class="stack" id="tsListe">${liste(d)}</div><div id="tsHist">${historie(d)}</div><div id="tsWoche">${woche(d)}</div>` +
             `<p class="sub" style="font-size:.76rem;max-width:none">Mechanisches Raster, keine Anlageberatung und kein Kaufbefehl. Memecoins können in Minuten auf null fallen. Die Vertragsprüfung senkt das Risiko eines Betrugs, sie schließt ihn nicht aus. Nur Geld einsetzen, dessen Verlust du verkraftest.</p>`;
+        if (einstieg === 'gut') ['#tsHist', '#tsWoche'].forEach(q => { const el = root.querySelector(q); if (el) el.style.display = 'none'; });
         root.onclick = e => {
             const k = e.target.closest('[data-kopie]');
             if (k) { navigator.clipboard && navigator.clipboard.writeText(k.dataset.kopie).then(() => { const alt = k.innerHTML; k.textContent = 'Kopiert'; setTimeout(() => { k.innerHTML = alt; }, 1300); }); return; }

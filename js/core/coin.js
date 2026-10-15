@@ -1,8 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610122058';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610122058';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610122058';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610122058';
-import { berechneTA, mystik } from './auto_ta.js?v=202610122058';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610151130';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610151130';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610151130';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610151130';
+import { berechneTA, mystik } from './auto_ta.js?v=202610151130';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -194,7 +194,8 @@ function repaint() {
 export function externChart(box, rohKerzen, { sym = 'EXT', ath = null } = {}) {
     if (!window.LightweightCharts || !box || !rohKerzen || rohKerzen.length < 30) return null;
     ensureStyle();
-    const bars = rohKerzen.map(k => ({ time: k[0], open: k[1], high: k[2], low: k[3], close: k[4], value: k[4] })).filter(b => isFinite(b.close));
+    const kerzen = rohKerzen.filter(k => k && k[4] != null && isFinite(k[4]));
+    const bars = kerzen.map(k => ({ time: k[0], open: k[1], high: k[2], low: k[3], close: k[4], value: k[4] }));
     if (bars.length < 30) return null;
     const p = pal();
     box.innerHTML = '';
@@ -202,7 +203,7 @@ export function externChart(box, rohKerzen, { sym = 'EXT', ath = null } = {}) {
     const ro = folgeGroesse(ch, box);
     const ser = ch.addCandlestickSeries({ ...candleOpts(p), priceFormat: priceFmt(bars[bars.length - 1].close) });
     ser.setData(bars);
-    const vols = rohKerzen.map((k, i) => ({ time: k[0], value: k[5] || 0, color: alpha(bars[i].close >= bars[i].open ? p.up : p.down, .3) }));
+    const vols = kerzen.map((k, i) => ({ time: k[0], value: k[5] || 0, color: alpha(bars[i].close >= bars[i].open ? p.up : p.down, .3) }));
     const vs = ch.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: 'vol', color: alpha(p.ink3, .3) });
     ch.priceScale('vol').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
     vs.setData(vols);

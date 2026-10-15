@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202610122058';
-import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610122058';
+import { D } from '../core/data.js?v=202610151130';
+import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610151130';
 
 const TABS = [['heute', 'Heute'], ['30', 'Nächste 30 Tage'], ['6m', '3 bis 6 Monate'], ['3j', '1 bis 3 Jahre'], ['offen', 'Ohne Termin'], ['abgeschlossen', 'Abgeschlossen'], ['alle', 'Alle']];
 const STATUS_FARBE = { 'durchgeführt': 'var(--up)', 'aktiv': 'var(--a1)', 'angekündigt': 'var(--a2)', 'geplant': 'var(--ink-2)', 'verschoben': 'var(--warn)', 'abgesagt': 'var(--down)' };
@@ -12,7 +12,7 @@ const dash = v => (v == null || v === '' || (Array.isArray(v) && !v.length)) ? '
 const dat = d => { if (!d) return null; const t = new Date(d.length === 10 ? d + 'T12:00:00' : d); return isNaN(t) ? d : t.toLocaleDateString('de-DE', d.length === 10 ? { day: '2-digit', month: '2-digit', year: 'numeric' } : { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
 const wann = e => e.datum && e.datum.length === 10 ? dat(e.datum) : (e.zeitraum || e.datum || 'kein Termin bekannt');
 const get = () => D.icoipo;
-const link = (u, t) => u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" class="io-l">${esc(t)}</a>` : esc(t);
+const link = (u, t) => u && /^https?:\/\//i.test(u) ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" class="io-l">${esc(t)}</a>` : esc(t);
 const mcap = v => v == null ? '–' : fBig(v);
 
 function zaehle(daten) {
@@ -33,7 +33,7 @@ function zeile(e) {
     const sc = STATUS_FARBE[e.status] || 'var(--ink-3)';
     const m = e.markt || {};
     return `<button class="io-row" data-io="${esc(e.id)}">
-        <div class="io-r1"><span class="io-art ${e.art}">${e.art}</span><b>${esc(e.name)}</b>${e.ticker ? `<span class="io-tk">${esc(e.ticker)}</span>` : ''}
+        <div class="io-r1"><span class="io-art ${esc(e.art)}">${esc(e.art)}</span><b>${esc(e.name)}</b>${e.ticker ? `<span class="io-tk">${esc(e.ticker)}</span>` : ''}
             ${e.pruefen ? `<span class="io-warn" title="${esc(e.pruefen)}">${icon('triangle-alert')}prüfen</span>` : ''}</div>
         <div class="io-r2"><span>${esc(wann(e))}</span>${chip(e.status, sc)}</div>
         <div class="io-r3">${(e.narrative || []).map(n => `<span class="io-n">${esc(n)}</span>`).join('')}</div>
@@ -97,7 +97,7 @@ function zeichne(root, daten) {
     const c = zaehle(daten), liste = gefiltert(daten);
     root.querySelector('#ioTabs').innerHTML = TABS.map(([k, l]) => `<button data-tab="${k}" class="${st.tab === k ? 'on' : ''}">${l}<i>${c[k]}</i></button>`).join('');
     root.querySelector('#ioListe').innerHTML = liste.length ? liste.map(zeile).join('') : empty('Für diese Auswahl gibt es keine Einträge.');
-    root.querySelector('#ioNarr').innerHTML = daten.narrative.map(n => narrKarte(n, st.narr === n.name)).join('');
+    root.querySelector('#ioNarr').innerHTML = (daten.narrative || []).map(n => narrKarte(n, st.narr === n.name)).join('');
     root.querySelector('#ioAnz').textContent = `${liste.length} von ${daten.eintraege.length} Einträgen`;
     icons(root);
 }
@@ -187,11 +187,12 @@ export default {
             const r = ev.target.closest('[data-io]'); if (r) { const e = daten.eintraege.find(x => x.id === r.dataset.io); if (e) detail(daten, e); return; }
             const n = ev.target.closest('[data-narr]'); if (n) { st.narr = st.narr === n.dataset.narr ? '' : n.dataset.narr; st.tab = 'alle'; this.render(root); return; }
             if (ev.target.closest('#ioNarrAus')) { st.narr = ''; this.render(root); return; }
-            if (ev.target.closest('#ioSeit')) { st.tab = 'alle'; root.querySelector('.io-log') && root.querySelector('.io-log').scrollIntoView({ behavior: 'smooth' }); }
+            if (ev.target.closest('#ioSeit')) { st.tab = 'alle'; zeichne(root, daten); const logs = root.querySelectorAll('.io-log'); if (logs.length) logs[logs.length - 1].scrollIntoView({ behavior: 'smooth' }); return; }
             const sg = ev.target.closest('[data-seg="ioart"] button'); if (sg) { st.art = sg.dataset.v; root.querySelectorAll('[data-seg="ioart"] button').forEach(b => b.classList.toggle('on', b === sg)); zeichne(root, daten); }
         };
         root.querySelector('#ioQ').oninput = ev => { st.q = ev.target.value; zeichne(root, daten); };
         root.querySelector('#ioSt').onchange = ev => { st.status = ev.target.value; zeichne(root, daten); };
+        if (onKey) document.removeEventListener('keydown', onKey);
         onKey = ev => { if (ev.key === 'Escape' && overlays.length) zu(overlays[overlays.length - 1]); };
         document.addEventListener('keydown', onKey);
     },

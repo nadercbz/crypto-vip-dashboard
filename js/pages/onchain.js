@@ -1,6 +1,6 @@
-import { D, coin } from '../core/data.js?v=202610122058';
-import { esc, fBig, fPct, fNum } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, sparkline, coinRow, empty, chip } from '../core/ui.js?v=202610122058';
+import { D, coin } from '../core/data.js?v=202610151130';
+import { esc, fBig, fPct, fNum } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, sparkline, coinRow, empty, chip } from '../core/ui.js?v=202610151130';
 
 function zeitHer(ts) {
     const min = Math.round((Date.now() / 1000 - ts) / 60);
@@ -43,7 +43,7 @@ function taker(o) {
         ? `<p class="sub" style="margin:0 0 12px;color:var(--ink-2)">Über alle beobachteten Perpetuals liegt das Verhältnis bei <b class="num ${tk.ratio >= 1 ? 'up' : 'down'}">${fNum(tk.ratio, 2)}</b>. ${tk.ratio >= 1 ? 'Die Käufer sind aggressiver.' : 'Die Verkäufer sind aggressiver.'}</p>` : '') +
         `<div class="list oc-taker">${rows.slice(0, 12).map(r => {
             const c = coin(r.symbol) || {}, S = String(r.symbol || '').toUpperCase();
-            return coinRow(S, c.name || S, c.image, 'Käufe ' + fBig(r.buy_vol),
+            return coinRow(S, c.name || S, c.image, 'Käufe ' + fBig(r.buy_vol, '') + ' ' + S,
                 `<span class="${r.ratio >= 1 ? 'up' : 'down'}">${r.ratio != null ? fNum(r.ratio, 2) : '—'}</span>`);
         }).join('')}</div>`;
 }
@@ -52,7 +52,7 @@ function news(o) {
     const list = (o && o.news) || [];
     if (!list.length) return empty('Keine Nachrichten geladen.');
     return `<div class="grid g3 oc-news">${list.slice(0, 24).map(x =>
-        `<a class="card sunk click oc-n" href="${esc(x.link)}" target="_blank" rel="noopener">
+        `<a class="card sunk click oc-n" href="${/^https?:\/\//i.test(x.link || '') ? esc(x.link) : '#'}" target="_blank" rel="noopener">
             <div class="eyebrow">${esc(x.source)}${x.ts ? ' · vor ' + zeitHer(x.ts) : ''}</div>
             <div class="oc-t">${esc(x.title)}</div></a>`).join('')}</div>`;
 }

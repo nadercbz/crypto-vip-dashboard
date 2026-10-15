@@ -1,6 +1,6 @@
-import { store } from '../core/data.js?v=202610122058';
-import { esc } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, icon } from '../core/ui.js?v=202610122058';
+import { store } from '../core/data.js?v=202610151130';
+import { esc } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, icon } from '../core/ui.js?v=202610151130';
 
 const ITEMS = [
     'Trend klar definiert (Higher Highs / Lower Lows)',
@@ -13,7 +13,7 @@ const ITEMS = [
     'News / Events gecheckt',
 ];
 const KEY = 'c2_checklist_state';
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 function load() {
     const raw = store.get(KEY, {}) || {};
     return raw.date === today() && Array.isArray(raw.done) ? new Set(raw.done) : new Set();

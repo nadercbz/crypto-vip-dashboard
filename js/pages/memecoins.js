@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202610122058';
-import { esc } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610122058';
+import { D } from '../core/data.js?v=202610151130';
+import { esc } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610151130';
 
 const state = { seite: 'long', chain: 'alle', sort: 'score' };
 

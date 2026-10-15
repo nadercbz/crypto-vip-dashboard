@@ -1,10 +1,10 @@
-import { NAV, ALL, READY } from './nav.js?v=202610122058';
-import { D, coin, watch } from './core/data.js?v=202610122058';
-import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js?v=202610122058';
-import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js?v=202610122058';
-import * as glocke from './core/meldungen.js?v=202610122058';
-import { openCoin, closeCoin } from './core/coin.js?v=202610122058';
-import { kbInit } from './core/kaufbalken.js?v=202610122058';
+import { NAV, ALL, READY } from './nav.js?v=202610151130';
+import { D, coin, watch } from './core/data.js?v=202610151130';
+import { esc, fUsd, fBig, fPct, cls, ago, utcTs } from './core/fmt.js?v=202610151130';
+import { icon, icons, hydrate, toast, pageHead, card, coinImg } from './core/ui.js?v=202610151130';
+import * as glocke from './core/meldungen.js?v=202610151130';
+import { openCoin, closeCoin } from './core/coin.js?v=202610151130';
+import { kbInit } from './core/kaufbalken.js?v=202610151130';
 
 const $ = id => document.getElementById(id);
 const main = $('main');
@@ -112,17 +112,19 @@ async function go(id) {
     active = item.id; activeMod = null;
     document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.go === active));
     document.querySelectorAll('#tabbar [data-tab]').forEach(a => a.classList.toggle('on', a.dataset.tab === active));
-    $('scrim').classList.remove('on');
+    if (!$('drawer').classList.contains('on')) $('scrim').classList.remove('on');
     $('side').classList.remove('on');
     document.title = item.label + (OEFFENTLICH ? ' · Crypto Biz' : ' · Crypto Biz 2.0');
     const root = document.createElement('div');
     root.className = 'page'; root.dataset.page = active;
     main.replaceChildren(root); main.scrollTop = 0;
+    const seite = active;
     const paint = async () => {
-        if (READY.has(active)) {
+        if (READY.has(seite)) {
             try {
-                const mod = (await import(`./pages/${active}.js?v=202610122058`)).default;
-                if (mod.styles && !styled.has(active)) { const s = document.createElement('style'); s.textContent = mod.styles; document.head.appendChild(s); styled.add(active); }
+                const mod = (await import(`./pages/${seite}.js?v=202610151130`)).default;
+                if (!root.isConnected) return;
+                if (mod.styles && !styled.has(seite)) { const s = document.createElement('style'); s.textContent = mod.styles; document.head.appendChild(s); styled.add(seite); }
                 activeMod = mod;
                 await mod.render(root, { go, openCoin, rerender: () => go(active) });
             } catch (e) {
@@ -169,9 +171,13 @@ document.addEventListener('click', e => {
         openCoin(lastCoin); return;
     }
     const tk = e.target.closest('[data-tk]');
-    if (tk && !e.target.closest('a, details, [data-stop]')) { const [ch, tok] = tk.dataset.tk.split('|'); import('./pages/signale.js?v=202610122058').then(m => { if (m.default.styles && !styled.has('signale')) { const st = document.createElement('style'); st.textContent = m.default.styles; document.head.appendChild(st); styled.add('signale'); } m.openToken(ch, tok); }); return; }
+    if (tk && !e.target.closest('a, details, [data-stop]')) { const [ch, tok] = tk.dataset.tk.split('|'); import('./pages/signale.js?v=202610151130').then(m => { if (m.default.styles && !styled.has('signale')) { const st = document.createElement('style'); st.textContent = m.default.styles; document.head.appendChild(st); styled.add('signale'); } m.openToken(ch, tok); }); return; }
     const g = e.target.closest('[data-go]');
-    if (g) { closePalette(); location.hash = '#/' + g.dataset.go; }
+    if (g) {
+        closePalette();
+        if (location.hash === '#/' + g.dataset.go) { $('side').classList.remove('on'); if (!$('drawer').classList.contains('on')) $('scrim').classList.remove('on'); }
+        else location.hash = '#/' + g.dataset.go;
+    }
 });
 $('scrim').onclick = () => { closeCoin(); closePalette(); $('side').classList.remove('on'); $('scrim').classList.remove('on'); };
 $('menuBtn').onclick = () => { $('side').classList.add('on'); $('scrim').classList.add('on'); };

@@ -1,7 +1,7 @@
-import { coin } from './data.js?v=202610122058';
-import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610122058';
-import { aufbereich } from './coin.js?v=202610122058';
-import { berechneTA } from './auto_ta.js?v=202610122058';
+import { coin } from './data.js?v=202610151130';
+import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610151130';
+import { aufbereich } from './coin.js?v=202610151130';
+import { berechneTA } from './auto_ta.js?v=202610151130';
 
 const ZB = 36;   // Breite der Zone auf der Leiste in Prozent
 export function zoneHtml(z) {
@@ -161,8 +161,9 @@ function slotFuer(el) {
 
 const zonen = new Map();
 function zFuer(sym) {
-    if (!zonen.has(sym)) { const c = coin(sym); zonen.set(sym, c ? aufbereich(c).catch(() => null) : Promise.resolve(null)); }
-    return zonen.get(sym);
+    const hit = zonen.get(sym);
+    if (!hit || Date.now() - hit.t > 30 * 60 * 1000) { const c = coin(sym); zonen.set(sym, { t: Date.now(), p: c ? aufbereich(c).catch(() => null) : Promise.resolve(null) }); }
+    return zonen.get(sym).p;
 }
 export function rang(z) {
     if (!z || z.keine) return null;
@@ -203,7 +204,8 @@ function anzeige(g) {
     if (!ind) return;
     g.kopf.classList.toggle('kb-an', !!d);
     const pre = g.kopf.classList.contains('kb-ls') ? ', ' : ' Kaufbereich, ';
-    ind.textContent = laedt && d ? pre + 'lädt ' + laedt : d === 1 ? pre + 'beste zuerst ↓' : d === -1 ? pre + 'beste zuletzt ↑' : '';
+    const txt = laedt && d ? pre + 'lädt ' + laedt : d === 1 ? pre + 'beste zuerst ↓' : d === -1 ? pre + 'beste zuletzt ↑' : '';
+    if (ind.textContent !== txt) ind.textContent = txt;
 }
 async function ordne(g, laden) {
     const d = sortZustand[g.key]; if (!d) return;
@@ -249,6 +251,7 @@ function gruppenFinden(root) {
         }
         const tbody = rows[0].parentNode;
         const g = { key, box: tbody, kopf: th, items: () => [...tbody.children].filter(x => x.matches('tr[data-coin]')) };
+        if (th._kbGruppe) gruppen.delete(th._kbGruppe);   // sonst wächst die Menge bei jedem Scan
         th._kbGruppe = g;
         gruppen.add(g);
         if (sortZustand[key]) ordne(g, true); else anzeige(g);
@@ -267,6 +270,7 @@ function gruppenFinden(root) {
             box.parentNode.insertBefore(btn, box);
         }
         const g = { key: schluessel(root, btn, 'liste'), box, kopf: btn, items };
+        if (btn._kbGruppe) gruppen.delete(btn._kbGruppe);
         btn._kbGruppe = g;
         gruppen.add(g);
         if (sortZustand[g.key]) ordne(g, true); else anzeige(g);

@@ -1,6 +1,6 @@
-import { coin, signal } from '../core/data.js?v=202610122058';
-import { esc, fUsd, fBig, fNum } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, seg } from '../core/ui.js?v=202610122058';
+import { coin, signal } from '../core/data.js?v=202610151130';
+import { esc, fUsd, fBig, fNum } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, seg } from '../core/ui.js?v=202610151130';
 
 const st = { coin: '', atr: 1.5, cap: '10000', risk: '1', entry: '100', stop: '95' };
 
@@ -55,7 +55,7 @@ export default {
         function calcPosition() {
             const cap = zahl('cap'), risk = zahl('risk'), entry = zahl('entry'), stop = zahl('stop');
             const out = $('rcResult');
-            if (!cap || !risk || !entry || !stop || entry === stop) {
+            if (cap <= 0 || risk <= 0 || entry <= 0 || stop <= 0 || entry === stop) {
                 out.innerHTML = `<div class="empty" style="grid-column:1/-1">Bitte alle Felder ausfüllen.</div>`;
                 return;
             }

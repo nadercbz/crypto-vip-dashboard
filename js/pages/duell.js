@@ -1,6 +1,6 @@
-import { D, store } from '../core/data.js?v=202610122058';
-import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, seg, empty, icon, icons } from '../core/ui.js?v=202610122058';
+import { D, store } from '../core/data.js?v=202610151130';
+import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, seg, empty, icon, icons } from '../core/ui.js?v=202610151130';
 
 const ARENA_KEY = 'c2_arena_elo_v1';
 const DEFAULT_ELO = 1200;
@@ -136,6 +136,7 @@ export default {
             sessionStreak++;
             (winnerIdx === 0 ? fA : fB).classList.add('win');
             (winnerIdx === 0 ? fB : fA).classList.add('lose');
+            pair = [null, null];
             updateStats();
             clearTimeout(timer);
             timer = setTimeout(nextBattle, 150);

@@ -1,8 +1,8 @@
-import { D, coin, watch, store } from '../core/data.js?v=202610122058';
-import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610122058';
-import { einstiegsCheck } from './signale.js?v=202610122058';
-import { kompakt, zoneAusKerzen } from '../core/kaufbalken.js?v=202610122058';
-import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js?v=202610122058';
+import { D, coin, watch, store } from '../core/data.js?v=202610151130';
+import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610151130';
+import { einstiegsCheck } from './signale.js?v=202610151130';
+import { kompakt, zoneAusKerzen } from '../core/kaufbalken.js?v=202610151130';
+import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js?v=202610151130';
 
 
 function ampel() {
@@ -43,7 +43,7 @@ function briefing() {
 }
 
 function kachel(label, wert, k, einheit) {
-    const mk = (D.series && D.series.market) || [], last = mk[mk.length - 1] || {}, first = mk[0] || {};
+    const mk = (D.series && D.series.market) || [], last = mk[mk.length - 1] || {}, first = mk.find(r => r[k] != null) || {};
     const reihe = mk.map(r => r[k]).filter(v => v != null);
     const chg = (last[k] != null && first[k]) ? (last[k] / first[k] - 1) * 100 : null;
     const fuss = einheit === 'pkt'
@@ -51,7 +51,7 @@ function kachel(label, wert, k, einheit) {
         : pct(chg);
     return card({ cls: 'stat', body: `
         <div class="eyebrow">${label}</div><div class="big num v">${wert(last)}</div>
-        <div class="foot">${fuss}<span>seit ${mk.length} Tagen</span></div>
+        <div class="foot">${fuss}<span>seit ${reihe.length} Tagen</span></div>
         ${dotChart(reihe)}` });
 }
 
@@ -255,7 +255,7 @@ const kbP = v => v == null ? '–' : v >= 100 ? '$' + kbZ(v, 0) : v >= 1 ? '$' +
 function kaufbar() {
     const out = [], knapp = [];
     const K = window.KAUFSIGNALE_DATA;
-    if (K && K.tiers) K.tiers.forEach(t => t.coins.forEach(c => {
+    if (K && K.tiers) K.tiers.forEach(t => (t.coins || []).forEach(c => {
         const e = (c.chart || {}).einstieg || {};
         const zeile = { art: 'cap', klasse: t.label, sym: c.symbol, name: c.name, img: c.image, score: c.score, preis: c.preis, zone: (c.chart && c.chart.zone && c.preis) ? { ...c.chart.zone, kurs: c.preis, abstandPct: c.chart.zone.abstandPct || 0 } : null, einstieg: e.von != null ? kbP(e.von) + ' bis ' + kbP(e.bis) : '–', stopp: e.stopp, ziel: ((c.chart || {}).ziele || [])[0], rr: e.rr, text: (c.horizonte && c.beste) ? { lang: 'langfristig', mittel: 'mittelfristig', kurz: 'kurzfristig' }[c.beste] : '', gruende: c.gruende_nein || [] };
         (c.status === 'kauf' ? out : knapp).push(zeile);
@@ -360,7 +360,7 @@ const marktupdateKarte = () => {
     if (!m || !m.video) return '';
     const zeit = t => Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
     return `<section class="card mu-karte">
-        <div class="kb-kopf"><div><div class="eyebrow">Marktupdate · ${esc(m.datum_lang || m.datum)}</div><h2>Das tägliche Update, ${esc(zeit(m.dauer))} Minuten</h2></div>
+        <div class="kb-kopf"><div><div class="eyebrow">Marktupdate · ${esc(m.datum_lang || m.datum)}</div><h2>Das tägliche Update${m.dauer > 0 ? ', ' + esc(zeit(m.dauer)) + ' Minuten' : ''}</h2></div>
         <div class="row" style="gap:10px"><a class="btn soft" href="${esc(m.download || m.video)}" download="Marktupdate_${esc(m.datum)}.mp4">${icon('download')}Herunterladen</a><span class="chip" title="Wird jeden Tag um 11 Uhr neu aus den Dashboard Daten gebaut.">täglich 11:00</span></div></div>
         <div class="mu-grid"><video id="muVideo" class="mu-video" controls preload="metadata" playsinline ${m.poster ? `poster="${esc(m.poster)}"` : ''} src="${esc(m.video)}"></video>
         <div class="mu-kap">${(m.kapitel || []).map(k => `<button data-mu-seek="${k.start}"><span class="mono">${zeit(k.start)}</span><span>${esc(k.titel)}</span></button>`).join('')}</div></div>

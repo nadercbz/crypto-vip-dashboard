@@ -1,5 +1,5 @@
-import { esc, fPct } from '../core/fmt.js?v=202610122058';
-import { card, pageHead, chip, empty, icon, hydrate, seg } from '../core/ui.js?v=202610122058';
+import { esc, fPct } from '../core/fmt.js?v=202610151130';
+import { card, pageHead, chip, empty, icon, hydrate, seg } from '../core/ui.js?v=202610151130';
 
 const H = () => window.HERDEN_DATA || null;
 const ZONEN = [[0, 20, 'Kapitulation', 'var(--up)'], [20, 40, 'Angst', 'color-mix(in srgb, var(--up) 55%, var(--ink-3))'], [40, 60, 'Neutral', 'var(--ink-3)'], [60, 80, 'Gier', 'color-mix(in srgb, var(--down) 55%, var(--ink-3))'], [80, 100, 'Euphorie', 'var(--down)']];
@@ -227,6 +227,7 @@ function feedKarte(D) {
 
 function feedStart(root) {
     feedLeeren();
+    feed.pause = false;   // Maus lag beim Seitenwechsel auf dem Feed: pointerleave kam nie, der Feed stünde sonst still
     feed.el = root.querySelector('[data-feed]');
     if (!feed.el || !feed.items.length) return;
     neuStart();
