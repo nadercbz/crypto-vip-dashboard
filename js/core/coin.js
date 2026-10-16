@@ -1,8 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610151657';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610151657';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610151657';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610151657';
-import { berechneTA, mystik } from './auto_ta.js?v=202610151657';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610160928';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610160928';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610160928';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610160928';
+import { berechneTA, mystik } from './auto_ta.js?v=202610160928';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
