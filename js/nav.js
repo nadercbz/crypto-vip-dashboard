@@ -29,6 +29,7 @@ export const NAV = [
         { id: 'chainscan', label: 'Chain-Scan', icon: 'scan-search', alt: 'Narrativ Scan', info: 'Vergleicht Blockchains: Wo startet gerade etwas und welche Projekte sind dort am größten.' },
         { id: 'icoipo', label: 'ICOs und IPOs', icon: 'ticket', alt: 'neu in 2.0', info: 'Neue Börsengänge und Token-Verkäufe, die bevorstehen oder gerade laufen, mit Terminen.' },
         { id: 'media', label: 'Media', icon: 'youtube', alt: 'neu in 2.0', info: 'Neue, noch kleine Krypto-YouTuber (100 bis 5.000 Abonnenten), Deutsch und Englisch, jeden Tag frisch gesucht.' },
+        { id: 'symbolik', label: 'Symbolik', icon: 'sparkles', alt: 'neu in 2.0', info: 'Die Top 5000 Coins nach der Bildsprache ihrer Logos: Tiere, Farben, Formen, Elemente. Mit Deutung aus der Mystic-Datenbank.' },
         { id: 'finder', label: 'Coin-Finder', icon: 'sliders-horizontal', alt: 'Finder', info: 'Fünf Regler einstellen, und der Finder zeigt dir passende Coins.' },
     ] },
     { group: 'Portfolio', items: [
@@ -48,5 +49,5 @@ export const NAV = [
         { id: 'werkzeuge', label: 'Werkzeuge', icon: 'external-link', alt: 'Links', info: 'Nützliche externe Tools und Webseiten als Link-Sammlung.' },
     ] },
 ];
-export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gehasst', 'gems', 'handelszeiten', 'heatmap', 'herdenradar', 'icoipo', 'influencer', 'kaufsignale', 'kurse', 'labor', 'media', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
+export const READY = new Set(['ausbrueche', 'bestenliste', 'bewegung', 'buzz', 'chainscan', 'cockpit', 'duell', 'finder', 'gehasst', 'gems', 'handelszeiten', 'heatmap', 'herdenradar', 'icoipo', 'influencer', 'kaufsignale', 'kurse', 'labor', 'media', 'memecoins', 'narrative', 'onchain', 'playbook', 'portfolio', 'radar', 'rechner', 'signale', 'stimmung', 'symbolik', 'tagebuch', 'tradecheck', 'watchlist', 'werkzeuge']);
 export const ALL = NAV.flatMap(g => g.items.map(i => ({ ...i, group: g.group })));
