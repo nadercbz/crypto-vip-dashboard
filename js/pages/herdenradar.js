@@ -1,5 +1,5 @@
-import { esc, fPct } from '../core/fmt.js?v=202610171118';
-import { card, pageHead, chip, empty, icon, hydrate, seg } from '../core/ui.js?v=202610171118';
+import { esc, fPct } from '../core/fmt.js?v=202610181021';
+import { card, pageHead, chip, empty, icon, hydrate, seg } from '../core/ui.js?v=202610181021';
 
 const H = () => window.HERDEN_DATA || null;
 const ZONEN = [[0, 20, 'Kapitulation', 'var(--up)'], [20, 40, 'Angst', 'color-mix(in srgb, var(--up) 55%, var(--ink-3))'], [40, 60, 'Neutral', 'var(--ink-3)'], [60, 80, 'Gier', 'color-mix(in srgb, var(--down) 55%, var(--ink-3))'], [80, 100, 'Euphorie', 'var(--down)']];
