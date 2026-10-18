@@ -1,36 +1,48 @@
-import { coin } from './data.js?v=202610181021';
-import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610181021';
-import { aufbereich } from './coin.js?v=202610181021';
-import { berechneTA } from './auto_ta.js?v=202610181021';
+import { coin } from './data.js?v=202610182147';
+import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610182147';
+import { aufbereich } from './coin.js?v=202610182147';
+import { berechneTA } from './auto_ta.js?v=202610182147';
 
 const ZB = 36;   // Breite der Zone auf der Leiste in Prozent
+export const GEGEN = {
+    rr: 'Chance zu Risiko unter 1 zu 2',
+    heiss: 'überhitzt',
+    oben: 'Kurs nahe am 90-Tage-Hoch',
+    jahr: 'Kurs in der oberen Hälfte der Jahresspanne',
+    ab: 'Trend abwärts',
+};
+export const gegenText = z => (z.gegen || []).map(g => GEGEN[g] || g).join(', ');
+const istBest = (z, tiefe) => z.best != null ? !!z.best : false;
 export function zoneHtml(z) {
     const mitte = (z.von + z.bis) / 2, p = v => fPct((v / z.kurs - 1) * 100);
     let pos, lage;
     if (z.im) {
         z.tiefe = z.bis > z.von ? Math.min(1, Math.max(0, (z.kurs - z.von) / (z.bis - z.von))) : 0;
         pos = Math.min(ZB - 2.5, Math.max(2.5, z.tiefe * ZB));
-        lage = (z.tiefe <= 1 / 3 && (z.score || 0) >= 3) ? 'best' : 'zone';
+        lage = istBest(z, z.tiefe) ? 'best' : 'zone';
+        if (lage === 'zone') pos = Math.min(ZB - 2.5, Math.max(ZB / 3 + 1, pos));
     } else {
-        pos = ZB + 3 + Math.min(1, z.abstandPct / 40) * (100 - ZB - 6);
-        lage = 'warten';
+        pos = ZB + 3 + Math.min(1, (z.abstandPct || 0) / 40) * (100 - ZB - 6);
+        lage = z.beobachten ? 'beob' : 'warten';
     }
     const status = {
         best: `<span class="wl-st best"><i></i>Bester Kaufbereich</span>`,
         zone: `<span class="wl-st zone"><i></i>Im Kaufbereich</span>`,
+        beob: `<span class="wl-st warten"><i></i>Beobachten: ${esc(gegenText(z))}${z.abstandPct > 0.2 ? ', nächste Zone ' + fPct((z.bis / z.kurs - 1) * 100) : ''}</span>`,
         warten: `<span class="wl-st warten"><i></i>Abwarten, ${fPct((z.bis / z.kurs - 1) * 100)} bis Kaufbereich</span>`,
     }[lage];
-    const tipKurs = `Aktueller Kurs ${fUsd(z.kurs)}\n` + (lage === 'best' ? 'Er steht im besten Kaufbereich.' : lage === 'zone' ? 'Er steht im Kaufbereich, aber in der oberen Zone oder die Zone ist weniger stark.' : `Er muss noch ${fPct((z.bis / z.kurs - 1) * 100)} fallen, bis der Kaufbereich erreicht ist.`);
+    const tipKurs = `Aktueller Kurs ${fUsd(z.kurs)}\n` + (lage === 'best' ? 'Er steht im besten Kaufbereich.' : lage === 'zone' ? 'Er steht im Kaufbereich, aber in der oberen Zone oder die Zone ist weniger stark.' : lage === 'beob' ? 'Kein Kaufbereich: ' + gegenText(z) + '.' : `Er muss noch ${fPct((z.bis / z.kurs - 1) * 100)} fallen, bis der Kaufbereich erreicht ist.`);
     const info = `<span class="wl-iw"><button type="button" class="wl-i" aria-label="So liest du die Leiste">i</button><span class="wl-tip" role="tooltip">
         <b>So liest du die Leiste</b>
-        <span><i class="k g1"></i><u>Dunkelgrün, Bester Kaufbereich:</u> unteres Drittel einer starken Zone mit mindestens 3 Gründen (Wendepunkte, Fibonacci, EMA 200, Volumen). Hier ist Chance zu Risiko am besten.</span>
+        <span><i class="k g1"></i><u>Dunkelgrün, Bester Kaufbereich:</u> unteres Drittel einer starken Zone mit mindestens 3 Gründen (Wendepunkte, Fibonacci, EMA 200, Volumen), Kurs im unteren Drittel der Jahresspanne. Hier ist Chance zu Risiko am besten.</span>
+        <span><u>Kaufbereich heißt nur:</u> Chance zu Risiko ab dem Kurs mindestens 1 zu 2, nicht überhitzt, nicht direkt unter dem 90-Tage-Hoch, Kurs in der unteren Hälfte der Jahresspanne, kein fallendes Messer. Sonst steht dort Beobachten mit Grund.</span>
         <span><i class="k g2"></i><u>Hellgrün, Kaufbereich:</u> restliche Zone. Einstieg möglich, aber etwas teurer oder die Zone ist weniger stark.</span>
         <span><i class="k y"></i><u>Gelb gestrichelt, Abwarten:</u> so weit muss der Kurs noch fallen. Je länger, desto weiter weg.</span>
         <span><i class="k p"></i><u>Der Punkt</u> ist der aktuelle Kurs. Je weiter links, desto besser für den Einstieg.</span>
         <span class="n">Die Zone kommt aus der Auto-TA: Wendepunkte im Chart, Fibonacci, EMA 200, Volumen. Regelbasiert, keine Anlageberatung.${z.quelle === 'tage' ? ' Bei diesem Coin aus Tageskursen berechnet (kein Binance-Paar), daher gröber als mit Kerzen.' : ''}</span></span></span>`;
-    const weg = lage === 'warten' ? `<i class="wl-weg" tabindex="0" style="left:${ZB}%;width:${(pos - ZB).toFixed(1)}%" data-tip="Abwarten&#10;Der Kurs liegt noch ${fNum(z.abstandPct, 1)} % über dem Kaufbereich. Diese Strecke muss er noch fallen."></i>` : '';
+    const weg = (lage === 'warten' || lage === 'beob') && pos > ZB ? `<i class="wl-weg" tabindex="0" style="left:${ZB}%;width:${(pos - ZB).toFixed(1)}%" data-tip="Abwarten&#10;Der Kurs liegt noch ${fNum(z.abstandPct, 1)} % über dem Kaufbereich. Diese Strecke muss er noch fallen."></i>` : '';
     return `<div class="wl-zk">${status}${info}</div>
-        <div class="wl-leiste wl-l-${lage}" style="--zb:${ZB}%">
+        <div class="wl-leiste wl-l-${lage === 'beob' ? 'warten' : lage}" style="--zb:${ZB}%">
             <i class="wl-g1" tabindex="0" data-tip="Bester Kaufbereich&#10;${fUsd(z.von)} bis ${fUsd(z.von + (z.bis - z.von) / 3)}, unteres Drittel der Zone. Vom Kurs aus ${p(z.von + (z.bis - z.von) / 3)} bis ${p(z.von)}. Hier ist Chance zu Risiko am besten."></i>
             <i class="wl-g2" tabindex="0" data-tip="Kaufbereich&#10;${fUsd(mitte)} bis ${fUsd(z.bis)}, restliche Zone. Einstieg möglich, aber etwas teurer oder die Zone ist weniger stark."></i>
             <i class="wl-rest" tabindex="0" data-tip="Abwarten&#10;Über ${fUsd(z.bis)} ist der Coin für einen Einstieg zu teuer."></i>
@@ -62,13 +74,17 @@ export function kompakt(z) {
     let pos, lage, txt;
     if (z.im) {
         const t = z.bis > z.von ? Math.min(1, Math.max(0, (z.kurs - z.von) / (z.bis - z.von))) : 0;
-        pos = Math.min(ZB - 3, Math.max(3, t * ZB)); lage = (t <= 1 / 3 && (z.score || 0) >= 3) ? 'best' : 'zone';
+        pos = Math.min(ZB - 3, Math.max(3, t * ZB)); lage = istBest(z, t) ? 'best' : 'zone';
+        if (lage === 'zone') pos = Math.min(ZB - 3, Math.max(ZB / 3 + 1, pos));
         txt = lage === 'best' ? 'Bester Kaufbereich' : 'Im Kaufbereich';
+    } else if (z.beobachten) {
+        pos = ZB + 3 + Math.min(1, (z.abstandPct || 0) / 40) * (100 - ZB - 6); lage = 'warten';
+        txt = 'Beobachten';
     } else {
         pos = ZB + 3 + Math.min(1, z.abstandPct / 40) * (100 - ZB - 6); lage = 'warten';
         txt = 'Abwarten ' + fPct((z.bis / z.kurs - 1) * 100);
     }
-    const tip = `${txt}. Kaufzone ${fUsd(z.von)} bis ${fUsd(z.bis)}, bester Bereich bis ${fUsd(z.von + (z.bis - z.von) / 3)}. Kurs ${fUsd(z.kurs)}. Je weiter links der Punkt, desto besser der Einstieg. Regelbasiert, keine Anlageberatung.${z.quelle === 'tage' ? ' Zone aus Tageskursen berechnet (kein Binance-Paar).' : ''}`;
+    const tip = `${txt}${z.beobachten ? ': ' + gegenText(z) : ''}. Kaufzone ${fUsd(z.von)} bis ${fUsd(z.bis)}, bester Bereich bis ${fUsd(z.von + (z.bis - z.von) / 3)}. Kurs ${fUsd(z.kurs)}. Je weiter links der Punkt, desto besser der Einstieg. Regelbasiert, keine Anlageberatung.${z.quelle === 'tage' ? ' Zone aus Tageskursen berechnet (kein Binance-Paar).' : ''}`;
     return `<div class="kbk wl-l-${lage}" title="${esc(tip)}" style="--zb:${ZB}%"><div class="kbk-bar"><i class="kg1"></i><i class="kg2"></i>${lage === 'warten' ? `<i class="kw" style="left:${ZB}%;width:${(pos - ZB).toFixed(1)}%"></i>` : ''}<b style="left:${pos.toFixed(1)}%"></b></div><span class="kbk-t ${lage}">${esc(txt)}</span></div>`;
 }
 
@@ -167,8 +183,8 @@ function zFuer(sym) {
 }
 export function rang(z) {
     if (!z || z.keine) return null;
-    if (z.im) { const t = z.bis > z.von ? Math.min(1, Math.max(0, (z.kurs - z.von) / (z.bis - z.von))) : 0; return ((t <= 1 / 3 && (z.score || 0) >= 3) ? -100 : -50) + t * 40; }
-    return z.abstandPct;
+    if (z.im) { const t = z.bis > z.von ? Math.min(1, Math.max(0, (z.kurs - z.von) / (z.bis - z.von))) : 0; return (istBest(z, t) ? -100 : -50) + t * 40; }
+    return Math.max(0.1, z.abstandPct || 0);
 }
 const raenge = new Map();
 
@@ -315,7 +331,7 @@ export function zoneAusKerzen(reihe, plan) {
         if (reihe && reihe.length >= 30) {
             const bars = reihe.map(k => ({ time: k[0], open: k[1], high: k[2], low: k[3], close: k[4], value: k[4] }));
             const ta = berechneTA({ bars, lang: null, vol: reihe.map(k => k[5] || 0), athDb: null, fng: null });
-            if (ta && ta.zone) return { im: !!ta.zone.im, von: ta.zone.von, bis: ta.zone.bis, abstandPct: Math.max(0, ta.zone.abstandPct || 0), score: ta.zone.score || 0, kurs: ta.jetzt };
+            if (ta && ta.zone) return { im: !!ta.zone.im, beobachten: !!ta.zone.beobachten, gegen: ta.zone.gegen || [], best: !!ta.zone.best, von: ta.zone.von, bis: ta.zone.bis, abstandPct: Math.max(0, ta.zone.abstandPct || 0), score: ta.zone.score || 0, kurs: ta.jetzt };
         }
     } catch (e) {}
     if (plan && plan.kurs && plan.stuetze && plan.stop && plan.stuetze > plan.stop) {

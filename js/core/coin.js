@@ -1,8 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610181021';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610181021';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610181021';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610181021';
-import { berechneTA, mystik } from './auto_ta.js?v=202610181021';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610182147';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610182147';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610182147';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610182147';
+import { berechneTA, mystik } from './auto_ta.js?v=202610182147';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -456,19 +456,20 @@ async function webseiteLaden(c, S) {
 }
 
 const zoneCache = new Map();
-try { Object.entries(JSON.parse(localStorage.getItem('c2_kb_cache2') || '{}')).forEach(([k, v]) => zoneCache.set(k, v)); } catch (e) {}
+try { Object.entries(JSON.parse(localStorage.getItem('c2_kb_cache3') || '{}')).forEach(([k, v]) => zoneCache.set(k, v)); } catch (e) {}
 let kbSpeichern = null;
 const kbMerken = () => { clearTimeout(kbSpeichern); kbSpeichern = setTimeout(() => {
     const o = {}, alt = Date.now() - 30 * 60 * 1000; zoneCache.forEach((v, k) => { if (v.t > alt) o[k] = v; });
-    try { localStorage.setItem('c2_kb_cache2', JSON.stringify(o)); } catch (e) {}
+    try { localStorage.setItem('c2_kb_cache3', JSON.stringify(o)); } catch (e) {}
 }, 1500); };
 function zoneOhneBinance(c) {
     const kz = D.kaufzonen, e = kz && kz.coins && c.id ? kz.coins[c.id] : null, kurs = c.current_price;
     if (!e || !kurs) return { keine: true, grund: 'wenig' };
     if (e.status !== 'zone') return { keine: true, grund: e.status };
     if (kurs < e.von * 0.97) return { keine: true, grund: 'unter' };
-    const im = kurs <= e.bis;
-    return { im, von: e.von, bis: e.bis, kurs, score: e.score, gruende: e.gruende, abstandPct: im ? 0 : (kurs - e.bis) / kurs * 100, quelle: 'tage' };
+    const drin = kurs <= e.bis;
+    if (drin && e.beob) return { im: false, beobachten: true, gegen: e.gegen || [], von: e.von, bis: e.bis, kurs, score: e.score, gruende: e.gruende, abstandPct: 0, quelle: 'tage' };
+    return { im: drin, best: drin && !!e.best, von: e.von, bis: e.bis, kurs, score: e.score, gruende: e.gruende, abstandPct: drin ? 0 : (kurs - e.bis) / kurs * 100, quelle: 'tage' };
 }
 export async function aufbereich(c) {
     if (!c) return null;

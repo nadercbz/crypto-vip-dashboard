@@ -1,7 +1,7 @@
-import { externChart } from '../core/coin.js?v=202610181021';
-import { kompakt, zoneAusKerzen } from '../core/kaufbalken.js?v=202610181021';
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610181021';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610181021';
+import { externChart } from '../core/coin.js?v=202610182147';
+import { kompakt, zoneAusKerzen, gegenText } from '../core/kaufbalken.js?v=202610182147';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610182147';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610182147';
 
 let kette = 'alle';
 let einstieg = 'alle';      // 'alle' = alle Signale wie bisher, 'gut' = nur gute Einstiege
@@ -24,6 +24,7 @@ export function einstiegsCheck(x) {
     if (r.gut) {
         const z = zoneAusKerzen((x.chart || {}).reihe, (x.chart || {}).plan);
         if (z.keine) r = { gut: false, grund: 'Kein klarer Kaufbereich im Chart erkennbar' };
+        else if (z.beobachten) r = { gut: false, grund: 'Beobachten: ' + gegenText(z) };
         else if (!z.im) r = { gut: false, grund: 'Abwarten: Kurs liegt ' + de(z.abstandPct, 0) + ' % über dem Kaufbereich' };
         else r = { ...r, grund: 'Im Kaufbereich. ' + r.grund };
     }

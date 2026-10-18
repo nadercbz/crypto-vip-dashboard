@@ -1,6 +1,7 @@
-import { D } from '../core/data.js?v=202610181021';
-import { esc, fBig, fPct, cls } from '../core/fmt.js?v=202610181021';
-import { card, pageHead, seg, chip, empty, icon, bar, coinImg, hydrate } from '../core/ui.js?v=202610181021';
+import { gegenText } from '../core/kaufbalken.js?v=202610182147';
+import { D } from '../core/data.js?v=202610182147';
+import { esc, fBig, fPct, cls } from '../core/fmt.js?v=202610182147';
+import { card, pageHead, seg, chip, empty, icon, bar, coinImg, hydrate } from '../core/ui.js?v=202610182147';
 
 const st = { tier: 'low', offen: new Set(), sort: 'score' };
 const STATUS = {
@@ -83,7 +84,7 @@ function detail(c) {
         einstieg = `<div class="ks-note">Für diesen Coin liegt kein ausreichender Kursverlauf vor. Ohne Chart gibt es keine Einstiegszone und kein Kaufsignal.</div>`;
     } else {
         const zeilen = [];
-        if (ch.zone) zeilen.push(['Lage', ch.zone.im ? 'Der Kurs steht in einer Kaufzone' : `Kurs ${z(ch.abstand, 1)} % über der nächsten Kaufzone`]);
+        if (ch.zone) zeilen.push(['Lage', ch.zone.im ? 'Der Kurs steht in einer Kaufzone' : ch.zone.beobachten ? 'Beobachten: ' + gegenText(ch.zone) : `Kurs ${z(ch.abstand, 1)} % über der nächsten Kaufzone`]);
         if (e) zeilen.push([c.status === 'kauf' ? 'Einstiegszone' : 'Mögliche Einstiegszone', `${p(e.von)} bis ${p(e.bis)}`]);
         if (e && e.gruende && e.gruende.length) zeilen.push(['Gestützt durch', e.gruende.join(', ')]);
         if (e && e.stopp) zeilen.push(['Invalidierung', `Schlusskurs unter ${p(e.stopp)}`]);

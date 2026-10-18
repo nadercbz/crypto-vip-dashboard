@@ -158,15 +158,43 @@ export function berechneTA({ bars, lang, vol, athDb, fng }) {
     });
 
     const starke = zonen.filter(z => z.stark);
+    const r = rsi(closes);
+    const heiss = r != null && r > 70 && (fng == null || fng > 75);
+
+    const fenster = bars.slice(-90);
+    const hoch90 = Math.max(...fenster.map(h)), tief90 = Math.min(...fenster.map(l));
+    const lage90 = hoch90 > tief90 ? (jetzt - tief90) / (hoch90 - tief90) : 0.5;
+    const jahr = lang && lang.length > 10 ? lang.slice(-52) : bars.slice(-365);
+    const hoch1j = Math.max(...jahr.map(h)), tief1j = Math.min(...jahr.map(l));
+    const lageJahr = hoch1j > tief1j ? (jetzt - tief1j) / (hoch1j - tief1j) : 0.5;
+    const pruefe = z => {
+        const stopp = z.von - Math.max(A * 0.8, (z.bis - z.von) * 0.6, z.mitte * 0.015);
+        const ziel = widerstaende.find(p => p > Math.max(jetzt, z.bis) + A * 0.3) || null;
+        const rr = ziel ? (ziel - jetzt) / Math.max(1e-12, jetzt - stopp) : null;
+        const gegen = [];
+        if (rr == null || rr < 2) gegen.push('rr');
+        if (heiss) gegen.push('heiss');
+        if (lage90 > 0.8) gegen.push('oben');
+        if (lageJahr > 0.5) gegen.push('jahr');
+        if (htf === 'ab') gegen.push('ab');
+        return { rr, stopp, ziel, gegen };
+    };
     const imZone = starke.filter(z => jetzt >= z.von - A * 0.15 && jetzt <= z.bis + A * 0.15).sort((a, b) => wertung(b) - wertung(a))[0] || null;
     const unter = starke.filter(z => z.bis < jetzt - A * 0.15).sort((a, b) => b.bis - a.bis)[0] || null;
     const naechste = unter || kauf[0] || null;
-    const zone = imZone ? { im: true, von: imZone.von, bis: imZone.bis, abstandPct: 0, gruende: imZone.gruende, score: imZone.score,
-            tiefe: imZone.bis > imZone.von ? Math.min(1, Math.max(0, (jetzt - imZone.von) / (imZone.bis - imZone.von))) : 0 }
-        : naechste ? { im: false, von: naechste.von, bis: naechste.bis, abstandPct: (jetzt - naechste.bis) / jetzt * 100, gruende: naechste.gruende, score: naechste.score } : null;
-
-    const r = rsi(closes);
-    const heiss = r != null && r > 70 && (fng == null || fng > 75);
+    const pr = imZone ? pruefe(imZone) : null;
+    let zone;
+    if (imZone && pr && !pr.gegen.length) {
+        const tiefe = imZone.bis > imZone.von ? Math.min(1, Math.max(0, (jetzt - imZone.von) / (imZone.bis - imZone.von))) : 0;
+        zone = { im: true, von: imZone.von, bis: imZone.bis, abstandPct: 0, gruende: imZone.gruende, score: imZone.score, rr: pr.rr, ziel: pr.ziel, stopp: pr.stopp, tiefe,
+            lageJahr, best: tiefe <= 1 / 3 && imZone.score >= 3 && lageJahr <= 1 / 3 };
+    } else if (imZone && pr) {
+        const ziel2 = naechste && naechste !== imZone ? naechste : null;
+        zone = { im: false, beobachten: true, gegen: pr.gegen, rr: pr.rr, lageJahr, von: (ziel2 || imZone).von, bis: (ziel2 || imZone).bis,
+            abstandPct: ziel2 ? Math.max(0, (jetzt - ziel2.bis) / jetzt * 100) : 0, gruende: (ziel2 || imZone).gruende, score: (ziel2 || imZone).score };
+    } else if (naechste) {
+        zone = { im: false, von: naechste.von, bis: naechste.bis, abstandPct: (jetzt - naechste.bis) / jetzt * 100, gruende: naechste.gruende, score: naechste.score };
+    } else zone = null;
 
     const H = Math.max(12, Math.min(60, Math.round(n * 0.18)));
     const m = Math.min(60, Math.max(20, Math.round(n / 3)));

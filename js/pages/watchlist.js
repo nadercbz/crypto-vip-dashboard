@@ -1,8 +1,8 @@
-import { D, coin, watch, store } from '../core/data.js?v=202610181021';
-import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610181021';
-import { aufbereich } from '../core/coin.js?v=202610181021';
-import { zoneHtml } from '../core/kaufbalken.js?v=202610181021';
-import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610181021';
+import { D, coin, watch, store } from '../core/data.js?v=202610182147';
+import { esc, fUsd, fNum, fPct, cls } from '../core/fmt.js?v=202610182147';
+import { aufbereich } from '../core/coin.js?v=202610182147';
+import { zoneHtml } from '../core/kaufbalken.js?v=202610182147';
+import { card, pageHead, coinImg, pct, scoreVar, sparkline, icon, empty } from '../core/ui.js?v=202610182147';
 
 const NOTE = 'c2_watch_notes';
 let onLive = null;
@@ -54,7 +54,7 @@ export default {
         document.addEventListener('cb2:live', onLive);
         const ergebnis = {};
         const sortiere = () => {
-            const rang = sym => { const z = ergebnis[sym]; return !z ? 1e9 : z.keine ? 1e8 : z.im ? -1000 + (z.tiefe || 0) : z.abstandPct; };
+            const rang = sym => { const z = ergebnis[sym]; return !z ? 1e9 : z.keine ? 1e8 : z.im ? -1000 + (z.tiefe || 0) : z.beobachten ? Math.max(0.1, z.abstandPct || 0) : z.abstandPct; };
             [...list].sort((a, b) => rang(a) - rang(b)).forEach((sym, i) => { const k = root.querySelector(`[data-wl="${CSS.escape(sym)}"]`); if (k) k.style.order = i; });
         };
         list.forEach(sym => {
