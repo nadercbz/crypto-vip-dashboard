@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202610182147';
-import { esc, fBig } from '../core/fmt.js?v=202610182147';
-import { card, pageHead, sparkFor, bar, coinImg, chip, seg, empty, icon, hydrate } from '../core/ui.js?v=202610182147';
+import { D } from '../core/data.js?v=202610191009';
+import { esc, fBig } from '../core/fmt.js?v=202610191009';
+import { card, pageHead, sparkFor, bar, coinImg, chip, seg, empty, icon, hydrate } from '../core/ui.js?v=202610191009';
 
 let gemTier = 'micro';   // aktiver Tab
 
