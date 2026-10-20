@@ -1,6 +1,6 @@
-import { D, coin, coinKey, store } from '../core/data.js?v=202610191009';
-import { esc } from '../core/fmt.js?v=202610191009';
-import { pageHead, ring, empty, icon, icons, hydrate, sparkline } from '../core/ui.js?v=202610191009';
+import { D, coin, coinKey, store } from '../core/data.js?v=202610201310';
+import { esc } from '../core/fmt.js?v=202610201310';
+import { pageHead, ring, empty, icon, icons, hydrate, sparkline } from '../core/ui.js?v=202610201310';
 
 const MERK = 'c2_ns_state_v1';
 const SORTEN = [['mc', 'Market Cap'], ['c24', '24 Std'], ['c7', '7 Tage'], ['c30', '30 Tage'], ['v', 'Volumen']];

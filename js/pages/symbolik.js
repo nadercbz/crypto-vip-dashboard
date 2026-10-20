@@ -1,7 +1,7 @@
-import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202610191009';
-import { card, pageHead, chip, icon, empty, laden, hydrate, icons } from '../core/ui.js?v=202610191009';
-import { coinKey, coinById } from '../core/data.js?v=202610191009';
-import { externChart } from '../core/coin.js?v=202610191009';
+import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202610201310';
+import { card, pageHead, chip, icon, empty, laden, hydrate, icons } from '../core/ui.js?v=202610201310';
+import { coinKey, coinById } from '../core/data.js?v=202610201310';
+import { externChart } from '../core/coin.js?v=202610201310';
 
 const S = () => window.SYMBOLIK_DATA || null;
 const PRO_SEITE = 120;
@@ -220,7 +220,7 @@ function kachel(c) {
         <div class="sy-k-n">${esc(c.n)}</div>
         <div class="sy-k-farben">${(c.f || []).slice(0, 4).map((f, i) => `<i style="background:${esc((farbe(f) || {}).sw || '#888')};flex:${c.fa ? c.fa[i] : 1}"></i>`).join('')}</div>
         ${c.nm ? `<div class="sy-k-nm" title="${esc(namenVon(c).map(x => x.wort + ': ' + x.h).join(' · '))}">${icon('signature')}${esc(namenVon(c).map(x => x.wort).join(', '))}</div>` : ''}
-        <div class="sy-k-u"><span>${mo ? esc(mo.l) : '·'}</span><span class="${cls(c.d7)}">${fPct(c.d7, 0)}</span></div>
+        <div class="sy-k-u"><span>${mo ? esc(mo.l) : '·'}${c.mq ? ` <i class="sy-mq" title="Dieses Motiv steht im Namen. Das Logo selbst zeigt es nicht oder wurde nicht als solches erkannt.">Name</i>` : ''}</span><span class="${cls(c.d7)}">${fPct(c.d7, 0)}</span></div>
         <div class="sy-k-r">#${c.r || '?'}</div>
         ${(c.sa || []).some(x => x !== 'dunkel') ? `<div class="sy-k-sa" title="Saturn-Marker: ${esc((c.sa || []).map(x => ((W().saturn.marker[x] || {}).l || x)).join(', '))}">${icon('orbit')}</div>` : ''}
     </button>`;
@@ -242,7 +242,12 @@ function ergebnis() {
     F.sa.forEach(v => aktiv.push(['sa', v, 'Saturn: ' + (((W().saturn || {}).marker || {})[v] || {}).l]));
     F.z.forEach(v => aktiv.push(['z', v, 'Zahl ' + v]));
     const median7 = median(liste.map(c => c.d7));
-    return `<div class="row between wrap sy-erg-kopf">
+    const VS = W().vollsichtung || null, d = S();
+    const ungeprueft = F.m.filter(k => !(VS && (VS.motive || []).includes(k)));
+    const abdeckung = !F.m.length ? '' : (!ungeprueft.length && VS
+        ? `<div class="sy-abd ok">${icon('shield-check')}<div>${esc(VS.text)}</div></div>`
+        : (d.erkannt < d.anzahl ? `<div class="sy-abd">${icon('triangle-alert')}<div><b>Liste unvollständig.</b> Das Bildmodell hat erst ${de(d.erkannt)} von ${de(d.anzahl)} Logos gelesen. Für ${esc(ungeprueft.map(k => (motiv(k) || {}).l || k).join(', '))} fehlt die Handsichtung, es kommen noch Treffer dazu.</div></div>` : ''));
+    return abdeckung + `<div class="row between wrap sy-erg-kopf">
             <div><span class="big num">${de(liste.length)}</span> <span class="dim">Coins</span>${liste.length ? ` <span class="dim" style="margin-left:10px">Median 7 Tage</span> <b class="${cls(median7)}">${fPct(median7, 1)}</b>` : ''}</div>
             <div class="row wrap" style="gap:6px">${aktiv.map(([a, v, l]) => `<button class="sy-aktiv" data-weg="${a}" data-v="${esc(v)}">${esc(l)}${icon('x')}</button>`).join('')}${aktiv.length || F.q ? `<button class="btn soft" id="syReset">${icon('rotate-ccw')}Zurücksetzen</button>` : ''}</div>
         </div>
@@ -275,6 +280,7 @@ function lesung(c) {
             <div class="sy-l-grid">
                 ${block('Motiv', esc(mo ? mo.l : (c.m ? c.m : 'Nicht erkannt')) + (mo2 ? ` <span class="dim">und ${esc(mo2.l)}</span>` : ''), mo && mo.b, mo && mo.q,
                     (mo && mo.zo ? `<div class="sy-tag">${icon('orbit')}${esc(mo.zo)}</div>` : '') + (mo && mo.ta ? `<div class="sy-tag">${icon('layers')}Tarot ${esc(mo.ta)}</div>` : '') +
+                    (c.mq ? `<div class="sy-tag">${icon('signature')}Dieses Motiv kommt aus dem Namen. Das Logo selbst zeigt es nicht oder wurde nicht als solches erkannt.</div>` : '') +
                     (c.c ? `<div class="sy-tag" title="Freie Beschreibung des Bildmodells, daraus wird das Motiv gelesen">${icon('scan-eye')}<i>„${esc(c.c)}“</i></div>` : ''), mo ? undefined : offen)}
                 ${block('Hauptfarbe', `<i class="sy-dot" style="background:${esc(c.hx || '#888')}"></i>${esc(fa ? fa.l : '?')}`, fa && fa.b, fa && fa.q,
                     fa ? `<div class="sy-tag">${icon('orbit')}Planet ${esc(fa.pl || 'ohne Zuordnung')}${fa.ch ? ' · Chakra ' + esc(fa.ch) : ''}</div>` : '')}
@@ -434,6 +440,10 @@ export default {
         .sy-bel { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; flex: none; }
         .sy-k-nm { display: flex; align-items: center; gap: 3px; font-size: .64rem; color: var(--ink-2); max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 3px; }
         .sy-k-nm svg { width: 11px; height: 11px; flex: none; }
+        .sy-mq { font-style: normal; font-size: .58rem; padding: 1px 5px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink-2); vertical-align: 1px; }
+        .sy-abd { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; font-size: .78rem; line-height: 1.5; color: var(--ink-2); padding: 12px 16px; border-radius: 16px; background: color-mix(in srgb, var(--warn) 12%, transparent); }
+        .sy-abd.ok { background: color-mix(in srgb, var(--up) 12%, transparent); }
+        .sy-abd svg { width: 16px; height: 16px; flex: none; margin-top: 2px; }
         .sy-k-sa { position: absolute; right: 8px; top: 8px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--ink) 12%, var(--sunk)); color: var(--ink-2); }
         .sy-k-sa svg { width: 12px; height: 12px; }
         .sy-pills { display: flex; flex-wrap: wrap; gap: 5px; }

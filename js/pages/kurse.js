@@ -1,6 +1,6 @@
-import { D, coin, watch } from '../core/data.js?v=202610191009';
-import { esc, fUsd, fBig, fNum, fPct, cls } from '../core/fmt.js?v=202610191009';
-import { card, pageHead, coinImg, pct, seg, chip, icon, icons, empty, sparkline } from '../core/ui.js?v=202610191009';
+import { D, coin, watch } from '../core/data.js?v=202610201310';
+import { esc, fUsd, fBig, fNum, fPct, cls } from '../core/fmt.js?v=202610201310';
+import { card, pageHead, coinImg, pct, seg, chip, icon, icons, empty, sparkline } from '../core/ui.js?v=202610201310';
 
 const BATCH = 120;
 const st = { q: '', cat: 'Alle', view: 'mcap', sort: 'market_cap_rank', dir: 1, n: BATCH };
