@@ -1,8 +1,8 @@
-import { D, coin, signal, watch, store, proxy } from './data.js?v=202610201310';
-import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610201310';
-import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610201310';
-import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610201310';
-import { berechneTA, mystik } from './auto_ta.js?v=202610201310';
+import { D, coin, signal, watch, store, proxy } from './data.js?v=202610201331';
+import { esc, fUsd, fBig, fPct, fNum, cls } from './fmt.js?v=202610201331';
+import { icon, icons, scoreBadge, seg, bar, scoreVar, hydrate } from './ui.js?v=202610201331';
+import { zeichner, WERKZEUGE } from './zeichnen.js?v=202610201331';
+import { berechneTA, mystik } from './auto_ta.js?v=202610201331';
 
 const NOTE = 'c2_watch_notes';
 const NA = fNum(null);
@@ -877,4 +877,43 @@ if (typeof document !== 'undefined') {
         if (!runter && !hoch) return;
         if (blaettere(runter ? 1 : -1)) { e.preventDefault(); e.stopPropagation(); }
     });
+}
+
+/** Coin, den das Dashboard nicht kennt (z. B. Chain Scan): eigenes Detail statt CoinGecko-Seite.
+ *  Kurse von DefiLlama (coingecko-ID), Chart mit Auto-Analyse über externChart. */
+export async function openExternCoin({ id, s = '', n = '', img = '' }) {
+    const d = el();
+    if (!d || !id) return;
+    ensureStyle();
+    zoomOff();
+    destroyChart(); destroyCmp();
+    current = null;
+    const S = upper(s || id);
+    d.innerHTML = `
+        <div class="cd-head">
+            <img class="coin-img" src="${esc(img)}" alt="" onerror="this.style.visibility='hidden'">
+            <div class="cd-title"><div class="cd-name"><span class="h2">${esc(n || S)}</span><span class="cd-sym">${esc(S)}</span></div></div>
+            <div class="cd-btns"><button class="ibtn" id="cdClose" title="Schließen (Esc)">${icon('x')}</button></div>
+        </div>
+        <div class="cd-links cd-links-top">
+            <a class="btn soft" target="_blank" rel="noopener" href="https://www.coingecko.com/en/coins/${esc(encodeURIComponent(id))}">${icon('external-link')}CoinGecko</a>
+            <a class="btn soft" target="_blank" rel="noopener" href="https://dexscreener.com/search?q=${esc(encodeURIComponent(S))}">${icon('activity')}DexScreener</a>
+        </div>
+        <div id="cdExtChart" style="height:420px;margin-top:14px"><div class="empty">Lade Kursverlauf …</div></div>
+        <p class="sub" id="cdExtNote" style="font-size:.74rem;margin-top:8px"></p>`;
+    hydrate && hydrate(d);
+    d.classList.add('on'); d.setAttribute('aria-hidden', 'false'); d.scrollTop = 0;
+    $('scrim').classList.add('on');
+    $('cdClose').onclick = closeCoin;
+    const box = document.getElementById('cdExtChart');
+    try {
+        const r = await fetch('https://coins.llama.fi/chart/coingecko:' + encodeURIComponent(id) + '?span=365&period=1d');
+        const j = await r.json(), p = j && j.coins && j.coins['coingecko:' + id] && j.coins['coingecko:' + id].prices;
+        if (!box.isConnected) return;
+        if (!p || p.length < 30) { box.innerHTML = '<div class="empty">Kein Kursverlauf verfügbar.</div>'; return; }
+        const k = p.filter(x => x.price > 0).map(x => [Math.floor(x.timestamp / 86400) * 86400, x.price, x.price, x.price, x.price, 0]);
+        box.innerHTML = '';
+        if (!externChart(box, k, { sym: S, ath: null })) box.innerHTML = '<div class="empty">Zu wenig Kerzen für einen Chart.</div>';
+        else document.getElementById('cdExtNote').textContent = 'DefiLlama · Tagesschlusskurse, mit Auto-Analyse (keine Anlageberatung)';
+    } catch (e) { if (box.isConnected) box.innerHTML = '<div class="empty">Kursverlauf nicht erreichbar.</div>'; }
 }

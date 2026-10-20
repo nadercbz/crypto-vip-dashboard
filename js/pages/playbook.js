@@ -1,6 +1,6 @@
-import { D, coin, signal, store } from '../core/data.js?v=202610201310';
-import { esc, fUsd, fBig, fPct, fNum } from '../core/fmt.js?v=202610201310';
-import { pageHead, icon, icons, scoreVar, sparkline } from '../core/ui.js?v=202610201310';
+import { D, coin, signal, store } from '../core/data.js?v=202610201331';
+import { esc, fUsd, fBig, fPct, fNum } from '../core/fmt.js?v=202610201331';
+import { pageHead, icon, icons, scoreVar, sparkline } from '../core/ui.js?v=202610201331';
 
 const UP = 'var(--up)';                                               // alt #4ecdc4
 const UP2 = 'color-mix(in srgb, var(--up) 70%, var(--warn))';         // alt #6bcf7f

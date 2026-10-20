@@ -1,6 +1,7 @@
-import { D, coin, coinKey, store } from '../core/data.js?v=202610201310';
-import { esc } from '../core/fmt.js?v=202610201310';
-import { pageHead, ring, empty, icon, icons, hydrate, sparkline } from '../core/ui.js?v=202610201310';
+import { D, coin, coinKey, store } from '../core/data.js?v=202610201331';
+import { openExternCoin } from '../core/coin.js?v=202610201331';
+import { esc } from '../core/fmt.js?v=202610201331';
+import { pageHead, ring, empty, icon, icons, hydrate, sparkline } from '../core/ui.js?v=202610201331';
 
 const MERK = 'c2_ns_state_v1';
 const SORTEN = [['mc', 'Market Cap'], ['c24', '24 Std'], ['c7', '7 Tage'], ['c30', '30 Tage'], ['v', 'Volumen']];
@@ -212,7 +213,7 @@ function renderListe(d, e) {
         if (c.c7 != null && c.c7 >= 30) badges += '<span class="cs-badge" style="--c:var(--up)">läuft</span>';
         if (c.v && c.mc && c.v / c.mc >= 0.25) badges += '<span class="cs-badge" style="--c:var(--warn)">Volumen-Schub</span>';
         const unter = esc(c.s) + (q ? ' · ' + esc(bandLabel(d, c.b)) : '') + (c.ath != null && c.ath <= -90 ? ' · ' + zahlDE(c.ath, 0) + ' % vom ATH' : '');
-        return `<div class="cs-row cs-zeile" ${sym ? `data-coin="${esc(sym)}"` : `data-cg="${esc(c.id)}"`} style="--i:${i}" role="button" tabindex="0" title="${sym ? 'Coin-Detail öffnen' : 'Auf CoinGecko öffnen'}">
+        return `<div class="cs-row cs-zeile" ${sym ? `data-coin="${esc(sym)}"` : `data-cg="${esc(c.id)}"`} style="--i:${i}" role="button" tabindex="0" title="Coin-Detail öffnen" data-n="${esc(c.n)}" data-s="${esc(c.s)}" data-img="${esc(c.img)}">
             <span class="cs-rang">${c.nat ? rang[c.id] || '' : ''}</span>
             <img class="coin-img" src="${esc(c.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
             <div class="cs-name"><b>${esc(c.n)}</b><span>${unter}</span>${badges}</div>
@@ -377,7 +378,7 @@ export default {
             const such = ev.target.closest('[data-suche]');
             if (such) { state.q = such.dataset.suche; $('csSuche').value = state.q; renderDetail(); return; }
             const row = ev.target.closest('.cs-zeile[data-cg]');
-            if (row && !ev.target.closest('a')) window.open('https://www.coingecko.com/en/coins/' + encodeURIComponent(row.dataset.cg), '_blank', 'noopener');
+            if (row && !ev.target.closest('a')) openExternCoin({ id: row.dataset.cg, s: row.dataset.s, n: row.dataset.n, img: row.dataset.img });
         };
         root.onkeydown = ev => {
             if (ev.key !== 'Enter' && ev.key !== ' ') return;
