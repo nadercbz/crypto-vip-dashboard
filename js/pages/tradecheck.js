@@ -1,6 +1,6 @@
-import { store } from '../core/data.js?v=202610201331';
-import { esc } from '../core/fmt.js?v=202610201331';
-import { card, pageHead, icon } from '../core/ui.js?v=202610201331';
+import { store } from '../core/data.js?v=202610211035';
+import { esc } from '../core/fmt.js?v=202610211035';
+import { card, pageHead, icon } from '../core/ui.js?v=202610211035';
 
 const ITEMS = [
     'Trend klar definiert (Higher Highs / Lower Lows)',

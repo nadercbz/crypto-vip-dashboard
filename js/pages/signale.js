@@ -1,7 +1,7 @@
-import { externChart } from '../core/coin.js?v=202610201331';
-import { kompakt, zoneAusKerzen, gegenText } from '../core/kaufbalken.js?v=202610201331';
-import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610201331';
-import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610201331';
+import { externChart } from '../core/coin.js?v=202610211035';
+import { kompakt, zoneAusKerzen, gegenText } from '../core/kaufbalken.js?v=202610211035';
+import { esc, fUsd, fBig, fPct, cls, ago } from '../core/fmt.js?v=202610211035';
+import { card, pageHead, ring, bar, chip, seg, icon, empty, hydrate, scoreVar } from '../core/ui.js?v=202610211035';
 
 let kette = 'alle';
 let einstieg = 'alle';      // 'alle' = alle Signale wie bisher, 'gut' = nur gute Einstiege

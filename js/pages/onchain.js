@@ -1,6 +1,6 @@
-import { D, coin } from '../core/data.js?v=202610201331';
-import { esc, fBig, fPct, fNum } from '../core/fmt.js?v=202610201331';
-import { card, pageHead, sparkline, coinRow, empty, chip } from '../core/ui.js?v=202610201331';
+import { D, coin } from '../core/data.js?v=202610211035';
+import { esc, fBig, fPct, fNum } from '../core/fmt.js?v=202610211035';
+import { card, pageHead, sparkline, coinRow, empty, chip } from '../core/ui.js?v=202610211035';
 
 function zeitHer(ts) {
     const min = Math.round((Date.now() / 1000 - ts) / 60);
