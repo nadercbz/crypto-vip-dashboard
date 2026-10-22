@@ -1,8 +1,8 @@
-import { D, coin, watch, store } from '../core/data.js?v=202610211035';
-import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610211035';
-import { einstiegsCheck } from './signale.js?v=202610211035';
-import { kompakt, zoneAusKerzen } from '../core/kaufbalken.js?v=202610211035';
-import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js?v=202610211035';
+import { D, coin, watch, store } from '../core/data.js?v=202610220924';
+import { esc, fBig, fPct, fUsd, cls, ago } from '../core/fmt.js?v=202610220924';
+import { einstiegsCheck } from './signale.js?v=202610220924';
+import { kompakt, zoneAusKerzen } from '../core/kaufbalken.js?v=202610220924';
+import { card, pageHead, ring, bar, scoreVar, scoreBadge, sparkline, sparkFor, dotChart, coinRow, coinImg, pct, empty, icon, icons, chip, hydrate, toast } from '../core/ui.js?v=202610220924';
 
 
 function ampel() {

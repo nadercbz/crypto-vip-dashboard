@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202610211035';
-import { esc } from '../core/fmt.js?v=202610211035';
-import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610211035';
+import { D } from '../core/data.js?v=202610220924';
+import { esc } from '../core/fmt.js?v=202610220924';
+import { card, pageHead, seg, chip, empty, icon, icons } from '../core/ui.js?v=202610220924';
 
 const state = { eintrag: 0, filter: 'alle', sort: 'rang' };
 const leer = v => v === null || v === undefined;

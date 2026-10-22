@@ -1,6 +1,6 @@
-import { esc } from '../core/fmt.js?v=202610211035';
-import { card, pageHead, chip, seg, empty, icon, hydrate } from '../core/ui.js?v=202610211035';
-import { VIDEO_CSS } from '../core/influencer_videos.js?v=202610211035';
+import { esc } from '../core/fmt.js?v=202610220924';
+import { card, pageHead, chip, seg, empty, icon, hydrate } from '../core/ui.js?v=202610220924';
+import { VIDEO_CSS } from '../core/influencer_videos.js?v=202610220924';
 
 const M = () => window.MEDIA_DATA || null;
 const de = (v, d = 0) => v == null ? '?' : Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });

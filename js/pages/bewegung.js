@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202610211035';
-import { esc, fUsd, fPct } from '../core/fmt.js?v=202610211035';
-import { card, pageHead, seg, sparkFor, coinImg, empty, icon, icons } from '../core/ui.js?v=202610211035';
+import { D } from '../core/data.js?v=202610220924';
+import { esc, fUsd, fPct } from '../core/fmt.js?v=202610220924';
+import { card, pageHead, seg, sparkFor, coinImg, empty, icon, icons } from '../core/ui.js?v=202610220924';
 
 const st = { tf: '24h', min: 50000000 };
 const FELD = { '24h': 'price_change_percentage_24h', '7d': 'price_change_percentage_7d_in_currency', '30d': 'price_change_percentage_30d' };
