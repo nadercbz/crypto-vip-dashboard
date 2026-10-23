@@ -1,7 +1,7 @@
-import { gegenText } from '../core/kaufbalken.js?v=202610220924';
-import { D } from '../core/data.js?v=202610220924';
-import { esc, fBig, fPct, cls } from '../core/fmt.js?v=202610220924';
-import { card, pageHead, seg, chip, empty, icon, bar, coinImg, hydrate } from '../core/ui.js?v=202610220924';
+import { gegenText } from '../core/kaufbalken.js?v=202610231141';
+import { D } from '../core/data.js?v=202610231141';
+import { esc, fBig, fPct, cls } from '../core/fmt.js?v=202610231141';
+import { card, pageHead, seg, chip, empty, icon, bar, coinImg, hydrate } from '../core/ui.js?v=202610231141';
 
 const st = { tier: 'low', offen: new Set(), sort: 'score' };
 const STATUS = {
