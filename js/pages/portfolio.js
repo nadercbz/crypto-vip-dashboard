@@ -1,6 +1,6 @@
-import { D, coin, store } from '../core/data.js?v=202610261105';
-import { esc, fUsd, cls } from '../core/fmt.js?v=202610261105';
-import { card, pageHead, seg, chip, pct, coinImg, empty, icon, hydrate, scoreBadge } from '../core/ui.js?v=202610261105';
+import { D, coin, store } from '../core/data.js?v=202611060833';
+import { esc, fUsd, cls } from '../core/fmt.js?v=202611060833';
+import { card, pageHead, seg, chip, pct, coinImg, empty, icon, hydrate, scoreBadge } from '../core/ui.js?v=202611060833';
 
 const PP_PROFILES = {
     defensiv:   { safe: 45, core: 30, growth: 20, moon: 5 },

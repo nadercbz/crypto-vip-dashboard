@@ -1,7 +1,7 @@
-import { coin } from './data.js?v=202610261105';
-import { esc, fUsd, fNum, fPct } from './fmt.js?v=202610261105';
-import { aufbereich } from './coin.js?v=202610261105';
-import { berechneTA } from './auto_ta.js?v=202610261105';
+import { coin } from './data.js?v=202611060833';
+import { esc, fUsd, fNum, fPct } from './fmt.js?v=202611060833';
+import { aufbereich } from './coin.js?v=202611060833';
+import { berechneTA } from './auto_ta.js?v=202611060833';
 
 const ZB = 36;   // Breite der Zone auf der Leiste in Prozent
 export const GEGEN = {

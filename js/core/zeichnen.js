@@ -1,5 +1,5 @@
-import { store } from './data.js?v=202610261105';
-import { fUsd } from './fmt.js?v=202610261105';
+import { store } from './data.js?v=202611060833';
+import { fUsd } from './fmt.js?v=202611060833';
 
 const KEY = 'cb2_zeichnungen_v1';
 const FIB = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
