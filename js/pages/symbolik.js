@@ -1,7 +1,7 @@
-import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202611070802';
-import { card, pageHead, chip, icon, empty, laden, hydrate, icons } from '../core/ui.js?v=202611070802';
-import { coinKey, coinById } from '../core/data.js?v=202611070802';
-import { externChart } from '../core/coin.js?v=202611070802';
+import { esc, fUsd, fBig, fPct, cls } from '../core/fmt.js?v=202611090811';
+import { card, pageHead, chip, icon, empty, laden, hydrate, icons } from '../core/ui.js?v=202611090811';
+import { coinKey, coinById } from '../core/data.js?v=202611090811';
+import { externChart } from '../core/coin.js?v=202611090811';
 
 const S = () => window.SYMBOLIK_DATA || null;
 const PRO_SEITE = 120;

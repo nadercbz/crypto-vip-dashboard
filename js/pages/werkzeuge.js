@@ -1,5 +1,5 @@
-import { esc } from '../core/fmt.js?v=202611070802';
-import { pageHead, card, icon } from '../core/ui.js?v=202611070802';
+import { esc } from '../core/fmt.js?v=202611090811';
+import { pageHead, card, icon } from '../core/ui.js?v=202611090811';
 
 const LINKS = [
     { name: 'TradingView',   url: 'https://www.tradingview.com/', desc: 'Charts',     icon: 'candlestick-chart' },
