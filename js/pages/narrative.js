@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202611112008';
-import { esc, fPct, fBig, cls } from '../core/fmt.js?v=202611112008';
-import { pageHead, seg, sparkline, bar, empty, icon, icons, laden } from '../core/ui.js?v=202611112008';
+import { D } from '../core/data.js?v=202611112012';
+import { esc, fPct, fBig, cls } from '../core/fmt.js?v=202611112012';
+import { pageHead, seg, sparkline, bar, empty, icon, icons, laden } from '../core/ui.js?v=202611112012';
 
 const META = {
     AI:       { icon: 'bot',            blurb: 'Artificial Intelligence & Agents' },
