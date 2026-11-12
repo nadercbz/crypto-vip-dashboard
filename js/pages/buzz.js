@@ -1,6 +1,6 @@
-import { D } from '../core/data.js?v=202611112012';
-import { esc } from '../core/fmt.js?v=202611112012';
-import { card, pageHead, sparkFor, bar, coinImg, chip, empty, icon } from '../core/ui.js?v=202611112012';
+import { D } from '../core/data.js?v=202611121233';
+import { esc } from '../core/fmt.js?v=202611121233';
+import { card, pageHead, sparkFor, bar, coinImg, chip, empty, icon } from '../core/ui.js?v=202611121233';
 
 const z = (v, d = 2) => Number(v).toLocaleString('de-DE', { maximumFractionDigits: d });
 const fmtViews = v => v == null ? '' : v >= 1e6 ? z(v / 1e6, 1) + ' Mio' : v >= 1e3 ? z(v / 1e3, 0) + ' Tsd' : String(v);
